@@ -83,3 +83,35 @@ Only Coordinator-owned `docs/contracts/**`, `docs/architecture/**`, and this age
 - [ ] Fresh Developer read-only acceptance of SAME final `1.0.0-rc.3` / blob `98d34e7bd7b4551c0f429ea5e388781060ceaf63`.
 - [ ] Fresh UI/UX read-only acceptance of SAME version/SHA.
 - [ ] Independent PR review, manager freeze, W0 exit; branch protection and required CI before W1 code merges.
+
+
+## 2026-11-14 — H-02 validator-tool npm audit remediation, Manager comment 6875764367
+
+**Scope/authorization:** same Coordinator H-02/W0, same open PR #1, only `docs/contracts/**` and this Coordinator report. Read Coordinator prompt/role, Manager PR comment and decisions, H-02 task and W0/W1 ledgers directly from GitHub. No W1 code, other agents' reports, ledger edits, PR merge or OpenAPI contract change.
+
+**Security issue:** owner manual `npm audit` raised AJV GHSA-2g4f-4pwh-qvx6 and js-yaml GHSA-mh29-5h37-fv8m/other advisories. Update `docs/contracts/package.json` direct dependency exact pins: `ajv: 8.20.0`, `js-yaml: 4.3.2`. `@apidevtools/swagger-parser: 11.0.0` unchanged.
+
+**Lockfile:** `docs/contracts/package-lock.json` created (`lockfileVersion:3`) with exact root dependencies and 17 transitive/top-level packages from verified public GitHub package-lock metadata plus upstream swagger-parser v11 manifest. Static dependency graph scan found 0 missing dependency nodes and 0 root version mismatches. Critical qualification: internet registry DNS unavailable in execution environment; the lockfile is **offline assembled, not npm CLI-generated**, and the swagger-parser tarball URL has **no verified integrity field**. Owner MUST run `npm ci`/online lock verification (and commit any resulting verified lock adjustment) before treating this as reproducibly installed or safe. `@apidevtools/json-schema-ref-parser 16.0.3` transitive metadata requires Node >=22.19.0. No audit-fixed PASS claimed.
+
+**Validator scripts:** `validate-openapi.cjs` no longer hard-codes `js-yaml 4.1.0` / `Ajv 8.17.1` in output: returns actual `require('js-yaml/package.json').version` / `require('ajv/package.json').version` on CLI invocation; `validate-standard.cjs` also emits actual installed versions. Historical `validation-result.json` remains evidence for earlier tool versions only. `VALIDATION.md` and `README.md` distinguish historical checks from PENDING owner's patched dependency manual retests.
+
+**Approved contract preserved:** `docs/contracts/openapi.yaml` unchanged `1.0.0-rc.3`, Git blob SHA `98d34e7bd7b4551c0f429ea5e388781060ceaf63`. Developer comment `6875403671` and UI/UX `6875407091` approvals for this exact blob unaffected.
+
+**PowerShell for owner** (root `D:\ChatGPT-Team-Test`, after checking clean local changes):
+```powershell
+git fetch origin pull/1/head
+git switch --detach FETCH_HEAD
+git status --short
+node --version
+npm --version
+npm --prefix docs/contracts ci --ignore-scripts
+npm --prefix docs/contracts ls ajv js-yaml @apidevtools/swagger-parser
+npm --prefix docs/contracts audit --audit-level=moderate
+node docs/contracts/validate-standard.cjs
+node docs/contracts/validate-openapi.cjs
+git hash-object docs/contracts/openapi.yaml
+git status --short
+```
+If `npm ci` fails due to lock metadata, do not use `npm audit fix --force` or alter the approved OpenAPI. Capture error, online `npm --prefix docs/contracts install --package-lock-only --ignore-scripts`, inspect diff, then report and commit any lock-only reconciliation under Manager review. The Node scripts may report a different **raw CRLF working-tree** hash `44647cc7ca51d0fbf59bf9c746fa4cae6391cb96`; canonical Git hash above is authoritative.
+
+**Actual validation this change:** static lock JSON/graph check only; NO online npm ci, NO patched `npm audit`, NO patched script execution. All runtime/security test gates PENDING owner. PR OPEN/UNMERGED; H-02/W0 not completed; W1 unauthorized.
