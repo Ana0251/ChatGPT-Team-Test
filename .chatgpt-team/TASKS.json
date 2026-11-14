@@ -94,9 +94,9 @@
       "mandatory_amendments": "Early reproducible backend smoke/Pytest checks performed manually with retained evidence; GitHub Actions/PR checks not required. Shared workflow files, if used, are edited serially with H-21/H-28. APP-HESABYAR-MANUAL-VALIDATION-20261114-001: Reproducible manual tests on the user's system replace mandatory GitHub Actions checks. For each gate record exact command, tool/environment versions, commit/blob SHA, observed PASS/FAIL output and PR evidence. Real runtime/API/PostgreSQL/accounting/security tests and independent QA remain mandatory where applicable; never claim unrun tests PASS. GitHub Actions are optional and a failing legacy workflow remains FAIL.",
       "evidence_required": "Manual backend boot/Pytest health-smoke command, tool/env and commit SHA, actual PASS/FAIL log, PR review; independent QA when module is delivered.",
       "evidence_refs": [],
-      "status": "NOT_STARTED",
+      "status": "AUTHORIZED_NOT_STARTED",
       "validation_status": "NOT_TESTED",
-      "start_authorized": false,
+      "start_authorized": true,
       "notes": null
     },
     {
@@ -510,9 +510,9 @@
       "mandatory_amendments": "Design-only ownership; accessible Persian RTL, Jalali, IRR and responsive 360px light/dark specs. Do not modify frontend implementation.",
       "evidence_required": "Design audit checklist + annotated specs",
       "evidence_refs": [],
-      "status": "NOT_STARTED",
+      "status": "AUTHORIZED_NOT_STARTED",
       "validation_status": "NOT_TESTED",
-      "start_authorized": false,
+      "start_authorized": true,
       "notes": null
     },
     {
