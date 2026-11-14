@@ -1442,6 +1442,38 @@
         "H-18 is specs-only: design completeness review may pass; rendered browser, screen-reader/keyboard, actual security workflows and real company/period functionality remain NOT_TESTED until implementation and QA.",
         "Independent QA, tenant financial invariants and real security testing stay mandatory when features are built; W1 exit is not approved."
       ]
+    },
+    {
+      "id": "APP-HESABYAR-DB-LOCAL-SQLITE-20261114-001",
+      "date": "2026-11-14",
+      "approved_by": "manager",
+      "project": "حسابیار (Hesabyar)",
+      "wave_id": "W1",
+      "task_id": "H-04",
+      "status": "TEMPORARY_SQLITE_LOCAL_DEV_OVERRIDE_APPROVED_PENDING_PM_ASSISTANT_LEDGER_SYNC",
+      "user_decision": "User does not want PostgreSQL for now; local SQLite preferred. No H-04/H-18 execution requested to agents yet.",
+      "observed_environment": "Windows Python 3.14.7 previously tested; owner verified sqlite3 SQLite 3.50.4 using py -3. SQLAlchemy/Alembic NOT_TESTED or installed evidence.",
+      "scope": "SQLite file database with SQLAlchemy 2/Alembic for H-04 and local W1 development only. Existing frozen OpenAPI 1.0.0-rc.3 unchanged. Not a release DB decision.",
+      "explicit_local_override": "Overrides PostgreSQL-only H-04 and W1-local-migration acceptance evidence in original APP-HESABYAR-V1-20261114-001 and APP-HESABYAR-W1-H04-H18-ENTRY-20261114-001 solely for local development.",
+      "PM_Assistant_authorized_changes": {
+        "H04_acceptance_criteria": "SQLite real local connection using SQLAlchemy 2 and Alembic: reproducible initial schema, manual upgrade/downgrade/upgrade, isolated test database, schema diff and foreign_keys enabled; no secrets or .db files committed.",
+        "H04_evidence_required": "Real owner Windows PowerShell execution commands/exit codes/output, Python/SQLite/SQLAlchemy/Alembic versions, exact test commit SHA, test DB isolation, FK enforcement, schema before/after, scope-specific PASS/FAIL; production PostgreSQL evidence NOT_TESTED.",
+        "H04_allowed_paths_append_only": [
+          "backend/pyproject.toml"
+        ],
+        "H04_path_exception_note": "H-03 completed. H-04 may amend backend/pyproject.toml only for reproducible SQLAlchemy/Alembic dependency declarations. Must not edit backend/app/core/config.py unless separately approved; no overlap with active H-03 edits.",
+        "W1_exit_criteria_override": "Actual manually verified backend health/Pytest, SQLite database migration upgrade/downgrade/upgrade and isolated DB evidence, required authorized auth/tenancy/fiscal/IRR and UI evidence, independent QA when delivered. PostgreSQL-specific concurrency/locking/NUMERIC(20,0) validations explicitly deferred, not PASS."
+      },
+      "nonnegotiable_controls": [
+        "SQLite engine available does not mean SQLAlchemy or Alembic works yet; no fabricated test pass.",
+        "Keep IRR integer whole rials 20-digit bounds exact by validated decimal string/Decimal or equally lossless design. Never assume SQLite NUMERIC affinity enforces PostgreSQL NUMERIC(20,0) precision; no floats. Account codes preserve leading zeros.",
+        "Enable PRAGMA foreign_keys=ON on every SQLite connection and verify in tests; never commit .db, journal files, credentials, or real customer data.",
+        "Do not claim SQLite substitutes for PostgreSQL multiuser row locks, transaction races, and concurrency QA; preserve known test debt.",
+        "Before real production/multiuser financial release the user and Manager must select a final engine and perform financial, security, concurrency and backup/restore tests on it. PG-specific W3/H26 gates remain outstanding until formally revised; no silent waiver.",
+        "PM Assistant should change ONLY H04 acceptance/evidence/allowed_paths and W1 exit criteria; 30 task statuses, 7 wave statuses, H18 auth, W2-W6 locks and task dependencies remain unchanged. Branch+PR protected main.",
+        "Only Coordinator may update architecture/contract docs on separately authorized scope; frozen OpenAPI SHA unchanged.",
+        "H04/H18 not automatically activated. No H05 or future wave approval."
+      ]
     }
   ]
 }
