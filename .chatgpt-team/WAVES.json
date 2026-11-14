@@ -14,12 +14,24 @@
       "depends_on": [],
       "entry_criteria": "Manager reconfirms entry to W0; approved scope/stack/roles available",
       "exit_criteria": "Approved scope/stack/roles, reviewed contract baseline and non-overlapping file ownership",
-      "status": "AUTHORIZED_NOT_STARTED",
+      "status": "COMPLETED",
       "entry_authorized": true,
       "started_at": null,
       "completed_at": null,
-      "evidence_refs": [],
-      "policy": "No automatic agent activation; per-task dependencies and exclusive allowed paths; independent branch/PR code and real QA evidence. Do not mark complete on registration alone."
+      "evidence_refs": [
+        ".chatgpt-team/DECISIONS.md#APP-HESABYAR-V1-20261114-001",
+        ".chatgpt-team/DECISIONS.md#APP-HESABYAR-H02-FREEZE-20261114-001",
+        ".chatgpt-team/DECISIONS.md#APP-HESABYAR-W0-EXIT-20261114-001",
+        "https://github.com/Ana0251/ChatGPT-Team-Test/pull/1",
+        "https://github.com/Ana0251/ChatGPT-Team-Test/commit/a389fc2eb29967aee0693a549a6e1e60857525d4",
+        "https://github.com/Ana0251/ChatGPT-Team-Test/commit/4a9ce8bb387a692a35bb71d9c3e017595b570ae5",
+        "docs/contracts/openapi.yaml@98d34e7bd7b4551c0f429ea5e388781060ceaf63",
+        "https://github.com/Ana0251/ChatGPT-Team-Test/pull/1#issuecomment-6876106618"
+      ],
+      "policy": "No automatic agent activation; per-task dependencies and exclusive allowed paths; independent branch/PR code and real QA evidence. Do not mark complete on registration alone.",
+      "completed_on": "2026-11-14",
+      "completion_decision_id": "APP-HESABYAR-W0-EXIT-20261114-001",
+      "completion_notes": "Manager-approved documentation/contract gate completed on 2026-11-14. Exact completion time not established; completed_at intentionally null. H-01 GATE_EVIDENCED, H-02 documentation-only COMPLETED. No implementation, runtime, accounting, independent QA or W1 approval implied."
     },
     {
       "id": "W1",
@@ -40,7 +52,7 @@
         "W0"
       ],
       "entry_criteria": "W0 contracts reviewed and manager authorizes W1",
-      "exit_criteria": "Backend health CI, PostgreSQL migrations, tenancy/auth/fiscal/IRR evidence, UX specs",
+      "exit_criteria": "Reproducible manually verified backend health/Pytest smoke, PostgreSQL migrations, auth/tenant/fiscal/IRR evidence, UX specs and independent QA when delivered; GitHub Actions not mandatory.",
       "status": "PENDING_MANAGER_GATE",
       "entry_authorized": false,
       "started_at": null,
@@ -137,7 +149,7 @@
         "W4"
       ],
       "entry_criteria": "W4 domain/report prerequisites passed; H-26 independent QA ongoing",
-      "exit_criteria": "Reports UI, integration PR/contract review and complete CI/restore drill",
+      "exit_criteria": "Reports UI, integration PR/contract review, reproducible manual validation with actual evidence and independent QA, plus fresh-install/migration/restore drill; GitHub Actions not mandatory.",
       "status": "PENDING_MANAGER_GATE",
       "entry_authorized": false,
       "started_at": null,
