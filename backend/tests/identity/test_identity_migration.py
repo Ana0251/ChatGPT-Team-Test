@@ -3,9 +3,11 @@ from __future__ import annotations
 
 from pathlib import Path
 
+import pytest
 from alembic import command
 from alembic.config import Config
 from sqlalchemy import inspect, text
+from sqlalchemy.exc import IntegrityError
 
 from app.db.engine import create_sqlite_engine
 
@@ -44,6 +46,13 @@ def test_identity_migration_and_reversal(tmp_path: Path, monkeypatch) -> None:
         session_cols = {column["name"] for column in inspector.get_columns("h05_sessions")}
         assert {"id_hash", "csrf_hash", "expires_at", "revoked_at"} <= session_cols
         assert len(inspector.get_check_constraints("h05_memberships")) >= 1
+        with engine.connect() as connection:
+            with pytest.raises(IntegrityError):
+                connection.execute(text(
+                    "INSERT INTO h05_memberships (user_id, company_id, role) "
+                    "VALUES ('unknown-user', 'unknown-company', 'owner')"
+                ))
+            connection.rollback()
 
         command.downgrade(config, "h04_0001")
         down = set(inspect(engine).get_table_names())
