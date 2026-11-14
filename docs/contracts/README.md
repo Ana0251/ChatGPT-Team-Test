@@ -23,13 +23,18 @@ The machine-readable baseline is [openapi.yaml](./openapi.yaml); architecture ru
 
 ## Current contract validation and review gates
 - [VALIDATION.md](./VALIDATION.md) and [validation-result.json](./validation-result.json) record **actual** `@apidevtools/swagger-parser 11.0.0` OpenAPI 3.1 schema validation function execution on unchanged `1.0.0-rc.3` Git blob `98d34e7bd7b4551c0f429ea5e388781060ceaf63` (PASS), plus local static checks. The vendor has an internal `$dynamicRef` workaround; full parser/dereference and runtime/QA were **not** executed. A documented Node CLI is reproducible but not claimed executed.
-- [validate-standard.cjs](./validate-standard.cjs) and [package.json](./package.json) are docs-only vendor-validator reproduction tools; [validate-openapi.cjs](./validate-openapi.cjs) is supplemental internal static checking. No W1 application source changed.
+- [validate-standard.cjs](./validate-standard.cjs), [package.json](./package.json) and [package-lock.json](./package-lock.json) are docs-only vendor-validator reproduction tools; [validate-openapi.cjs](./validate-openapi.cjs) is supplemental internal static checking. No W1 application source changed.
 - [ERRORS.md](./ERRORS.md) provides error-code applicability, stable field/line diagnostics, structured warnings and explicit CSRF recovery.
 - [TRIAL_BALANCE_FIXTURE.md](./TRIAL_BALANCE_FIXTURE.md) documents complete posting-leaf mixed-level detail-view fixture and page-independent totals.
 
+## npm audit follow-up — 2026-11-14
+- Manager PR #1 comment `6875764367` confirmed manual npm audit advisories in the validator-tool dependencies. The updated package pins are `ajv=8.20.0` and `js-yaml=4.3.2`; `@apidevtools/swagger-parser=11.0.0` is unchanged. `package-lock.json` now exists with pinned dependency graph sourced offline from public GitHub npm locks, **not yet verified by an online npm install**. One vendor tarball has no verified integrity digest, so owner must run `npm ci` to establish installability. Node >=22.19 is recommended based on transitive ref-parser 16.0.3 engines.
+- Previous validator PASS evidence in `validation-result.json` is **historical** for `js-yaml 4.1.0` / `ajv 8.17.1`; it does **not** prove newer installed packages pass. Both scripts now report installed versions rather than hard-code outdated labels. Current `npm audit` and both upgraded-tool validators are **PENDING OWNER MANUAL TEST**. Repro commands and CRLF versus canonical blob hash explanation: [VALIDATION.md](./VALIDATION.md).
+- `openapi.yaml` remains completely unchanged at exact reviewed SHA `98d34e7bd7b4551c0f429ea5e388781060ceaf63`, so existing contract-consumer approvals are unaffected. No W1 work or PR merge.
+
 ## Review evidence still required
-- [ ] Developer acknowledges final `1.0.0-rc.3` and **exact SHA `98d34e7bd7b4551c0f429ea5e388781060ceaf63`** (Manager coordinates).
-- [ ] UI/UX acknowledges the **same** version/SHA (Manager coordinates).
+- [x] Developer explicitly acknowledged unchanged `1.0.0-rc.3` / `98d34e7bd7b4551c0f429ea5e388781060ceaf63` in PR comment 6875403671; NOT a formal PR APPROVE review.
+- [x] UI/UX explicitly acknowledged the same version/SHA in PR comment 6875407091; not QA or a GitHub PR review.
 - [ ] Independent PR review, Manager contract freeze and W0 exit decision.
 - [ ] Runtime implementation, PostgreSQL/HTTP scenarios, CI and independent QA (none claimed).
 
