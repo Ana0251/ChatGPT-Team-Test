@@ -88,3 +88,39 @@ def login_email_key(email: str) -> str:
     if len(pepper) < 32:
         raise RuntimeError("HESABYAR_LOGIN_PEPPER must be a private 32+ character secret")
     return hmac.new(pepper.encode("utf-8"), email.encode("utf-8"), hashlib.sha256).hexdigest()
+
+
+def bound_csrf(session_id: str, expires_at: str) -> str:
+    """HMAC-bind a new random CSRF nonce to cookie nonce, origin and expiry.
+
+    The 256-bit HttpOnly cookie value is an unpredictable per-session HMAC key;
+    the completed token is also stored by digest for strict single-current-token
+    rotation (and never persisted in plaintext).
+    """
+    origin = os.environ.get("HESABYAR_ALLOWED_ORIGIN", "").rstrip("/")
+    if not origin.startswith("https://"):
+        raise RuntimeError("Explicit HTTPS HESABYAR_ALLOWED_ORIGIN required")
+    nonce = new_secret()
+    tag = hmac.new(
+        session_id.encode("utf-8"),
+        f"{origin}|{expires_at}|{nonce}".encode("utf-8"),
+        hashlib.sha256,
+    ).hexdigest()
+    return nonce + "." + tag
+
+
+def csrf_hmac_valid(session_id: str, expires_at: str, token: str) -> bool:
+    """Verify the HMAC-bound token without accepting stale or altered origins."""
+    try:
+        nonce, tag = token.rsplit(".", 1)
+    except ValueError:
+        return False
+    if not nonce or len(tag) != 64:
+        return False
+    origin = os.environ.get("HESABYAR_ALLOWED_ORIGIN", "").rstrip("/")
+    expected = hmac.new(
+        session_id.encode("utf-8"),
+        f"{origin}|{expires_at}|{nonce}".encode("utf-8"),
+        hashlib.sha256,
+    ).hexdigest()
+    return hmac.compare_digest(tag, expected)
