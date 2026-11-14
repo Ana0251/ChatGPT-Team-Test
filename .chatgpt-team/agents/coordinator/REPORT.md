@@ -19,6 +19,10 @@ Read directly on GitHub: .chatgpt-team/prompts/coordinator.md, .chatgpt-team/rol
 - No-overlap check: all four deliverable files are within H-02 allowed paths; no backend/frontend/design/qa/tasks/waves code or ledgers modified. The sole exception is this Coordinator-owned agent report in its mandated agent report path, permitted by role instruction and manager handoff.
 - No integration, database, end-to-end or QA test was run. No consumer acknowledgment has been observed or claimed.
 
+### GitHub publication evidence
+- Pull request: https://github.com/Ana0251/ChatGPT-Team-Test/pull/1 (open, unmerged; review pending).
+- Branch head at PR creation: `5031d467a54538bf8e19f67f16f6d160e970515b` (subsequent reporting update changes branch head).
+
 ### Pending review and blockers
 - Developer and UI/UX must each explicitly acknowledge the *same* OpenAPI file SHA/version before consumers implement against it. This is pending; do not activate either role automatically.
 - Manager must review contract specifics and authorize contract freeze / W0 exit. Potential contract review subjects: membership invite lifecycle, all HTTP response code coverage, fiscal close/reopen policy, route patterns, aggregate report totals, account lifecycle edge cases, and CSRF bootstrap policy.
