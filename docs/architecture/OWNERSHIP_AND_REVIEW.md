@@ -23,6 +23,8 @@ QA: qa/** and its own report; QA independently validates, never silently modifie
 - [x] Developer H-03..H-25 code paths do not overlap H-02 (nor this PR).
 - [x] QA qa/** and agent-specific report do not overlap H-02.
 - [x] Official task ledger and waves are not edited in this PR; H-27 not begun.
+- [x] Documentation-only YAML parsing and OpenAPI structural/schema-syntax checks recorded for rc.2 in docs/contracts/VALIDATION.md and validation-result.json (limits explicitly described).
+- [ ] Full unmodified OAI dynamic dialect validation if Manager requires strict schema-base PASS.
 - [ ] Developer explicitly acknowledges revised OpenAPI version and SHA (pending future approved review).
 - [ ] UI/UX explicitly acknowledges revised OpenAPI version and SHA (pending future approved review).
 - [ ] Independent Manager freeze/review and W0 exit decision (pending).
