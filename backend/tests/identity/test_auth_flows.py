@@ -19,7 +19,7 @@ from app.main import create_app
 from app.modules.identity import tables as t
 from app.modules.identity.provision import provision_initial_owner
 from app.modules.identity.security import digest, now_string
-from app.modules.identity.store import locked, new_id
+from app.modules.identity.store import locked, member_role, new_id
 
 PASSWORD = "ValidOwnerPassword123"
 OTHER_PASSWORD = "MemberSecurePass123"
@@ -34,6 +34,7 @@ def sandbox(tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
     monkeypatch.setenv("HESABYAR_ALLOWED_ORIGIN", "https://testserver")
     key = "local-tests-operator-only-secret-should-be-32-chars"
     monkeypatch.setenv("HESABYAR_OPERATOR_KEY", key)
+    monkeypatch.setenv("HESABYAR_LOGIN_PEPPER", "testing-only-login-throttle-pepper-32-characters")
     config = Config(str(Path(__file__).resolve().parents[2] / "alembic" / "alembic.ini"))
     command.upgrade(config, "head")
     engine = create_sqlite_engine(url)
@@ -344,3 +345,90 @@ def test_pre_session_requires_origin_and_token(sandbox: dict):
     assert client.post("/api/v1/auth/activate",
                        headers={"Origin": "https://testserver"},
                        json={"token": token, "password": PASSWORD}).status_code == 403
+
+
+def test_invitation_issuer_role_rechecked_and_token_hash_only(sandbox: dict):
+    client = sandbox["client"]
+    headers = provisioned_owner_login(sandbox)
+    created = invite(sandbox, sandbox["company_id"], "future@example.test", "owner", headers)
+    assert created.status_code == 202
+    raw = sandbox["sent"][-1][1]
+    with locked(sandbox["engine"]) as connection:
+        stored = connection.execute(select(t.invitations).where(
+            t.invitations.c.token_hash == digest(raw)
+        )).mappings().one()
+        assert stored["token_hash"] != raw
+        assert raw not in str(dict(stored))
+        connection.execute(t.memberships.update().where(
+            t.memberships.c.user_id == sandbox["owner_id"],
+            t.memberships.c.company_id == sandbox["company_id"],
+        ).values(role="admin"))
+    client.post("/api/v1/auth/logout", headers=headers)
+    denied = activate_new(client, raw)
+    assert denied.status_code == 403
+    assert denied.json()["error"]["code"] == "INVITE_ROLE_FORBIDDEN"
+
+
+def test_existing_invitation_email_mismatch_is_not_accepted(sandbox: dict):
+    client = sandbox["client"]
+    headers = provisioned_owner_login(sandbox)
+    assert invite(sandbox, sandbox["company_id"], "recipient@example.test", "viewer", headers).status_code == 202
+    raw = sandbox["sent"][-1][1]
+    impostor_id = new_id()
+    secondary = new_id()
+    from app.modules.identity.security import password_hash
+    with locked(sandbox["engine"]) as connection:
+        connection.execute(t.companies.insert().values(id=secondary, name="Synthetic"))
+        connection.execute(t.users.insert().values(
+            id=impostor_id, email="impostor@example.test",
+            password_hash=password_hash(OTHER_PASSWORD), active=True,
+        ))
+        connection.execute(t.memberships.insert().values(
+            user_id=impostor_id, company_id=secondary, role="viewer",
+        ))
+    client.post("/api/v1/auth/logout", headers=headers)
+    headers = login(client, "impostor@example.test", OTHER_PASSWORD)
+    rejected = client.post("/api/v1/auth/invitations/accept",
+                           headers=headers, json={"token": raw})
+    assert rejected.status_code == 409
+    assert rejected.json()["error"]["code"] == "INVITE_INVALID"
+    with sandbox["engine"].connect() as connection:
+        assert member_role(connection, impostor_id, sandbox["company_id"]) is None
+
+
+def test_login_throttling_avoids_unbounded_password_guesses(sandbox: dict):
+    client = sandbox["client"]
+    headers = provisioned_owner_login(sandbox)
+    client.post("/api/v1/auth/logout", headers=headers)
+    attempts = []
+    for _ in range(5):
+        token_header = csrf(client)
+        reply = client.post("/api/v1/auth/login", headers=token_header,
+                            json={"email": "owner@example.test", "password": "WrongPass123456"})
+        attempts.append(reply.status_code)
+    assert attempts == [401] * 5
+    authenticated = client.post("/api/v1/auth/login", headers=csrf(client),
+                                json={"email": "owner@example.test", "password": PASSWORD})
+    assert authenticated.status_code == 401
+
+
+def test_expired_pre_session_and_missing_smtp_fail_closed(sandbox: dict, monkeypatch: pytest.MonkeyPatch):
+    client = sandbox["client"]
+    csrf_header = csrf(client)
+    pre_cookie = client.cookies.get("hesabyar_pre_session")
+    with locked(sandbox["engine"]) as connection:
+        connection.execute(t.sessions.update().where(
+            t.sessions.c.id_hash == digest(pre_cookie)
+        ).values(expires_at="2000-01-01T00:00:00.000000+00:00"))
+    response = client.post("/api/v1/auth/activate", headers=csrf_header,
+                           json={"token": sandbox["sent"][0][1], "password": PASSWORD})
+    assert response.status_code == 403
+    login_headers = provisioned_owner_login(sandbox)
+    monkeypatch.delenv("HESABYAR_SMTP_HOST", raising=False)
+    client.app.state.identity_delivery = None
+    result = client.post(f"/api/v1/companies/{sandbox['company_id']}/members",
+                         headers=login_headers,
+                         json={"email": "new@example.test", "role": "viewer"})
+    assert result.status_code == 403
+    with sandbox["engine"].connect() as connection:
+        assert not connection.execute(select(t.invitations.c.id)).first()
