@@ -5,6 +5,11 @@
   "description": "Documentation-only OpenAPI validator for H-02. Not application code.",
   "dependencies": {
     "ajv": "8.17.1",
-    "js-yaml": "4.1.0"
+    "js-yaml": "4.1.0",
+    "@apidevtools/swagger-parser": "11.0.0"
+  },
+  "scripts": {
+    "validate:standard": "node validate-standard.cjs",
+    "validate:h02": "node validate-openapi.cjs"
   }
 }
