@@ -20,7 +20,7 @@ from app.modules.identity import tables as t
 from app.modules.identity.delivery import smtp_delivery_from_env
 from app.modules.identity.security import (
     bound_csrf, csrf_hmac_valid, digest, equal_digest, expiry, login_email_key,
-    normalize_email, now_string, password_hash, verify_known_or_dummy,
+    new_secret, normalize_email, now_string, password_hash, verify_known_or_dummy,
 )
 from app.modules.identity.store import (
     audit_event, configured_engine, get_session, locked, member_role,
