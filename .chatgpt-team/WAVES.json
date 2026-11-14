@@ -52,7 +52,7 @@
         "W0"
       ],
       "entry_criteria": "W0 contracts reviewed and manager authorizes W1",
-      "exit_criteria": "Reproducible manually verified backend health/Pytest smoke, PostgreSQL migrations, auth/tenant/fiscal/IRR evidence, UX specs and independent QA when delivered; GitHub Actions not mandatory.",
+      "exit_criteria": "Real manually evidenced backend health/Pytest, local SQLite (SQLAlchemy 2/Alembic) isolated database connection and PRAGMA foreign_keys=ON, reversible upgrade/downgrade/upgrade with schema diff, authorized auth/tenancy/fiscal/IRR validations and UX specs, plus independent QA when delivered. PostgreSQL-only NUMERIC(20,0), row-locking and concurrency evidence DEFERRED/NOT_TESTED, never PASS; release database engine separately approved. GitHub Actions not mandatory.",
       "status": "AUTHORIZED_NOT_STARTED",
       "entry_authorized": true,
       "started_at": null,
