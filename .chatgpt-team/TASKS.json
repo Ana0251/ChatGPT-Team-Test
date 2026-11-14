@@ -1252,6 +1252,61 @@
         "Future user-driven manual tests require actual commands/version/outputs and independent QA when work reaches QA waves; no GitHub Actions success claim."
       ],
       "next_manager_gate": "Review PM Assistant ledger PR and separately decide whether W1 can start with non-overlapping authorized tasks; do not activate agent chats automatically."
+    },
+    {
+      "id": "APP-HESABYAR-W1-ENTRY-20261114-001",
+      "date": "2026-11-14",
+      "approved_by": "manager",
+      "project": "حسابیار (Hesabyar)",
+      "release": "V1.0",
+      "wave_id": "W1",
+      "status": "ENTRY_AUTHORIZED_WITH_PHASED_TASK_START",
+      "parent_decision": "APP-HESABYAR-W0-EXIT-20261114-001",
+      "w0_verified": {
+        "H01": "GATE_EVIDENCED approved manager contract/scope gate",
+        "H02": "COMPLETED doc contract and validated OpenAPI v1.0.0-rc.3 exact blob 98d34e7bd7b4551c0f429ea5e388781060ceaf63",
+        "W0": "COMPLETED via PM Assistant PR #4 merged commit 1668558d496bf15a8f2c8fba23ca1b09e533a277"
+      },
+      "initial_tasks_authorized": [
+        "H-03",
+        "H-17"
+      ],
+      "remaining_w1_tasks_locked": [
+        "H-04",
+        "H-05",
+        "H-06",
+        "H-07",
+        "H-08",
+        "H-18"
+      ],
+      "dependency_exception": "H-01 is a manager GATE_EVIDENCED decision, not implementation/QA task, and counts as approved prerequisite for H-03 and H-17 only. H-02 COMPLETED satisfies the other prerequisite. H-04 requires H-03 COMPLETED, H-18 requires H-17 COMPLETED, later W1 tasks retain their published dependency gates.",
+      "agent_ownership": {
+        "developer": {
+          "task_id": "H-03",
+          "paths": [
+            "backend/pyproject.toml",
+            "backend/app/main.py",
+            "backend/app/core/config.py",
+            "backend/tests/test_health.py"
+          ],
+          "optional_workflow_path": ".github/workflows/backend-smoke.yml",
+          "expectation": "Minimal real FastAPI boot and /health endpoint plus pytest smoke, reproducible config/environment example within allowed files; no H-04 DB migration or auth implementation; package-level and health validation on user's Windows machine, exact commit/versions/output."
+        },
+        "ui_ux": {
+          "task_id": "H-17",
+          "paths": [
+            "design/tokens/**",
+            "design/specs/global/**"
+          ],
+          "expectation": "Persian RTL accessible global tokens, typography, light/dark, numeric (IRR)/Jalali, 360px responsive design specs and review checklist, without editing frontend/backend/OpenAPI contract. Indep. PR and review."
+        }
+      },
+      "manual_validation_policy": "APP-HESABYAR-MANUAL-VALIDATION-20261114-001 applies. GitHub Actions not a required evidence/check gate. Developer must document owner-executable commands and collect actual user-run test results; no inferred PASS. Independent QA when delivered and testing complex authentication/tenancy/financial flows later is still mandatory.",
+      "governance": "Separate branches/PRs, never direct push to protected main. PM Assistant owns W1 entry/status and H-03/H-17 authorization synchronization, must keep all other task states/authorization untouched and preserve all 30 tasks/7 waves; no agent starts until PM Assistant PR merged and user explicitly instructs each role conversation.",
+      "change_control": "Change OpenAPI contract only via Coordinator-approved follow-on contract change and exact-SHA reviews; H-02 rc.3 baseline remains frozen.",
+      "wave_status_target": "AUTHORIZED_NOT_STARTED",
+      "task_status_target": "AUTHORIZED_NOT_STARTED",
+      "w1_exit_not_approved": true
     }
   ]
 }
