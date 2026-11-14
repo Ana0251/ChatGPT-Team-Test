@@ -1158,6 +1158,60 @@
       ],
       "next_gate": "Check visibility, protection, formal PR governance, and decision to merge docs-only PR; then manager W0 exit and separate W1 authorization if gates satisfied.",
       "no_qa_or_completion_claim": true
+    },
+    {
+      "id": "APP-HESABYAR-MANUAL-VALIDATION-20261114-001",
+      "date": "2026-11-14",
+      "approved_by": "manager",
+      "project": "حسابیار (Hesabyar)",
+      "status": "APPROVED_MANUAL_TEST_EVIDENCE_POLICY",
+      "rationale": "Repository owner explicitly elected manual test runs instead of GitHub Actions. Independent QA remains mandatory at the applicable waves; missing/failed CI is never reported as PASS.",
+      "applies_to": "H-02 manual contract validation immediately; subsequent H-03..H-30 only after PM Assistant reconciles task/wave acceptance criteria and manager authorizes waves individually",
+      "manual_evidence_rules": [
+        "Owner/authorized tester runs manager-provided reproducible commands on exact commit or PR head, preserving raw stdout/stderr and exit codes, runtime versions, dependency lock SHA and canonical Git blob hashes.",
+        "Any failing gate is FAIL/PENDING, not PASS; next actions blocked until corrected and retested.",
+        "For app implementation, real backend/database, frontend, accounting invariants, tenant security, recovery and QA tests require real execution and independent QA review of evidence. Manual verification does not waive tests.",
+        "Protected main and PR workflow remain mandatory. The obsolete GitHub Actions validator fails with KeyError state due to old schema; its failing checks are not claimed successful or made required. Updating/disabling legacy workflow is a separately approved path.",
+        "PM Assistant must propose and implement any mandated CI-to-manual acceptance-criteria changes in TASKS/WAVES on its own future PR, leaving task ownership and statuses untouched until approved."
+      ],
+      "no_qa_pass_claim": true
+    },
+    {
+      "id": "APP-HESABYAR-H02-FREEZE-20261114-001",
+      "date": "2026-11-14",
+      "approved_by": "manager",
+      "project": "حسابیار (Hesabyar)",
+      "wave_id": "W0",
+      "task_id": "H-02",
+      "status": "CONTRACT_FREEZE_APPROVED_DOCS_MERGE_AUTHORIZED",
+      "contract_version": "1.0.0-rc.3",
+      "openapi_git_blob_sha": "98d34e7bd7b4551c0f429ea5e388781060ceaf63",
+      "expected_pr_number": 1,
+      "expected_pr_head_sha": "3508d0bfb3c882c79434d73dbc7b97077d51d590",
+      "review_evidence": [
+        {
+          "role": "developer",
+          "comment_id": 6875403671
+        },
+        {
+          "role": "ui-ux",
+          "comment_id": 6875407091
+        }
+      ],
+      "manual_test_evidence_comment_id": 6876106618,
+      "checks": {
+        "npm_ci": "PASS",
+        "npm_audit_moderate": "PASS_0_VULNERABILITIES",
+        "vendor_schema_function": "PASS_LIMITED_SCOPE",
+        "h02_structural_lint": "PASS_0_ERRORS",
+        "canonical_openapi_sha": "MATCH",
+        "full_vendor_async_deref": "NOT_RUN",
+        "backend_frontend_db_qa": "NOT_RUN"
+      },
+      "accepted_pr_review_substitution": "For this documentation-only H-02 PR, manager accepts separately reported Developer and UI/UX exact-SHA consumer review plus owner-executed manual validation; GitHub native reviews remain 0 (single account), not misrepresented.",
+      "merge_conditions": "Manager may merge PR #1 via protected-main GitHub PR flow after this governance decision merges, only if OpenAPI blob and PR head and changed-file scope remain unchanged; never direct push; old legacy Action failure is not accepted as PASS but is not a required ruleset check.",
+      "after_merge": "PM Assistant updates H-02 and W0 status/evidence and proposes any W1 authorization separately. Do not mark W1 authorized here.",
+      "no_implementation_or_qa_pass_claim": true
     }
   ]
 }
