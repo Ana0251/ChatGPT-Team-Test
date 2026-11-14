@@ -1212,6 +1212,36 @@
       "merge_conditions": "Manager may merge PR #1 via protected-main GitHub PR flow after this governance decision merges, only if OpenAPI blob and PR head and changed-file scope remain unchanged; never direct push; old legacy Action failure is not accepted as PASS but is not a required ruleset check.",
       "after_merge": "PM Assistant updates H-02 and W0 status/evidence and proposes any W1 authorization separately. Do not mark W1 authorized here.",
       "no_implementation_or_qa_pass_claim": true
+    },
+    {
+      "id": "APP-HESABYAR-W0-EXIT-20261114-001",
+      "date": "2026-11-14",
+      "approved_by": "manager",
+      "project": "حسابیار (Hesabyar)",
+      "wave_id": "W0",
+      "status": "W0_EXIT_APPROVED_LEDGER_SYNC_PENDING",
+      "evidence": {
+        "H01": "APP-HESABYAR-V1-20261114-001 / GATE_EVIDENCED",
+        "H02": "APP-HESABYAR-H02-FREEZE-20261114-001 / contract exact 1.0.0-rc.3 sha 98d34e7bd7b4551c0f429ea5e388781060ceaf63",
+        "pr1_merged": "a389fc2eb29967aee0693a549a6e1e60857525d4",
+        "pr2_manager_decisions_merged": "4a9ce8bb387a692a35bb71d9c3e017595b570ae5",
+        "owner_manual_validation_comment": "https://github.com/Ana0251/ChatGPT-Team-Test/pull/1#issuecomment-6876106618",
+        "consumer_comments": [
+          "https://github.com/Ana0251/ChatGPT-Team-Test/pull/1#issuecomment-6875403671",
+          "https://github.com/Ana0251/ChatGPT-Team-Test/pull/1#issuecomment-6875407091"
+        ],
+        "branch_protection": "Public repo main protect-main ruleset active; PR required, non-fast-forward and deletions prohibited"
+      },
+      "authorized_agent": "pm-assistant",
+      "authorized_changes": "Only reconcile H-02 to COMPLETED (docs-only contract task) with manual validation evidence; W0 to COMPLETED with exit/evidence timestamp; preserve H-01 as gate evidenced; align existing approved manual-testing policy with CI-evidence wording in task criteria for future waves by an accurately scoped PR. Do not misstate runtime QA/CI success.",
+      "constraints": [
+        "Manager W0 exit granted in principle based on accepted contract and merged protected PR; PM Assistant executes authoritative ledger transitions and verifies 30 tasks/7 waves preserved.",
+        "H-02 documentation acceptance is not software runtime QA, backend API test, database security or accounting test.",
+        "W1 remains PENDING_MANAGER_GATE with entry_authorized=false; H-03/H-17 and other W1 tasks stay NOT_STARTED and start_authorized=false until separate Manager authorization.",
+        "All writes through branch/PR because main protected; do not update any other agent files or implement application code.",
+        "Future user-driven manual tests require actual commands/version/outputs and independent QA when work reaches QA waves; no GitHub Actions success claim."
+      ],
+      "next_manager_gate": "Review PM Assistant ledger PR and separately decide whether W1 can start with non-overlapping authorized tasks; do not activate agent chats automatically."
     }
   ]
 }
