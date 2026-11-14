@@ -1095,6 +1095,34 @@
       "next_gate": "Coordinator revision with new exact OpenAPI version/blob, manager re-review then Developer/UI-UX read-only acknowledgments, PR independent review, W0 exit decision",
       "requires_user_action": "Owner should enable GitHub branch protection/ruleset for main with PR+review and block force pushes/deletion; required CI checks after jobs exist, before W1 code merges. If private repo plan does not support it, report limitation for manager mitigation.",
       "execution_authorization": "No additional tasks/waves authorized; W1 stays locked"
+    },
+    {
+      "id": "APP-HESABYAR-W0-RC3-REVIEW-20261114-001",
+      "date": "2026-11-14",
+      "approved_by": "manager",
+      "project": "حسابیار (Hesabyar)",
+      "status": "READ_ONLY_RC3_CONSUMER_REVIEW_APPROVED",
+      "parent_approval_id": "APP-HESABYAR-H02-CONSUMER-FINDINGS-20261114-001",
+      "task_id": "H-02",
+      "wave_id": "W0",
+      "contract_version": "1.0.0-rc.3",
+      "openapi_git_blob_sha": "98d34e7bd7b4551c0f429ea5e388781060ceaf63",
+      "pr_url": "https://github.com/Ana0251/ChatGPT-Team-Test/pull/1",
+      "review_roles": [
+        "developer",
+        "ui-ux"
+      ],
+      "review_scope": "Read final revised H-02 contract/architecture from PR head, report precise findings/objections or unambiguous consumer acknowledgment of same exact blob/version in PR and own agent report only",
+      "conditions": [
+        "No H-03/H-17 or any W1 development/design, no QA, no changes to central ledgers or other agent files.",
+        "The independent vendor @apidevtools/swagger-parser v11.0.0 schema-validation-function evidence is accepted ONLY as a qualified OpenAPI 3.1 static validation stage; full async dereferencing, Node CLI reproduction, HTTP/PostgreSQL implementation and QA were NOT run.",
+        "Validator and contract status may be frozen only after both consumer reviews on exact final blob, independent PR review and explicit Manager W0 exit.",
+        "All material OpenAPI changes reset both consumer acknowledgments.",
+        "main protected=false and rulesets API returned 403 stating GitHub Pro upgrade or public repo required; do not make private financial application repo public merely to enable rulesets. No W1 code merge until protected main or manager-approved alternative compensating mechanism."
+      ],
+      "branch_protection_blocker": "Private repository rulesets API HTTP 403: Upgrade to GitHub Pro or make this repository public to enable this feature",
+      "next": "User directs Developer/UI-UX independent role chats for READ-ONLY rc.3 review; owner checks GitHub Pro/private branch protection; return to Manager.",
+      "no_execution_or_completion_claim": true
     }
   ]
 }
