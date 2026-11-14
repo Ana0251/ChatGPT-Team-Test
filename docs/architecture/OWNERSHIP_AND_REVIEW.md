@@ -14,7 +14,7 @@ QA: qa/** and its own report; QA independently validates, never silently modifie
 4. API contract version 1.0.0-rc.3 is prerelease; immutable tagged baseline after approval. Patch: docs/additive clarification/non-behavioral fix. Minor: backwards-compatible optional field/endpoint, with reviewer approvals. Major: removing/renaming required fields, changing defaults/permissions/error semantics or URLs; use /api/v2 for breaking public HTTP changes. No breaking edits under /api/v1 after freeze without versioned migration.
 5. PR checklist: task/wave/auth IDs, base SHA, changed files, module/owner map, API diff and examples, F1/F2/F3 implications, compatibility with typed client, security review, validation evidence, reviewers, rollback. No merge until appropriate reviews, CI gates, and Manager gate. Main protection requirement is open (no code merge W1).
 6. Alembic: H-04 owns baseline and migration protocol; module work appends unique backend/alembic/versions/h-XX_*.py, never modifies older migrations. Coordinator checks revision graph/merge ordering. No overlap of two task branches editing shared configuration or shared frontend client.
-7. Contract testing: actual YAML parsing plus OpenAPI 3.1 specification validator (version, command, output, GitHub blob SHA recorded); static reference-only checks are not equivalent to successful OpenAPI validation. Later OpenAPI conformance and later OpenAPI conformance, negative 401/403/404/409/422 cases, IDOR, closed-period/race, F1/F2/F3 with actual HTTP+PostgreSQL evidence. Static contract review is not implementation PASS.
+7. Contract testing: actual YAML parsing plus OpenAPI 3.1 specification validator (version, command, output, GitHub blob SHA recorded); static reference-only checks are not equivalent to successful OpenAPI validation. Later OpenAPI conformance, negative 401/403/404/409/422 cases, IDOR, closed-period/race, F1/F2/F3 with actual HTTP+PostgreSQL evidence. Static contract review is not implementation PASS.
 
 ## No-overlap verification (against current authorized ledger)
 - [x] H-02 paths docs/contracts/** and docs/architecture/** assigned to Coordinator only.
@@ -23,8 +23,8 @@ QA: qa/** and its own report; QA independently validates, never silently modifie
 - [x] Developer H-03..H-25 code paths do not overlap H-02 (nor this PR).
 - [x] QA qa/** and agent-specific report do not overlap H-02.
 - [x] Official task ledger and waves are not edited in this PR; H-27 not begun.
-- [x] Documentation-only YAML parsing and OpenAPI structural/schema-syntax checks recorded for rc.2 in docs/contracts/VALIDATION.md and validation-result.json (limits explicitly described).
-- [ ] Full unmodified OAI dynamic dialect validation if Manager requires strict schema-base PASS.
+- [x] rc.3 YAML parsing, independent vendor OpenAPI 3.1 schema validation function (@apidevtools/swagger-parser 11.0.0), and supplemental structural checks recorded with exact SHA/limits in docs/contracts/VALIDATION.md and validation-result.json.
+- [ ] Full OAI dynamic-dialect schema-base / full vendor dereference pipeline if Manager requires this stricter additional gate (vendor internal workaround disclosed).
 - [ ] Developer explicitly acknowledges revised OpenAPI version and SHA (pending future approved review).
 - [ ] UI/UX explicitly acknowledges revised OpenAPI version and SHA (pending future approved review).
 - [ ] Independent Manager freeze/review and W0 exit decision (pending).
