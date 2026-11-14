@@ -1,5 +1,5 @@
 # Hesabyar V1.0 — Architecture Baseline
-Task H-02 | Contract baseline: 1.0.0-rc.1 | 2026-11-14 | Owner: Coordinator | Status: PROPOSED FOR REVIEW
+Task H-02 | Contract baseline: 1.0.0-rc.2 | 2026-11-14 | Owner: Coordinator | Status: PROPOSED FOR REVIEW
 
 ## Authorized decisions
 Source of truth: .chatgpt-team/DECISIONS.md (H-D01..H-D09), TASKS.json, WAVES.json. W0/H-02 only; no production implementation or W1 authorization.
@@ -25,6 +25,8 @@ Modules are packages, NOT distributed microservices. No direct browser-to-DB acc
 | journals | draft, balanced atomic posting, immutable posted data, reversal, sequence and idempotency | accounts, fiscal, identity, money, audit | H-11..H-14 |
 | reports | posted-only source-of-truth ledger/daybook/trial balance queries | read-only journals/accounts/fiscal and access policy | H-15/H-16 |
 
+**Identity bootstrap:** Initial company/owner is provisioned only by restricted audited operator action, not a publicly exposed registration/bootstrap endpoint. One-time hashed setup claim (<=15 min) activates pending owner with strong password, then normal login; no default password or global admin. A company-owner/admin can invite either existing or new email into *only that company* through a pending, hashed, expiring (<=48h), one-use invitation. Only the authenticated existing-email owner of an invitation (verified email) or new user with valid token plus strong password may accept it; acceptance creates membership atomically. Only existing company owner can invite owner role. No membership before acceptance and no client-specified tenancy/role override. Sessions and CSRF are bound and rotated; see docs/contracts/README.md and openapi.yaml.
+
 Every tenant-owned row carries company_id; keys/references must enforce matching company boundaries. When an authenticated user has multiple memberships, selection scopes the active context but never grants permission by itself. API never trusts arbitrary company_id or header as proof of membership.
 
 ## Invariants and persistence
@@ -37,7 +39,7 @@ Every tenant-owned row carries company_id; keys/references must enforce matching
 - Reversal is exactly one separately numbered posted voucher with inverted lines, linked to original, with no partial or duplicate reversal. Reversal must independently pass open-period, role and tenancy checks; original remains unchanged.
 - Fiscal close/post race is serialized by transaction-level locks of the same fiscal period record; final decision obeys serialized order. Never check period openness only before entering transaction.
 - Reads/exports/reports include only one authorized company and permitted fiscal/date scope. SQL uses scoped predicates AND database integrity constraints; IDOR requests are rejected without revealing other-company existence.
-- Reports derive sums exclusively from POSTED lines including reversal lines. Opening before query start, period debit/credit, closing net and signed running balances must reconcile. F1: Dr movement=Cr movement=1,200,000, cash ending debit=800,000, expense debit=200,000, capital credit=1,000,000. F2 after reversal: movement 1,400,000 each side; closing debit/credit each 1,000,000. F3: deliberate cross-company IDs/codes must not leak.
+- Trial balance row/summary separation: `TrialBalanceRow` includes account_id and account_code; `TrialBalanceTotals` only six financial sums without account identity. At the requested hierarchy level, each posted leaf contributes to exactly one row; never sum overlapping ancestors/descendants. All-filtered-account totals (before page slicing) are independent of page/page_size. Opening before from_date, movements in [from_date,to_date), closing = opening plus net movement. Reports derive sums exclusively from POSTED lines including reversal lines. Opening before query start, period debit/credit, closing net and signed running balances must reconcile. F1: Dr movement=Cr movement=1,200,000, cash ending debit=800,000, expense debit=200,000, capital credit=1,000,000. F2 after reversal: movement 1,400,000 each side; closing debit/credit each 1,000,000. F3: deliberate cross-company IDs/codes must not leak.
 
 ## Internal interfaces and dependency direction
 Authentication context -> company membership verification -> fiscal/account domain checks -> journal application orchestration -> transactionally persist -> audit. Reporting reads canonical posted journal stream, never private journal draft tables alone. Service functions receive explicit verified principal and company context; repositories never accept an unverified tenant selector. API adapters serialize Pydantic-compatible request/response DTOs; SQLAlchemy models never leak directly into JSON.
