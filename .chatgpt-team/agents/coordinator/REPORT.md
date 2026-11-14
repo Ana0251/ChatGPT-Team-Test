@@ -56,3 +56,30 @@ No work on H-27, W1 or application code. No changes to other agents' reports or 
 - Manager must decide whether documented dialect limitation is acceptable, independently review PR, and freeze baseline.
 - Manager will arrange Developer and UI/UX read-only acknowledgments for SAME version `1.0.0-rc.2` and OpenAPI blob SHA `c7d45ebfb715aea6960f130648ebfde148c93e54`. No acknowledgments claimed.
 - W0 exit and W1 authorization not approved. Only H-02 docs/architecture/contracts and Coordinator's own report changed; TASKS/WAVES and application code remain untouched.
+
+
+## 2026-11-14 — H-02 rc.3 after Developer and UI/UX CHANGES_REQUIRED
+
+**Authorization and decision:** APP-HESABYAR-H02-CONSUMER-FINDINGS-20261114-001 in .chatgpt-team/DECISIONS.md and Manager PR comment 6875071707. Developer consumer objection 6875035147; UI/UX objection 6875039903, read directly with role reports on feature branch. Both rc.2 consumers remain NOT ACKNOWLEDGED. H-02/W0 authorization persists; W1 unauthorized. Do not merge PR.
+
+**Current API contract:** `1.0.0-rc.3`; exact `docs/contracts/openapi.yaml` blob SHA `98d34e7bd7b4551c0f429ea5e388781060ceaf63` (read/write source SHA). Contract docs only, no backend/frontend application implementation.
+
+### Findings reconciled
+- Manager policy decided: `level=detail` returns ALL postable leaf accounts, including DETAIL and independent directly-postable SUBSIDIARY (no detail children). TrialBalanceRow has `account_name` and actual `account_level`. No double-counting; aggregate totals are computed on full filtered population before pagination. Fixture docs/contracts/TRIAL_BALANCE_FIXTURE.md: stand-alone subsidiary A debit 100 and DETAIL B credit 100, across page_size=1 pages both present, totals each page Dr 100 / Cr 100.
+- Allow existing company `owner` to invite a newly-created user to company-scoped `owner` role only after one-use invitation token/email/company/role/expiry/inviter-authorization verified atomically; company `admin` cannot invite owner; no global/superadmin rights or immediate membership on invitation creation.
+- Structured ErrorCode and FieldIssue with stable reason, JSON Pointer field and optional zero-based line_index for Persian UI; JournalWarning[] codes/indices/field and always-returned valid draft totals; movement carries stable line_id, line_index, description, account_name/code/level; Jalali UI inclusive-last-day derived from exclusive Gregorian end.
+- CSRF: one safe GET refresh maximum; no automatic replay of original unsafe mutation. Force explicit user review/resubmission, display error if refresh fails, session-expiry re-login and scope/period recheck; no token disclosure.
+- docs/contracts/ERRORS.md, docs/contracts/TRIAL_BALANCE_FIXTURE.md, docs/architecture/README.md, docs/contracts/README.md, docs/architecture/OWNERSHIP_AND_REVIEW.md synchronized.
+
+### Actual independent OpenAPI 3.1 validator run, qualified PASS
+- Unchanged rc.3 YAML parsed with js-yaml 4.1.0; loaded exact upstream `@apidevtools/swagger-parser` **11.0.0** `lib/validators/schema.js` from GitHub commit `3ac7860717bfe41e4a438ae61b1a90ecce6108a3` as CommonJS function with its declared dependencies, and invoked `validateSchema(api)` in JavaScript execution isolate.
+- Input: GitHub-fetched `docs/contracts/openapi.yaml`, blob `98d34e7bd7b4551c0f429ea5e388781060ceaf63`; OAI OpenAPI 3.1 structural schema dated 2026-08-03 pinned `ce49002c7bbd323819555464eb479523923f6754`. Output: successful function return, **no exception and no stdout/stderr**. Verdict: **PASS for independent vendor schema-validation function**. Vendor internally applies its documented `$dynamicRef` workaround; original YAML never altered. Full vendor async dereference/validate() pipeline was NOT run; this is not strict unmodified-OAI dynamic schema-base PASS.
+- Supplemental checked-in `docs/contracts/validate-openapi.cjs` `validateH02()` actually ran with js-yaml 4.1.0 and Ajv2020 8.17.1: PASS, 0 findings, 72 JSON Schema checks, 23 paths, 33 operations, 18 unsafe-method CSRF headers, 239 component refs. This supplemental check uses four in-memory OAI schema substitutions and MUST NOT be represented as the independent vendor validator.
+- Evidence: docs/contracts/validation-result.json and docs/contracts/VALIDATION.md; reproduction helper docs/contracts/validate-standard.cjs and pinned docs/contracts/package.json. Node shell command is described but was NOT executed in this tool session. No runtime HTTP/PostgreSQL, CI, or independent QA has been performed.
+
+### Scope and handoff
+Only Coordinator-owned `docs/contracts/**`, `docs/architecture/**`, and this agent report were modified by Coordinator. Developer/UI UX reports already on branch were not touched; task/wave ledgers and other agents' files unchanged. PR #1 still OPEN/UNMERGED.
+- [ ] Manager decides acceptance of vendor schema-function validation scope vs full async validation if stricter.
+- [ ] Fresh Developer read-only acceptance of SAME final `1.0.0-rc.3` / blob `98d34e7bd7b4551c0f429ea5e388781060ceaf63`.
+- [ ] Fresh UI/UX read-only acceptance of SAME version/SHA.
+- [ ] Independent PR review, manager freeze, W0 exit; branch protection and required CI before W1 code merges.
