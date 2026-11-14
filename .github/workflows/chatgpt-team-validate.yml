@@ -1,0 +1,23 @@
+name: Validate ChatGPT team state
+on:
+  push:
+    paths: ['.chatgpt-team/**']
+  pull_request:
+    paths: ['.chatgpt-team/**']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  validate:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - run: python .chatgpt-team/tools/validate.py .
+      - name: Prepare wave proposal on manual run
+        if: github.event_name == 'workflow_dispatch'
+        run: python .chatgpt-team/tools/plan.py . > wave-proposal.json
+      - uses: actions/upload-artifact@v4
+        if: github.event_name == 'workflow_dispatch'
+        with:
+          name: wave-proposal
+          path: wave-proposal.json
