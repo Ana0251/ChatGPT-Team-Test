@@ -93,11 +93,18 @@
       "acceptance_criteria": "Run FastAPI service, health endpoint, deterministic env sample; test boot succeeds",
       "mandatory_amendments": "Early reproducible backend smoke/Pytest checks performed manually with retained evidence; GitHub Actions/PR checks not required. Shared workflow files, if used, are edited serially with H-21/H-28. APP-HESABYAR-MANUAL-VALIDATION-20261114-001: Reproducible manual tests on the user's system replace mandatory GitHub Actions checks. For each gate record exact command, tool/environment versions, commit/blob SHA, observed PASS/FAIL output and PR evidence. Real runtime/API/PostgreSQL/accounting/security tests and independent QA remain mandatory where applicable; never claim unrun tests PASS. GitHub Actions are optional and a failing legacy workflow remains FAIL.",
       "evidence_required": "Manual backend boot/Pytest health-smoke command, tool/env and commit SHA, actual PASS/FAIL log, PR review; independent QA when module is delivered.",
-      "evidence_refs": [],
-      "status": "AUTHORIZED_NOT_STARTED",
-      "validation_status": "NOT_TESTED",
+      "evidence_refs": [
+        ".chatgpt-team/DECISIONS.md#APP-HESABYAR-H03-HEALTH-ACCEPT-20261114-001",
+        "https://github.com/Ana0251/ChatGPT-Team-Test/pull/7",
+        "https://github.com/Ana0251/ChatGPT-Team-Test/commit/9c1120e699468a509b88290bf18d57783757c060",
+        "https://github.com/Ana0251/ChatGPT-Team-Test/pull/7#issuecomment-6876604892",
+        "PR #7 head 77d84599cadfe9584753d84602c8fc61d7047d09"
+      ],
+      "status": "COMPLETED",
+      "validation_status": "MANUAL_BACKEND_HEALTH_PYTEST_PASS_LIMITED",
       "start_authorized": true,
-      "notes": null
+      "notes": "Manager-accepted H-03 limited backend boot/health scope only. Owner actually ran Windows PowerShell in isolated H-03 worktree against PR #7 head 77d84599cadfe9584753d84602c8fc61d7047d09: Python 3.14.7; FastAPI 0.162.7; Uvicorn 0.54.0; Pytest 9.2.0; HTTPX 0.28.1. python -m pytest -v tests/test_health.py: 3/3 PASS with 1 non-blocking StarletteDeprecationWarning (httpx/TestClient); live Uvicorn GET /health gave status=ok and HTTP 200. PR #7 merged 9c1120e699468a509b88290bf18d57783757c060. Database/PostgreSQL, migrations, auth/tenant security, financial correctness and independent QA NOT_TESTED; no GitHub Actions PASS claimed.",
+      "completed_on": "2026-11-14"
     },
     {
       "id": "H-04",
@@ -509,11 +516,21 @@
       "acceptance_criteria": "Persian RTL tokens, light/dark, typography, numeric fields, accessibility and 360px responsive rules",
       "mandatory_amendments": "Design-only ownership; accessible Persian RTL, Jalali, IRR and responsive 360px light/dark specs. Do not modify frontend implementation.",
       "evidence_required": "Design audit checklist + annotated specs",
-      "evidence_refs": [],
-      "status": "AUTHORIZED_NOT_STARTED",
-      "validation_status": "NOT_TESTED",
+      "evidence_refs": [
+        ".chatgpt-team/DECISIONS.md#APP-HESABYAR-H17-DESIGN-ACCEPT-20261114-001",
+        "https://github.com/Ana0251/ChatGPT-Team-Test/pull/8",
+        "https://github.com/Ana0251/ChatGPT-Team-Test/commit/0beb9ecc5121adf68fa245eed07f4df426d3f712",
+        "PR #8 head 5e24725db5065316670a46a8c23cd5b4fe3614ce",
+        "design/tokens/foundations.json",
+        "design/specs/global/DESIGN_SYSTEM.md",
+        "design/specs/global/NUMBERS_DATES.md",
+        "design/specs/global/REVIEW_CHECKLIST.md"
+      ],
+      "status": "COMPLETED",
+      "validation_status": "DESIGN_DOCUMENTATION_REVIEW_ACCEPTED_UI_A11Y_NOT_TESTED",
       "start_authorized": true,
-      "notes": null
+      "notes": "Manager accepted design specifications only (tokens, Persian RTL, light/dark typography, IRR/Jalali, 360px responsive and review checklist). Four design-only files accepted in PR #8 head 5e24725db5065316670a46a8c23cd5b4fe3614ce; merged 0beb9ecc5121adf68fa245eed07f4df426d3f712. JSON structure and 26 sample semantic token contrast ratios checked by manager; these are design document/token checks, NOT rendered UI/browser/360px/keyboard/screen-reader/actual accessibility QA. Real UI and independent QA remain NOT_TESTED.",
+      "completed_on": "2026-11-14"
     },
     {
       "id": "H-18",
