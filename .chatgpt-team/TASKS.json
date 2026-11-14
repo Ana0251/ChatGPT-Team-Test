@@ -1543,7 +1543,7 @@
       "project": "حسابیار (Hesabyar)",
       "task_id": "H-04",
       "wave_id": "W1",
-      "status": "LOCAL_SQLITE_INFRA_COORDINATOR_AND_INDEPENDENT_QA_ACCEPTED_PR18_MERGE_AUTHORIZED",
+      "status": "LOCAL_SQLITE_INFRA_COORDINATOR_AND_QA_PASS_LIMITED_ACCEPTED_PR18_MERGE_BLOCKED_QA_REPORT_CONFLICT",
       "framework_version": "1.3.0",
       "contract": "legacy",
       "review_policy": "coordinator_required",
@@ -1555,7 +1555,6 @@
       ],
       "review_reason": "Infrastructure and financial data paths are high risk, so legacy Coordinator integration review followed by independent QA review is mandatory. Both reviews found the local-only H-04 baseline acceptable at PASS LIMITED scope; owner-run tests are documented, not QA-rerun.",
       "pr_number": 18,
-      "expected_pr_head_sha": "748fa948d82332387e14a7b24e5af4c255c52f13",
       "reviewed_code_head_sha": "c6b3c20da04ac5a381869f2ee10eabc2af20744e",
       "coordinator_review": "https://github.com/Ana0251/ChatGPT-Team-Test/pull/18#issuecomment-6880332388",
       "qa_review": "https://github.com/Ana0251/ChatGPT-Team-Test/pull/18#issuecomment-6880620698",
@@ -1587,9 +1586,11 @@
         ".chatgpt-team/agents/developer/REPORT.md",
         ".chatgpt-team/agents/qa/REPORT.md"
       ],
-      "merge_conditions": "Merge this protected-main governance decision first. Then merge only PR #18 at exact HEAD 748fa948d82332387e14a7b24e5af4c255c52f13 and identical 11-file scope. Stop and re-review if material change.",
-      "post_merge": "PM Assistant may mark H-04 COMPLETED for strictly local SQLite infrastructure scope only in separate branch/PR after confirming merged PR #18 and limited QA evidence. Keep W1 open; H-05 and later task/wave authorizations remain locked pending separate Manager gate.",
-      "task_status_unchanged": true
+      "merge_conditions": "NOT authorized for merge yet. GitHub PR #18 mergeable_state=dirty as current main has H-18 QA report and PR18 QA report lacks that H-18 entry. QA owns qa/REPORT.md and must preserve both H-18 and H-04 reports while integrating current main into PR18 branch. After reconciliation, new PR SHA and exact changed paths must be reviewed by Manager and a separate explicit final merge-authorization decision recorded. Owner-run code SHA remains c6b3c20... if code blobs unchanged; do not infer runtime retest for any changed code.",
+      "post_merge": "Once explicitly reauthorized and PR #18 merged with both QA reports intact, PM Assistant may record only H-04 COMPLETED for limited local SQLite infrastructure scope in own PR, keeping W1 open, H05+ and W2–W6 locked.",
+      "task_status_unchanged": true,
+      "reviewed_pr_head_sha": "748fa948d82332387e14a7b24e5af4c255c52f13",
+      "blocking_issue": "GH PR #18 merge conflict in .chatgpt-team/agents/qa/REPORT.md: current main contains H-18 QA review whereas PR branch contains H-04 QA review but not H-18; preserve both. DO NOT overwrite any prior QA evidence."
     }
   ]
 }
