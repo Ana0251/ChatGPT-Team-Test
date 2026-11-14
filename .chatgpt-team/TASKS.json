@@ -1069,6 +1069,32 @@
         "PR open, no merge/closing W0/W1 approval until contract freeze, review and manager exit gate."
       ],
       "status_note": "Read-only reviews may be performed after user personally visits each role conversation; this approval does not activate chats or prove acknowledgment."
+    },
+    {
+      "id": "APP-HESABYAR-H02-CONSUMER-FINDINGS-20261114-001",
+      "date": "2026-11-14",
+      "approved_by": "manager",
+      "status": "CHANGES_REQUIRED_MANAGER_DIRECTIONS",
+      "project": "حسابیار (Hesabyar)",
+      "parent_approval_id": "APP-HESABYAR-W0-20261114-001",
+      "task_id": "H-02",
+      "wave_id": "W0",
+      "source_contract_version": "1.0.0-rc.2",
+      "source_contract_blob_sha": "c7d45ebfb715aea6960f130648ebfde148c93e54",
+      "developer_review_comment_id": 6875035147,
+      "ui_ux_review_comment_id": 6875039903,
+      "manager_review_comment_id": 6875071707,
+      "decisions": [
+        "level=detail is comprehensive effective posting-leaf view including direct-postable subsidiary without detail children; actual account_level and pre-pagination balanced sums required.",
+        "Owner may invite new email to become owner of the same company via explicit secure invite acceptance; never a global super-admin; only company owner can invite owner.",
+        "Structured error/warning codes, account/line identity, safe CSRF user resubmission and Jalali period display must be specified before UX approval.",
+        "Independent OpenAPI 3.1 validation of unchanged final YAML with executed tool/version/command/output/SHA required; qualified previous Ajv result must stay qualified."
+      ],
+      "scope": "Coordinator may correct existing H-02 PR #1 docs/contracts/** and docs/architecture/** and own report only; must not merge, implement code or modify central ledgers",
+      "other_agents_review_status": "Both CHANGES_REQUIRED for rc.2, no acknowledgments",
+      "next_gate": "Coordinator revision with new exact OpenAPI version/blob, manager re-review then Developer/UI-UX read-only acknowledgments, PR independent review, W0 exit decision",
+      "requires_user_action": "Owner should enable GitHub branch protection/ruleset for main with PR+review and block force pushes/deletion; required CI checks after jobs exist, before W1 code merges. If private repo plan does not support it, report limitation for manager mitigation.",
+      "execution_authorization": "No additional tasks/waves authorized; W1 stays locked"
     }
   ]
 }
