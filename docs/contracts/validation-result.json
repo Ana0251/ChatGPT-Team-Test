@@ -1,40 +1,54 @@
 {
   "task": "H-02",
+  "decision": "APP-HESABYAR-H02-CONSUMER-FINDINGS-20261114-001",
   "date": "2026-11-14",
-  "source": "GitHub connector direct read of feature/h-02-contract-architecture-v1",
-  "execution": "validateH02() from docs/contracts/validate-openapi.cjs invoked in isolated JavaScript tool; Node CLI below is reproducibility command, NOT executed in this environment",
-  "validatorScriptBlobSha": "1a44b1760398b80a16b0416c489b2995284902ac",
-  "commandToReproduce": [
-    "npm --prefix docs/contracts install --no-package-lock --ignore-scripts",
-    "node docs/contracts/validate-openapi.cjs"
-  ],
-  "result": {
-    "validator": "H-02 contract lint 1.0.0",
+  "contract": {
+    "path": "docs/contracts/openapi.yaml",
+    "version": "1.0.0-rc.3",
+    "git_blob_sha": "98d34e7bd7b4551c0f429ea5e388781060ceaf63",
+    "unaltered_for_validation": true
+  },
+  "execution": {
+    "environment": "Connected GitHub source fetch + JavaScript code-execution isolate; no Node shell or application implementation",
+    "actual_invocation": "validateSchema(api) — original @apidevtools/swagger-parser/lib/validators/schema.js, loaded as CommonJS function through JavaScript evaluation",
+    "vendor": "@apidevtools/swagger-parser",
+    "vendor_version": "11.0.0",
+    "vendor_source_commit": "3ac7860717bfe41e4a438ae61b1a90ecce6108a3",
+    "yaml_parser": "js-yaml 4.1.0",
+    "json_schema_engine": "Ajv2020 8.17.1 bundled",
+    "supporting_schema": "official OpenAPI 3.1 schema, OAI dated 2026-08-03 at pinned commit ce49002c7bbd323819555464eb479523923f6754",
+    "captured_stdout": "(none: vendor function returns void on success)",
+    "captured_stderr": "(none: no exception)",
+    "result": "PASS",
+    "scope": "Vendor's OpenAPI 3.1 schema-validation function; NOT the full SwaggerParser.validate() dereference pipeline and NOT runtime/QA tests.",
+    "limitations": "The vendor's actual 3.1 implementation uses an internal $dynamicRef workaround documented by its maintainers. It validates unmodified Hesabyar YAML, but does not establish unmodified-OAI schema-base dynamic dialect PASS."
+  },
+  "existing_h02_lint": {
+    "invocation": "validateH02() from docs/contracts/validate-openapi.cjs in JavaScript isolate",
     "parser": "js-yaml 4.1.0",
-    "engine": "Ajv2020 8.17.1 (validateFormats=false)",
-    "officialSchema": "OAI OpenAPI 3.1 schema 2026-08-03",
-    "officialSchemaPinnedCommit": "ce49002c7bbd323819555464eb479523923f6754",
-    "schemaDynamicRefSubstitutions": 4,
-    "note": "OAI structural schema validated with #meta dynamicRef mapped to local loose schema; each embedded JSON Schema separately checked using Draft 2020-12 meta. This is not full dialect validation.",
-    "yamlParsing": "PASS",
-    "structuralValidation": "PASS",
-    "embeddedSchemaChecks": 69,
-    "inlineSchemaChecks": 42,
+    "engine": "Ajv2020 8.17.1",
+    "result": "PASS",
+    "findings": 0,
     "paths": 23,
     "operations": 33,
     "csrfProtectedMutations": 18,
-    "componentReferences": 236,
-    "contractVersion": "1.0.0-rc.2",
-    "gitBlobSha": "c7d45ebfb715aea6960f130648ebfde148c93e54",
-    "result": "PASS",
-    "errors": []
+    "componentReferences": 239,
+    "jsonSchemaSyntaxChecks": 72,
+    "limitation": "Four #meta substitutions in in-memory copy of official structural schema; previous rc.2 report documents unmodified schema-base failure."
   },
-  "fullUnmodifiedOasDialectValidation": {
-    "status": "NOT_PASSED",
-    "reason": "Unmodified OAI schema-base 2026-08-03 evaluated through this Ajv bundle produced 329 dialect/dynamicRef errors; structural schema mode replaces four #meta dynamic references and independently validates 69 embedded schemas. No claim of full original dialect conformance."
+  "tests": {
+    "yaml_parsed": "PASS",
+    "vendor_openapi_3_1_schema_check": "PASS",
+    "h02_static_semantic_check": "PASS",
+    "full_external_dereference": "NOT_RUN",
+    "node_cli": "NOT_RUN",
+    "runtime_http_db": "NOT_RUN",
+    "independent_qa": "NOT_RUN"
   },
-  "runtimeImplementationTests": "NOT_RUN",
-  "independentQA": "NOT_RUN",
-  "developerAcknowledgment": "PENDING_MANAGER_COORDINATION",
-  "uiUxAcknowledgment": "PENDING_MANAGER_COORDINATION"
+  "pending": [
+    "Fresh Developer acknowledgment exact rc.3 blob SHA",
+    "Fresh UI/UX acknowledgment exact rc.3 blob SHA",
+    "Manager review/freeze and W0 exit",
+    "PR independent review and branch protection before W1 code merge"
+  ]
 }
