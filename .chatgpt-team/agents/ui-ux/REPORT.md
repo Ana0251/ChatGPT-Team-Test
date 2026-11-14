@@ -50,3 +50,15 @@ No product or design files were edited; no H-17/H-03, QA, TASKS/WAVES, W1 or mer
 
 ### Scope and restrictions
 Only the UI/UX consumer contract is approved, not technical conformance, security acceptance, runtime implementation, PR merge, H-02 completion, W0 exit or W1 start. New contract blob requires fresh UI/UX acknowledgment. No H-17/H-18/H-19/H-20 design tasks, code, QA, ledger changes or other-agent activations performed. This report update and PR comment are the only authorized writes.
+
+## 2026-11-14 — H-18 identity/company-period UX specification handoff
+
+- **Framework:** `1.3.0` (verified `.chatgpt-team/FRAMEWORK_VERSION.json`); read `.chatgpt-team/prompts/ui-ux.md`, role rules, TASKS/WAVES, DECISIONS, H-17 design files, relevant frozen H-02 OpenAPI and error contract directly from GitHub.
+- **Authorization:** Manager decision `APP-HESABYAR-W1-H04-H18-ENTRY-20261114-001`; H-18 `AUTHORIZED_NOT_STARTED`, `start_authorized=true`; W1 `entry_authorized=true`; dependencies H-02 and H-17 `COMPLETED`. Ledger states not changed by UI/UX.
+- **Base main commit:** `a972e31e0f108b97097e26822ceecb14b6e0d1a9`. **Contract:** OpenAPI `1.0.0-rc.3`, exact blob `98d34e7bd7b4551c0f429ea5e388781060ceaf63`; verified unchanged in H-18 branch.
+- **Branch:** `feature/h-18-identity-company-period-ux`. **PR:** [#17](https://github.com/Ana0251/ChatGPT-Team-Test/pull/17). **Feature-design commit at PR creation:** `f7761e0ed73171b9577b8a54dbc9166dd7da5186`.
+- **Files:** `design/specs/identity/AUTH_AND_INVITATIONS.md`, `design/specs/identity/SESSION_STATES.md`, `design/specs/company-period/COMPANY_FISCAL_SELECTION.md`, `design/specs/company-period/STATE_MATRIX_AND_REVIEW.md`. A checked GitHub commit comparison showed these four design-only additions and no other modifications before this role-report append.
+- **Coverage:** login/logout/session expiry/CSRF explicit recovery, initial owner and two invitation activation modes, scoped company/role switching, fiscal-year/period selection with Jalali and exclusive-end, Loading/Empty/Error/Permission Denied, RTL/two themes/360px, state matrices and 19-point review checklist.
+- **Evidence:** File paths and contract SHA verified from GitHub; document criteria **SPECIFIED**, real rendered UI, mobile/keyboard/screen-reader, API, authorization and security **NOT_TESTED**. This is not QA PASS.
+- **Review policy:** H-18 lacks explicit `review_policy`, thus v1.3.0 legacy `Coordinator → QA` applies. Await independent Coordinator integration assessment first, then QA; final merge and task closure require Manager decision. No direct QA claim or independent review invented.
+- **Scope:** no frontend/backend/OpenAPI changes, H-19 or other tasks started, PR merged, or task/wave status rewritten.
