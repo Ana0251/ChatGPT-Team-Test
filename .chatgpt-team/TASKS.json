@@ -1535,6 +1535,61 @@
       "merge_conditions": "Only after this manager approval is merged into protected main and PR #17 remains open with exact head SHA and six-file scope, merge PR #17; if changed stop/re-review. Native GitHub code review APPROVED is not claimed.",
       "post_merge": "PM Assistant may record only H-18 COMPLETED for authorized documentation deliverable with Coordinator+QA PASS LIMITED and exact merge evidence in separate PR. Preserve W1 open, no H-19/H-20/H-05 authorization, QA runtime gates pending.",
       "task_status_unchanged": true
+    },
+    {
+      "id": "APP-HESABYAR-H04-SQLITE-QA-ACCEPT-20261114-001",
+      "date": "2026-11-14",
+      "approved_by": "manager",
+      "project": "حسابیار (Hesabyar)",
+      "task_id": "H-04",
+      "wave_id": "W1",
+      "status": "LOCAL_SQLITE_INFRA_COORDINATOR_AND_INDEPENDENT_QA_ACCEPTED_PR18_MERGE_AUTHORIZED",
+      "framework_version": "1.3.0",
+      "contract": "legacy",
+      "review_policy": "coordinator_required",
+      "review_risks": [
+        "database connection, migration integrity and schema constraints",
+        "exact financial IRR representation and prevention of float rounding",
+        "foreign key enforcement and data isolation",
+        "database selection and future concurrency/tenant security"
+      ],
+      "review_reason": "Infrastructure and financial data paths are high risk, so legacy Coordinator integration review followed by independent QA review is mandatory. Both reviews found the local-only H-04 baseline acceptable at PASS LIMITED scope; owner-run tests are documented, not QA-rerun.",
+      "pr_number": 18,
+      "expected_pr_head_sha": "748fa948d82332387e14a7b24e5af4c255c52f13",
+      "reviewed_code_head_sha": "c6b3c20da04ac5a381869f2ee10eabc2af20744e",
+      "coordinator_review": "https://github.com/Ana0251/ChatGPT-Team-Test/pull/18#issuecomment-6880332388",
+      "qa_review": "https://github.com/Ana0251/ChatGPT-Team-Test/pull/18#issuecomment-6880620698",
+      "qa_report_blob": "81b284a5b5c7cb43136b61601074be2420eb9e9f",
+      "owner_run_evidence": "https://github.com/Ana0251/ChatGPT-Team-Test/pull/18#issuecomment-6880269744",
+      "owner_run_results": "Windows Python 3.14.7, SQLite 3.50.4, SQLAlchemy 2.1.8, Alembic 1.20.1, Pytest 9.2.0; 24/24 Pytest passed, 3 Alembic deprecation warnings, exit 0; CLI migration upgrade/downgrade/upgrade each exit 0; FK PRAGMA 1 before and after; matching columns/PK/FK/unique/check schema snapshots across upgrades",
+      "actual_qa_executed_tests": "NOT_TESTED; QA independently inspected source and owner-supplied logs but did not execute commands; native GitHub APPROVE not claimed",
+      "accepted_scope": "Only local development H-04 SQLite file-based database, SQLAlchemy/Alembic baseline, adapter-level exact 20-digit IRR in SQLite TEXT and Python Decimal, isolated test DB, FK enforcement and reversible migration.",
+      "nonblocking_follow_up": "3 Alembic path_separator configuration DeprecationWarnings; future approved cleanup before tooling upgrade.",
+      "deferred_not_tested": [
+        "Final production database engine choice",
+        "PostgreSQL NUMERIC(20,0) behavior/row locking/concurrent transactions",
+        "Real tenant security/IDOR and raw SQL bypass protection",
+        "HTTP/API and functional accounting correctness",
+        "Backup/restore, production recovery, security and release readiness",
+        "Independent QA runtime execution on Windows"
+      ],
+      "reviewed_code_blobs": {
+        "backend/app/db/engine.py": "ab346ded6e625125a347e5bcde1ac6e0258ac6b9",
+        "backend/app/db/money.py": "7d69c1fdef53e32697c9012b59a8a8ed21d7a34a",
+        "backend/tests/db/test_sqlite_storage.py": "bf397b25a3eee889ee8eec822016dfbbf27d975d",
+        "backend/tests/db/test_migrations.py": "d857ffc39d681f31f77833025d827fc3675acd86"
+      },
+      "allowed_changed_paths": [
+        "backend/app/db/**",
+        "backend/alembic/**",
+        "backend/tests/db/**",
+        "backend/pyproject.toml",
+        ".chatgpt-team/agents/developer/REPORT.md",
+        ".chatgpt-team/agents/qa/REPORT.md"
+      ],
+      "merge_conditions": "Merge this protected-main governance decision first. Then merge only PR #18 at exact HEAD 748fa948d82332387e14a7b24e5af4c255c52f13 and identical 11-file scope. Stop and re-review if material change.",
+      "post_merge": "PM Assistant may mark H-04 COMPLETED for strictly local SQLite infrastructure scope only in separate branch/PR after confirming merged PR #18 and limited QA evidence. Keep W1 open; H-05 and later task/wave authorizations remain locked pending separate Manager gate.",
+      "task_status_unchanged": true
     }
   ]
 }
