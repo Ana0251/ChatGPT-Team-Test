@@ -81,3 +81,40 @@ git status --short
 ```
 
 If `npm ci` fails, **do not force-fix or skip**: record exact error; run `npm --prefix docs/contracts install --package-lock-only --ignore-scripts` to reconcile lock metadata only after reviewing the diff, and send the changed lock plus command output to Coordinator/Manager for an explicit follow-up. Do not change the approved OpenAPI source.
+
+
+## 6. Transitive dependency follow-up — 2026-11-14 (manual npm audit retest pending)
+
+Manager PR #1 comment `6875958532` records real owner Windows worktree testing of the preceding H-02 lock: `npm ci PASS`, direct `ajv 8.20.0`, `js-yaml 4.3.2`; `npm audit FAIL` because **fast-uri 3.1.8** and **undici 8.11.2** remained vulnerable. The owner correctly stopped before validator execution in that test. These are historical owner results, NOT a new test.
+
+**Current lockfile change:** Only `docs/contracts/package-lock.json` dependency entries for `fast-uri` and `undici` changed to **3.1.9** and **8.12.4**. The `resolved` registry URLs, exact version and `integrity` SHA512 values came from pre-existing, publicly accessible npm-generated GitHub lockfile entries, respectively:
+- `aarpus/Acute-RPOS-Online-Ordering`, commit `3d3fac9730fb02e17dd8bd630c2a9a7cb80246a2`, `package-lock.json.backup` — fast-uri 3.1.9.
+- `koala73/worldmonitor`, commit `a3f4f06a10e772e290ddb369bc4e374cb6ea2b9e`, `blog-site/package-lock.json` — undici 8.12.4.
+
+**Important:** Coordinator has NOT run `npm` in this environment. This is a targeted offline lockfile edit based on npm-origin metadata; it is **not** claimed to be a freshly generated `npm audit fix` lockfile, nor evidence of an audited clean dependency tree. Graph consistency and parent requirements were statically checked only: `ajv -> fast-uri ^3.0.1` accepts 3.1.9; `json-schema-ref-parser -> undici ^8.10.2` accepts 8.12.4; `package.json` and direct pins are unchanged. The existing separate Swagger Parser 11 tarball entry still lacks a verified integrity digest. No CLI, security, or validator PASS is asserted for these new entries.
+
+**Owner repeat test (PowerShell) — isolated worktree to protect local files:**
+```powershell
+cd D:\ChatGPT-Team-Test
+git fetch origin pull/1/head
+if ($LASTEXITCODE -ne 0) { throw 'git fetch failed' }
+git worktree add --detach D:\ChatGPT-Team-Test-H02-audit2 FETCH_HEAD
+if ($LASTEXITCODE -ne 0) { throw 'worktree failed' }
+cd D:\ChatGPT-Team-Test-H02-audit2
+npm --prefix docs/contracts ci --ignore-scripts
+if ($LASTEXITCODE -ne 0) { throw 'npm ci failed' }
+npm --prefix docs/contracts ls ajv js-yaml fast-uri undici @apidevtools/swagger-parser
+if ($LASTEXITCODE -ne 0) { throw 'dependency verification failed' }
+npm --prefix docs/contracts audit --audit-level=moderate
+if ($LASTEXITCODE -ne 0) { throw 'audit failed; stop without claiming PASS' }
+node docs/contracts/validate-standard.cjs
+if ($LASTEXITCODE -ne 0) { throw 'standard validator failed' }
+node docs/contracts/validate-openapi.cjs
+if ($LASTEXITCODE -ne 0) { throw 'H-02 validator failed' }
+git hash-object docs/contracts/openapi.yaml
+git status --short
+```
+
+This uses a **different** worktree path from previous owner tests; do not overwrite it if it already exists. If any command fails, stop and return exact stderr/stdout to Manager. An optional online, reviewed `npm --prefix docs/contracts audit fix --package-lock-only --ignore-scripts` (NO `--force`) may be applied in a separate working checkout **only after comparing its lock diff and confirming no direct package changes**. Do not auto-commit an unrelated npm update.
+
+**Invariant:** The approved contract `docs/contracts/openapi.yaml` remains version `1.0.0-rc.3`, canonical Git blob `98d34e7bd7b4551c0f429ea5e388781060ceaf63`. Existing consumer contract approvals stand. The npm-audit security gate remains **PENDING OWNER TEST**, PR remains OPEN/UNMERGED and W1 unauthorized.
