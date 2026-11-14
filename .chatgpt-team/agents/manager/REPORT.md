@@ -93,3 +93,15 @@ Manager re-fetched the authoritative GitHub ledgers after PM Assistant administr
 **GitHub review evidence:** Comment on PR #1, id `6874642836`. No source code/task/wave ledger updated by Manager in this review. Per approved workflow, W0/H-02 are NOT marked completed or QA-tested; W1 stays unauthorized.
 
 **Next handoff:** Coordinator H-02 revisions within same existing PR only. The Coordinator must not activate other chats; after technical revision/validation manager will arrange read-only consumer acknowledgments from Developer/UI-UX through user-controlled conversations, without authorizing any W1 work. Review revised branch and confirmed acknowledgments before a separate W0 exit decision.
+
+## 2026-11-14 — Re-review of H-02 revised contract rc.2; limited read-only consumer review approved
+
+GitHub PR #1 remains OPEN, unmerged, head `d0067c98c6c5fc2f883dbf0baf715ad797818119`. Revised OpenAPI version `1.0.0-rc.2`, blob SHA `c7d45ebfb715aea6960f130648ebfde148c93e54`. Nine changed files, all in H-02 docs paths plus Coordinator's own agent report; TASKS/WAVES untouched by the PR. Manager verified new `TrialBalanceTotals`, secure provisioner/invitation flows, pre-session CSRF binding, and static validation artefacts `VALIDATION.md`, `validation-result.json` and `validate-openapi.cjs`.
+
+**Validation qualification:** js-yaml and Ajv-based structural checks are reported PASS with 0 errors against a **modified copy** of official OAI 3.1 schema (4 dynamic-ref substitutions). The unmodified dialect check is explicitly NOT_PASSED (329 errors under that validator); the reproducible Node CLI is documented but not executed. Neither independent validator nor API implementation has passed QA.
+
+**Manager observations (PR comment 6874976613):** 1. Trial balance `level=detail` may exclude postable subsidiary leaves lacking detail children unless its row/totals scope is clarified; this is financial-integrity relevant. 2. Invitation activation says “Never creates owner” while company owner can invite a new email as owner; needs consistent tenant-scoped owner role handling. 3. Require a fully independent OpenAPI 3.1-compatible validation of the unchanged file before freeze.
+
+**Formal manager approval:** `APP-HESABYAR-W0-CONTRACT-REVIEW-20261114-001` in DECISIONS.md and TASKS.json approvals. Developer and UI/UX may perform **read-only consumer review** of exact rc.2/SHA, log findings to PR comments and own reports, and explicitly acknowledge only when acceptable. This is not permission to begin their W1 tasks, edit application/design files, change task/wave ledgers, or assert test PASS. Any file SHA change invalidates earlier consumer acknowledgments until renewed.
+
+**W0 / H-02 remain NOT COMPLETE; W1 remains UNAUTHORIZED.** Main protection and required checks still pending before code merge. Next conversations are Developer and UI/UX solely for independent contract reviews; afterwards return manager to coordinate Coordinator resolution and contract freeze.
