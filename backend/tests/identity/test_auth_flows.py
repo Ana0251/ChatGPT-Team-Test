@@ -432,3 +432,53 @@ def test_expired_pre_session_and_missing_smtp_fail_closed(sandbox: dict, monkeyp
     assert result.status_code == 403
     with sandbox["engine"].connect() as connection:
         assert not connection.execute(select(t.invitations.c.id)).first()
+
+
+def test_authenticated_session_cannot_replace_anonymous_login_csrf(sandbox: dict):
+    client = sandbox["client"]
+    headers = provisioned_owner_login(sandbox)
+    # The authenticated CSRF token is not an anonymous login credential.
+    switched = client.post(
+        "/api/v1/auth/login", headers=headers,
+        json={"email": "owner@example.test", "password": PASSWORD},
+    )
+    assert switched.status_code == 403
+    assert switched.json()["error"]["code"] == "CSRF_INVALID"
+    assert client.get("/api/v1/auth/me").status_code == 200
+    # CSRF is bound to the auth session: an incorrect header also fails.
+    wrong_csrf = client.post(
+        "/api/v1/auth/logout",
+        headers={"Origin": "https://testserver", "X-CSRF-Token": "invalid"},
+    )
+    assert wrong_csrf.status_code == 403
+    assert client.get("/api/v1/auth/me").status_code == 200
+
+
+def test_duplicate_owner_membership_and_pending_invitation(sandbox: dict):
+    client = sandbox["client"]
+    headers = provisioned_owner_login(sandbox)
+    already_member = invite(
+        sandbox, sandbox["company_id"], "owner@example.test", "viewer", headers,
+    )
+    assert already_member.status_code == 409
+    assert already_member.json()["error"]["code"] == "DUPLICATE_MEMBERSHIP"
+    assert invite(
+        sandbox, sandbox["company_id"], "pending@example.test", "viewer", headers,
+    ).status_code == 202
+    pending_duplicate = invite(
+        sandbox, sandbox["company_id"], "pending@example.test", "viewer", headers,
+    )
+    assert pending_duplicate.status_code == 409
+    assert pending_duplicate.json()["error"]["code"] == "INVITE_INVALID"
+
+
+def test_origin_missing_with_valid_header_is_denied(sandbox: dict):
+    client = sandbox["client"]
+    headers = csrf(client)
+    response = client.post(
+        "/api/v1/auth/activate",
+        headers={"X-CSRF-Token": headers["X-CSRF-Token"]},
+        json={"token": sandbox["sent"][0][1], "password": PASSWORD},
+    )
+    assert response.status_code == 403
+    assert response.json()["error"]["code"] == "CSRF_INVALID"
