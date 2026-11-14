@@ -1042,6 +1042,33 @@
       ],
       "delegated_ledger_update": "pm-assistant",
       "evidence_ref": ".chatgpt-team/DECISIONS.md#APP-HESABYAR-W0-20261114-001"
+    },
+    {
+      "id": "APP-HESABYAR-W0-CONTRACT-REVIEW-20261114-001",
+      "project": "حسابیار (Hesabyar)",
+      "date": "2026-11-14",
+      "approved_by": "manager",
+      "status": "READ_ONLY_CONTRACT_REVIEW_APPROVED",
+      "parent_approval_id": "APP-HESABYAR-W0-20261114-001",
+      "wave_id": "W0",
+      "task_id": "H-02",
+      "review_only_roles": [
+        "developer",
+        "ui-ux"
+      ],
+      "contract_version": "1.0.0-rc.2",
+      "openapi_git_blob_sha": "c7d45ebfb715aea6960f130648ebfde148c93e54",
+      "pr_url": "https://github.com/Ana0251/ChatGPT-Team-Test/pull/1",
+      "review_comment_id": 6874976613,
+      "authorized_scope": "Read-only technical/UX review and GitHub PR discussion of already-authored H-02 API contract; review must cite exact version/blob SHA and raise questions before acknowledging. Review notes may go in each agent's own agent REPORT only. NOT H-03/H-17 implementation.",
+      "conditions": [
+        "No backend/frontend/design/QA/source/ledger mutations; no W1 task start or agent auto-activation.",
+        "Manager awaits independent consumer feedback and Coordinator resolution of direct-postable subsidiary detail-level trial balance and new-owner invitation ambiguity.",
+        "Independent unmodified OpenAPI 3.1 validation with actual tool output required before final contract freeze; existing modified-schema validation must retain its stated caveat.",
+        "Any changed OpenAPI blob requires re-review/acknowledgment against the new FINAL SHA.",
+        "PR open, no merge/closing W0/W1 approval until contract freeze, review and manager exit gate."
+      ],
+      "status_note": "Read-only reviews may be performed after user personally visits each role conversation; this approval does not activate chats or prove acknowledgment."
     }
   ]
 }
