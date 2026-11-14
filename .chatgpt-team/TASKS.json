@@ -51,11 +51,21 @@
       "acceptance_criteria": "Module boundaries, OpenAPI baseline, ownership map; all consumers acknowledge version",
       "mandatory_amendments": "Contract freeze before API consumers; module boundaries identity/tenancy, fiscal, accounts, journals, reporting and audit. Coordinator owns contract and architecture docs.",
       "evidence_required": "Contract review + no-overlap checklist",
-      "evidence_refs": [],
-      "status": "AUTHORIZED_NOT_STARTED",
-      "validation_status": "NOT_TESTED",
+      "evidence_refs": [
+        ".chatgpt-team/DECISIONS.md#APP-HESABYAR-W0-EXIT-20261114-001",
+        ".chatgpt-team/DECISIONS.md#APP-HESABYAR-H02-FREEZE-20261114-001",
+        "https://github.com/Ana0251/ChatGPT-Team-Test/pull/1",
+        "https://github.com/Ana0251/ChatGPT-Team-Test/commit/a389fc2eb29967aee0693a549a6e1e60857525d4",
+        "docs/contracts/openapi.yaml@98d34e7bd7b4551c0f429ea5e388781060ceaf63",
+        "https://github.com/Ana0251/ChatGPT-Team-Test/pull/1#issuecomment-6875403671",
+        "https://github.com/Ana0251/ChatGPT-Team-Test/pull/1#issuecomment-6875407091",
+        "https://github.com/Ana0251/ChatGPT-Team-Test/pull/1#issuecomment-6876106618"
+      ],
+      "status": "COMPLETED",
+      "validation_status": "MANUAL_CONTRACT_STATIC_VALIDATION_PASS_LIMITED",
       "start_authorized": true,
-      "notes": null
+      "notes": "Documentation-only H-02 completed by manager decision APP-HESABYAR-W0-EXIT-20261114-001. OpenAPI 1.0.0-rc.3 blob 98d34e7bd7b4551c0f429ea5e388781060ceaf63; PR #1 merged a389fc2eb29967aee0693a549a6e1e60857525d4. User-executed npm ci PASS, npm audit 0 moderate+ vulnerabilities, static validators PASS; consumer Developer/UI-UX comments accepted by Manager, not native GitHub reviews. Full asynchronous parser/dereference, HTTP/DB/runtime/accounting security and independent QA NOT RUN. Do not interpret limited contract validation as software QA.",
+      "completed_on": "2026-11-14"
     },
     {
       "id": "H-03",
@@ -81,8 +91,8 @@
         ".github/workflows/backend-smoke.yml"
       ],
       "acceptance_criteria": "Run FastAPI service, health endpoint, deterministic env sample; test boot succeeds",
-      "mandatory_amendments": "Early CI includes backend Pytest/health smoke and PR check in .github/workflows/backend-smoke.yml. Serial workflow ownership with H-21/H-28.",
-      "evidence_required": "CI backend boot/test log",
+      "mandatory_amendments": "Early reproducible backend smoke/Pytest checks performed manually with retained evidence; GitHub Actions/PR checks not required. Shared workflow files, if used, are edited serially with H-21/H-28. APP-HESABYAR-MANUAL-VALIDATION-20261114-001: Reproducible manual tests on the user's system replace mandatory GitHub Actions checks. For each gate record exact command, tool/environment versions, commit/blob SHA, observed PASS/FAIL output and PR evidence. Real runtime/API/PostgreSQL/accounting/security tests and independent QA remain mandatory where applicable; never claim unrun tests PASS. GitHub Actions are optional and a failing legacy workflow remains FAIL.",
+      "evidence_required": "Manual backend boot/Pytest health-smoke command, tool/env and commit SHA, actual PASS/FAIL log, PR review; independent QA when module is delivered.",
       "evidence_refs": [],
       "status": "NOT_STARTED",
       "validation_status": "NOT_TESTED",
@@ -625,7 +635,7 @@
         ".github/workflows/frontend-checks.yml"
       ],
       "acceptance_criteria": "Frontend shell, routing, RTL/theme/accessible primitives, typed contract; no business mock shown as real",
-      "mandatory_amendments": "Own frontend package.json and lockfile, vite/tailwind/ts/vitest config, generated typed client and build configuration. Early frontend CI/PR checks; shared workflow changes serial with H-03/H-28.",
+      "mandatory_amendments": "Own frontend package/lockfile, Vite/Tailwind/TypeScript/Vitest config, typed client and build config. Perform early manual frontend checks with versioned PASS/FAIL evidence; GitHub Actions/PR checks are not required; shared workflows, if used, edited serially. APP-HESABYAR-MANUAL-VALIDATION-20261114-001: Reproducible manual tests on the user's system replace mandatory GitHub Actions checks. For each gate record exact command, tool/environment versions, commit/blob SHA, observed PASS/FAIL output and PR evidence. Real runtime/API/PostgreSQL/accounting/security tests and independent QA remain mandatory where applicable; never claim unrun tests PASS. GitHub Actions are optional and a failing legacy workflow remains FAIL.",
       "evidence_required": "Vitest accessibility/shell tests",
       "evidence_refs": [],
       "status": "NOT_STARTED",
@@ -786,7 +796,7 @@
       ],
       "acceptance_criteria": "Independent threat/accounting test plan, execute each delivered module against real database; defects with reproducible steps",
       "mandatory_amendments": "Start independent QA continuously from delivered W1 modules, while spanning W2–W5; real PostgreSQL F1/F2/F3, security, fiscal closed-period, posting race and CSRF tests. Never claim unrun tests.",
-      "evidence_required": "Timestamped CI logs, case IDs, HTTP traces/redactions",
+      "evidence_required": "Timestamped reproducible manual QA execution logs with commands, environment/tool versions, build/commit SHAs, case IDs and redacted HTTP traces; actual pass/fail and independent QA report. APP-HESABYAR-MANUAL-VALIDATION-20261114-001: Reproducible manual tests on the user's system replace mandatory GitHub Actions checks. For each gate record exact command, tool/environment versions, commit/blob SHA, observed PASS/FAIL output and PR evidence. Real runtime/API/PostgreSQL/accounting/security tests and independent QA remain mandatory where applicable; never claim unrun tests PASS. GitHub Actions are optional and a failing legacy workflow remains FAIL.",
       "evidence_refs": [],
       "status": "NOT_STARTED",
       "validation_status": "NOT_TESTED",
@@ -819,7 +829,7 @@
         "docs/integration/**",
         ".chatgpt-team/agents/coordinator/REPORT.md"
       ],
-      "acceptance_criteria": "Confirm contract compatibility, merge order, review ownership and CI gates; NO unapproved source edits",
+      "acceptance_criteria": "Confirm contract compatibility, merge order, review ownership and manual validation/independent QA evidence gates; NO unapproved source edits.",
       "mandatory_amendments": "Required join gates: H-13 reversal, H-14 concurrency, H-24 journal UI, H-26 independent tests, F1/F2/F3, tenant security and accounting totals all reviewed before integration signoff.",
       "evidence_required": "Reviewed PR references and SHA matrix",
       "evidence_refs": [],
@@ -851,8 +861,8 @@
         ".github/workflows/**",
         "docs/runbook/**"
       ],
-      "acceptance_criteria": "Reproducible env/bootstrap, DB migration, seed **synthetic** fixtures, backup/restore instructions, CI gates",
-      "mandatory_amendments": "Complete CI by W5 using serial workflow edits; reproducible private/staging setup, migration and backup/restore drill; synthetic seed explicitly labelled; actual evidence required.",
+      "acceptance_criteria": "Reproducible env/bootstrap, DB migration, synthetic seed fixtures, backup/restore instructions and manual validation gates with independent QA; GitHub Actions not mandatory.",
+      "mandatory_amendments": "By W5 complete reproducible manual integration/installation/migration/backup-restore test protocol and gather real logs, versions, commit SHAs and PR review evidence. Shared workflows, if maintained, serialized; GitHub Actions not a release prerequisite. APP-HESABYAR-MANUAL-VALIDATION-20261114-001: Reproducible manual tests on the user's system replace mandatory GitHub Actions checks. For each gate record exact command, tool/environment versions, commit/blob SHA, observed PASS/FAIL output and PR evidence. Real runtime/API/PostgreSQL/accounting/security tests and independent QA remain mandatory where applicable; never claim unrun tests PASS. GitHub Actions are optional and a failing legacy workflow remains FAIL.",
       "evidence_required": "Fresh-install, migration & restore drill",
       "evidence_refs": [],
       "status": "NOT_STARTED",
