@@ -1753,6 +1753,48 @@
       "PM_Assistant_authorized_changes": "Only H-05 record: set start_authorized=true and status=AUTHORIZED_NOT_STARTED; append the two narrow shared paths to allowed_paths and add scope/test/security notes, review_policy/review_risks/review_reason and approved evidence/decision refs. Preserve 30 tasks, approvals, H-04/H-18 statuses and all other task records; do NOT change WAVES.json or start work itself. Use independent PR and wait for Manager merge.",
       "entry_gate": "Developer may start ONLY after PM Assistant's H-05 ledger sync PR is reviewed and merged to protected main; Manager to send explicit Developer handoff after verifying.",
       "no_other_authorization": "No H-06/H-07/H-08/H-26 or W2–W6 authorization; W1 remains open; no release gate, no production PostgreSQL QA waiver."
+    },
+    {
+      "id": "APP-HESABYAR-H05-H04-MIGRATION-TEST-EXCEPTION-20261114-001",
+      "date": "2026-11-14",
+      "approved_by": "manager",
+      "project": "حسابیار (Hesabyar)",
+      "task_id": "H-05",
+      "related_task_id": "H-04",
+      "wave_id": "W1",
+      "framework_version": "1.3.0",
+      "status": "H05_H04_TEST_PIN_EXCEPTION_APPROVED_PENDING_PM_ASSISTANT_LEDGER_SYNC",
+      "review_policy": "coordinator_required",
+      "review_risks": [
+        "Version-correct Alembic migration assertion without weakening original H04 schema/integrity checks",
+        "Maintaining future migration coverage and preventing accidental regressions",
+        "Shared file H04 test ownership exception limited to a single file and two-line replacement"
+      ],
+      "review_reason": "H04 migration regression assumes global Alembic head remains h04_0001; H05 legally appends h05_0002, so upgrade head returns h05_0002 without violating H04 baseline. Change is strictly a test-specific version pin; security-sensitive H05 requires Coordinator integration and independent QA after owner actual rerun.",
+      "evidence": {
+        "original_tested_sha": "50f2e937b047aa3abba1fa6eb36faa86671d70c9",
+        "original_owner_tests": "Windows Python 3.14.7, SQLite 3.50.4, dependency installation exit 0; identity/health 15 pass/8 fail exit 1 due to missing new_secret import; H04 db 23 pass/1 fail exit 1 due to global Alembic head h05_0002.",
+        "new_current_pr_head_sha": "53e6770a0e5f220fec3022d320e25c3629b71fbf",
+        "new_router_source_blob": "41c90a74e67dd03baa2990c32ad5881b5f397d37",
+        "router_import_fix": "new_secret imported from app.modules.identity.security; NEW SHA NOT_YET_RUNTIME_TESTED",
+        "old_h04_test_blob": "d857ffc39d681f31f77833025d827fc3675acd86",
+        "existing_h05_migration_test_blob": "9e904fc0dd99e217292142921b7bcb5c82f0c961",
+        "pr_number": 26,
+        "developer_pr_comment": "https://github.com/Ana0251/ChatGPT-Team-Test/pull/26#issuecomment-6882726277"
+      },
+      "exception_allowed_path": "backend/tests/db/test_migrations.py",
+      "exact_change": "Only replace both occurrences of command.upgrade(config, \"head\") with command.upgrade(config, \"h04_0001\") in test_upgrade_downgrade_upgrade_uses_isolated_database (currently lines 75 and 93), thereby pinning H04 baseline; all existing assertions and schema/constraint/foreign-key/integrity/downgrade/independent-DB checks remain unchanged.",
+      "scope_limits": [
+        "No H04 production source/code or DB engine edits",
+        "No H04/Alembic historical migration revisions/env or frozen OpenAPI edits",
+        "No deletion/reduction of test assertions or weakening H04 baseline",
+        "No modification of H05 migration test that validates H04→H05→H04→H05",
+        "Only this one file exception after administrative ledger sync, on existing feature/h-05-identity-security and PR #26"
+      ],
+      "admin_handoff": "PM Assistant only updates H05.allowed_paths to append backend/tests/db/test_migrations.py with explicit two-line exception in H05.mandatory_amendments, evidence refs and notes if appropriate. H05.status remains AUTHORIZED_NOT_STARTED, start_authorized true, validation_status NOT_TESTED, and all other 29 tasks plus approvals/waves untouched. Independent PR; no testing/merge by PM Assistant.",
+      "developer_gate": "Only after manager-governance PR and PM Assistant ledger-scope PR both merged into protected main may H05 Developer edit the two exact lines in same H05 PR #26. Developer should first preserve/import new_secret existing fix, then rerun full Windows identity+health, H04 DB suite on exact new SHA; capture raw PASS/FAIL, exits, environment, and update PR. Developer must not claim tests pass before run.",
+      "next_review": "Coordinator integration review then independent QA and Manager decision; H05 PR26 unmerged, H05 validation_status NOT_TESTED, W1 open, H06/H07/H08/H26 W2–W6 locked.",
+      "not_tested": "Current new SHA runtime tests; production DB/PostgreSQL locks/concurrency, external SMTP, TLS proxy, full multi-tenant penetration testing, final release suitability"
     }
   ]
 }
