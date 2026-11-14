@@ -18,6 +18,7 @@ from pydantic import BaseModel, ConfigDict, Field
 from sqlalchemy import select
 
 from app.modules.identity import tables as t
+from app.modules.identity.delivery import smtp_delivery_from_env
 from app.modules.identity.security import (
     check_password, digest, equal_digest, expiry, new_secret,
     normalize_email, now_string, password_hash, validate_password,
@@ -334,6 +335,8 @@ def list_members(companyId: UUID, request: Request):
 def invite_member(companyId: UUID, body: InviteInput, request: Request):
     engine = engine_for(request)
     delivery = getattr(request.app.state, "identity_delivery", None)
+    if delivery is None:
+        delivery = smtp_delivery_from_env()
     try:
         email = normalize_email(body.email)
     except ValueError:
