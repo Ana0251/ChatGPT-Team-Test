@@ -89,3 +89,24 @@ Exactly nine H-04-authorized paths, checked with GitHub compare (9 commits ahead
 **No H-05, real tenancy, business-account migrations, auth, multi-company security, or production setup** were implemented. PostgreSQL row-locking, `NUMERIC(20,0)`, production transaction race tests and engine selection are **DEFERRED/NOT_TESTED**, not PASS; SQLite is a manager-approved temporary local exception only.
 
 **H-04 disposition:** CODE SUBMITTED / PENDING MANUAL VALIDATION; owner report to **Coordinator first**, then **independent QA** and Manager approval. H-04 status ledger untouched; no merge or W1 completion claimed.
+
+
+## 2026-11-14 — H-04 revision in response to Coordinator review PR #18
+
+**Review source:** Coordinator PR #18 comment `6879348645` (2026-11-14); disposition CHANGES_REQUIRED / OWNER_REPORTED_EXECUTION_OUTPUT_UNVERIFIED.  
+**Authorization:** Main `.chatgpt-team/FRAMEWORK_VERSION.json` version `1.3.0`; main H-04 `AUTHORIZED_NOT_STARTED`/`start_authorized=true`; W1 `entry_authorized=true`; H-03 `COMPLETED`; local SQLite exception `APP-HESABYAR-DB-LOCAL-SQLITE-20261114-001`.  
+**PR:** https://github.com/Ana0251/ChatGPT-Team-Test/pull/18, existing `feature/h-04-sqlite-alembic-baseline` (never main).  
+**Original reviewed head:** `338d004aa13ad1541560d7b7a5efe2fb114c904d`.
+
+### Corrections mapped to Coordinator findings
+
+1. **Local file-only SQLite URL:** `backend/app/db/engine.py` checks `make_url` backend SQLite, requires an absolute file path, existing parent folder, existing file if present must be a regular file; rejects `:memory:`, missing location, relative path, SQLite URI mode/query (including URI memory), missing parent, and a directory as the target. Existing per-DBAPI-connection foreign_keys PRAGMA remains. `backend/tests/db/test_sqlite_storage.py` adds positive file-path test and parameterized negative tests.
+2. **Canonical Decimal exponent policy:** `ExactRial.process_bind_param` now validates `str(Decimal)` without normalization (previous `format(value, 'f')` normalized exponent away). `Decimal('1E+3')`, `Decimal('0E+3')`, scientific-notation strings and fractional decimal forms are explicitly rejected; `Decimal('1000')`, canonical integers/strings remain allowed; floats are prohibited. Additional negative persistence tests assert failed inserts do not leave a row, and 20-digit amounts remain SQLite TEXT and Decimal.
+3. **Real schema comparison on Alembic round trip:** `backend/tests/db/test_migrations.py` takes fresh SQLAlchemy Inspector snapshots of table columns (names/types/nullable/PK flags), PK constrained columns, foreign/unique/check constraints before, after first upgrade, after downgrade, after second upgrade. It asserts complete expected baseline schema, equal first/second snapshots, disappearance on downgrade, a real rejected NULL label insertion, and untouched independent DB. `backend/alembic/README.md` now contains PowerShell schema snapshots at each migration stage with explicit constraints.
+
+**Code change commits (before report):** `708484984318f7327d22d28177c9b40a7016e133` (engine), `3a10d038537fb4fe89258d1a321e95fc6d244307` (money), `33c52075e2c9b1842d7dc016dd5820488c508ee3` (storage tests), `7e9667e6e7abe43b483cba1b45bcf220e25df011` (migration tests), `32b700adada00afefad702371dd3c6b99139ec19` (manual evidence guide).
+
+### Test/approval truth
+**This revision contains new test definitions, NOT observed test passes.** No Windows Python 3.14.7 / SQLite 3.50.4 Pytest/Alembic stdout/stderr, real exit codes, or owner command transcript has been delivered to this Developer conversation or PR at the time of review. Status: **NOT_TESTED / PENDING_OWNER_EVIDENCE**. Earlier owner statement of execution is **OWNER_REPORTED / NOT VERIFIED**; no PASS claim.
+
+Request Coordinator **re-review of new PR HEAD** and verification of real owner manual evidence before QA. Legacy framework 1.3.0 order: Developer → Coordinator integration review → independent QA; Manager final gate. `TASKS.json` and `WAVES.json` untouched. H-04 NOT_COMPLETED, PR remains open/unmerged; H-05 and other tasks not started. PostgreSQL NUMERIC(20,0)/locking/production engine tests DEFERRED, not PASS.
