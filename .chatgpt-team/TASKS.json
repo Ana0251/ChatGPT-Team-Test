@@ -1001,6 +1001,47 @@
       "registered_task_count": 30,
       "registered_wave_count": 7,
       "registration_note": "Administrative registration only, no development, no tests, no activation; W0 entry remains manager-controlled."
+    },
+    {
+      "id": "APP-HESABYAR-W0-20261114-001",
+      "project": "حسابیار (Hesabyar)",
+      "date": "2026-11-14",
+      "approved_by": "manager",
+      "status": "WAVE_ENTRY_APPROVED",
+      "parent_approval_id": "APP-HESABYAR-V1-20261114-001",
+      "wave_id": "W0",
+      "approved_task_ids": [
+        "H-01",
+        "H-02"
+      ],
+      "task_authorization": [
+        {
+          "task_id": "H-01",
+          "type": "ALREADY_EVIDENCED_MANAGER_DECISION"
+        },
+        {
+          "task_id": "H-02",
+          "type": "START_AUTHORIZED_AFTER_PMA_LEDGER_SYNC",
+          "owner": "coordinator"
+        }
+      ],
+      "scope": "W0 decision and contract baseline ONLY; H-02 may author docs/contracts/** and docs/architecture/** via branch/PR after PM Assistant synchronizes official ledgers",
+      "prerequisites_verified": [
+        "30 tasks and 7 waves registered",
+        "No missing task dependencies",
+        "H-01 manager decision recorded with evidence",
+        "W0 has no predecessor wave",
+        "H-02 exclusive docs/contracts/** and docs/architecture/** authorized"
+      ],
+      "conditions": [
+        "PM Assistant updates W0.entry_authorized and H-02.start_authorized/status; actual execution only after registration reflects manager approval",
+        "Coordinator checks HEAD/SHAs, module boundaries, API contracts and file ownership before drafting",
+        "No development, QA execution, W1 opening, source-code merges or public deployment authorized",
+        "Branch main observed unprotected; require branch/PR review for contracts and protect main/required CI gates before W1 code merges",
+        "Coordinator must provide contract review & no-overlap evidence; Manager rechecks before authorizing W1"
+      ],
+      "delegated_ledger_update": "pm-assistant",
+      "evidence_ref": ".chatgpt-team/DECISIONS.md#APP-HESABYAR-W0-20261114-001"
     }
   ]
 }
