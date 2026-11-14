@@ -115,3 +115,21 @@ git status --short
 If `npm ci` fails due to lock metadata, do not use `npm audit fix --force` or alter the approved OpenAPI. Capture error, online `npm --prefix docs/contracts install --package-lock-only --ignore-scripts`, inspect diff, then report and commit any lock-only reconciliation under Manager review. The Node scripts may report a different **raw CRLF working-tree** hash `44647cc7ca51d0fbf59bf9c746fa4cae6391cb96`; canonical Git hash above is authoritative.
 
 **Actual validation this change:** static lock JSON/graph check only; NO online npm ci, NO patched `npm audit`, NO patched script execution. All runtime/security test gates PENDING owner. PR OPEN/UNMERGED; H-02/W0 not completed; W1 unauthorized.
+
+
+## 2026-11-14 — H-02 transitive security follow-up after npm audit FAIL
+
+**Authority:** Manager PR #1 comment `6875958532`; Coordinator prompt, role, TASKS/WAVES, own INBOX/MEMORY read from GitHub. Manager-provided owner evidence: isolated Windows npm ci PASS on prior lock; npm audit FAIL for `fast-uri 3.1.8` and `undici 8.11.2`. This is owner evidence, not a tool run by Coordinator.
+
+**Action:** Modified only `docs/contracts/package-lock.json`, replacing exactly two transitive lock entries:
+- `fast-uri 3.1.8 -> 3.1.9`, original SHA512 integrity from public npm-generated lock `aarpus/Acute-RPOS-Online-Ordering` commit `3d3fac9730fb02e17dd8bd630c2a9a7cb80246a2`.
+- `undici 8.11.2 -> 8.12.4`, original SHA512 integrity from public npm-generated lock `koala73/worldmonitor` commit `a3f4f06a10e772e290ddb369bc4e374cb6ea2b9e`.
+- No new direct dependencies, no change in `package.json` or vendor Swagger Parser 11.0.0. `ajv 8.20.0`, `js-yaml 4.3.2` retained.
+- Static checks: lock has 18 package nodes including root, 15 dependency edges, zero missing nodes; parent declared semver ranges `fast-uri ^3.0.1` and `undici ^8.10.2` accept target versions. This static result DOES NOT prove npm install or audit.
+- New lock blob: `ffe8097b6a4d6f2c929a2b7c515fbad950731157`, commit `168345680497528c01b4e72f16989de80de3d7d0`.
+
+**Execution limitation:** GitHub connector can read/write files but cannot invoke `npm` or perform real registry resolution here. **NO actual npm audit fix, npm ci, npm audit or validator command was run by Coordinator** in this iteration. Offline edit is not a claim of standard npm-generated lockfile; the next owner run must verify it. Previous Swagger Parser 11.0.0 lock node still has no independent tarball integrity field. Security status remains `PENDING_OWNER_MANUAL_RETEST`; any FAIL stops gate.
+
+**Unchanged contract:** `docs/contracts/openapi.yaml` exact Git blob `98d34e7bd7b4551c0f429ea5e388781060ceaf63`, version `1.0.0-rc.3`. Developer and UI/UX consumer approvals preserved. No changes in agent reports other than Coordinator own report; TASKS/WAVES untouched. PR #1 open, unmerged; no W1.
+
+**Owner commands / guarded fresh worktree:** See `docs/contracts/VALIDATION.md` section 6. Use `git fetch origin pull/1/head`; `git worktree add --detach D:\ChatGPT-Team-Test-H02-audit2 FETCH_HEAD`; run npm ci, npm ls, npm audit, Node standard and H-02 validators, then canonical Git hash; stop immediately on any failure. Preserve logs and report to Manager.
