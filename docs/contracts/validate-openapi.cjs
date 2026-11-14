@@ -1,8 +1,9 @@
 /* H-02 contract lint 1.0.0. Docs-only validation helper, no application runtime code.
- * For reproducibility: npm --prefix docs/contracts install --no-package-lock --ignore-scripts
+ * For reproducibility: npm --prefix docs/contracts ci --ignore-scripts
  * node docs/contracts/validate-openapi.cjs
  *
- * Uses js-yaml 4.1.0, Ajv2020 8.17.1 and official OAI 3.1 structural schema dated 2026-08-03.
+ * Uses pinned js-yaml/Ajv2020 dependencies; reports actual runtime package versions.
+ * Historical rc.3 checks used js-yaml 4.1.0 / Ajv2020 8.17.1; retest upgraded packages before PASS.
  * Explicit nuance: OAI's schema-object $dynamicRef is replaced in a COPY of the
  * structural schema by a local loose Schema Object ref; 2020-12 syntax of embedded
  * schemas is validated separately by Ajv.validateSchema. This is NOT a full runtime
@@ -14,7 +15,7 @@ const METHODS = new Set(['get','post','put','patch','delete','head','options','t
 const UNSAFE = new Set(['post','put','patch','delete']);
 const MONEY_KEYS = ['opening_debit','opening_credit','debit','credit','closing_debit','closing_credit'];
 
-function validateH02({source, yaml, Ajv2020, officialSchema, gitBlobSha}) {
+function validateH02({source, yaml, Ajv2020, officialSchema, gitBlobSha, runtimeVersions = {}}) {
   const spec = yaml.load(source, {json:false}); // fail on malformed/duplicate YAML mappings
   const problems = [];
   if (spec.openapi !== '3.1.0') problems.push('OpenAPI root must be 3.1.0');
@@ -116,8 +117,8 @@ function validateH02({source, yaml, Ajv2020, officialSchema, gitBlobSha}) {
 
   return {
     validator:'H-02 contract lint 1.0.0',
-    parser:'js-yaml 4.1.0',
-    engine:'Ajv2020 8.17.1 (validateFormats=false)',
+    parser:runtimeVersions.yaml ? 'js-yaml ' + runtimeVersions.yaml : 'js-yaml (version not supplied)',
+    engine:runtimeVersions.ajv ? 'Ajv2020 ' + runtimeVersions.ajv + ' (validateFormats=false)' : 'Ajv2020 (version not supplied; validateFormats=false)',
     officialSchema:'OAI OpenAPI 3.1 schema 2026-08-03',
     officialSchemaPinnedCommit:'ce49002c7bbd323819555464eb479523923f6754',
     schemaDynamicRefSubstitutions:dynamicRefSubstitutions,
@@ -147,7 +148,8 @@ if (typeof require==='function' && require.main===module) {
     const officialSchema=await response.json();
     const result=validateH02({
       source,yaml:require('js-yaml'),Ajv2020:require('ajv/dist/2020').default,
-      officialSchema,gitBlobSha:hash
+      officialSchema,gitBlobSha:hash,
+      runtimeVersions:{yaml:require('js-yaml/package.json').version,ajv:require('ajv/package.json').version}
     });
     process.stdout.write(JSON.stringify(result,null,2)+'\n');
     if(result.result!=='PASS') process.exitCode=1;
