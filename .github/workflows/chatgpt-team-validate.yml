@@ -1,9 +1,9 @@
 name: Validate ChatGPT team state
 on:
   push:
-    paths: ['.chatgpt-team/**']
+    paths: ['.chatgpt-team/**', '.github/workflows/chatgpt-team-validate.yml']
   pull_request:
-    paths: ['.chatgpt-team/**']
+    paths: ['.chatgpt-team/**', '.github/workflows/chatgpt-team-validate.yml']
   workflow_dispatch:
 permissions:
   contents: read
@@ -16,8 +16,13 @@ jobs:
       - name: Prepare wave proposal on manual run
         if: github.event_name == 'workflow_dispatch'
         run: python .chatgpt-team/tools/plan.py . > wave-proposal.json
+      - name: Prepare assistant queues on manual run
+        if: github.event_name == 'workflow_dispatch'
+        run: python .chatgpt-team/tools/assistant.py . > assistant-queues.json
       - uses: actions/upload-artifact@v4
         if: github.event_name == 'workflow_dispatch'
         with:
-          name: wave-proposal
-          path: wave-proposal.json
+          name: team-proposals
+          path: |
+            wave-proposal.json
+            assistant-queues.json

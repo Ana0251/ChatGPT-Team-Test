@@ -1,15 +1,18 @@
 """Print a draft execution wave from GitHub project ledgers; never writes data."""
-import json
 import sys
 from pathlib import Path
-from validate import check
+import json
+from validate import load_view
 
 def plan(root, capacity=4, max_tasks=12, max_steps=20):
     if min(capacity,max_tasks,max_steps) < 1: raise ValueError('Invalid capacity')
-    check(root)
-    base=Path(root)/'.chatgpt-team'
-    tasks=json.loads((base/'TASKS.json').read_text(encoding='utf-8'))['tasks']
-    waves=json.loads((base/'WAVES.json').read_text(encoding='utf-8'))['waves']
+    view=load_view(root)
+    tasks=view['tasks']; waves=view['waves']
+    if view['contract'] != 'framework':
+        return {'status':'MANAGER_GATE_REQUIRED','task_ids':[],'groups':{},
+                'reason':'Legacy staged waves and project-specific statuses require manager decisions; no automatic wave is proposed.',
+                'existing_wave_ids':[w['id'] for w in waves],
+                'pending_manager_gates':[w['id'] for w in waves if w['status']=='PENDING_MANAGER_GATE']}
     by_id={t['id']:t for t in tasks}
     active=[w for w in waves if w['status'] in ('DRAFT','READY','IN_PROGRESS','BLOCKED')]
     booked={id for w in active for id in w['task_ids']}
