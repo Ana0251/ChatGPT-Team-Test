@@ -1,0 +1,10 @@
+{
+  "name": "@hesabyar/h02-contract-validator",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Documentation-only OpenAPI validator for H-02. Not application code.",
+  "dependencies": {
+    "ajv": "8.17.1",
+    "js-yaml": "4.1.0"
+  }
+}
