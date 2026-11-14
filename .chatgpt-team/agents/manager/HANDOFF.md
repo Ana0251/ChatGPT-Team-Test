@@ -1,9 +1,7 @@
 # manager / HANDOFF
 
-## 2026-11-14 — Hesabyar W0 approval synchronization
+## 2026-11-14 — H-02 Coordinator design contract handoff
 
-**Next:** PM Assistant conversation, administrative ledger synchronization only.
-**Manager decision:** `APP-HESABYAR-W0-20261114-001` in `.chatgpt-team/DECISIONS.md` and `.chatgpt-team/TASKS.json` approvals. Parent `APP-HESABYAR-V1-20261114-001`.
-**Verified registration:** H-01..H-30, W0..W6; no dangling dependencies. H-01 GATE_EVIDENCED; H-02 NOT_STARTED.
+**Verified gate:** W0 entry_authorized=true / AUTHORIZED_NOT_STARTED; H-02 start_authorized=true / AUTHORIZED_NOT_STARTED; 30 official tasks and 7 waves. Decision: `APP-HESABYAR-W0-20261114-001`. No other wave authorized.
 
-PMA must reread role, decisions, task/wave ledgers, current HEAD and SHA, then apply manager decision: set W0.entry_authorized = true, status appropriate for authorized but not yet started; set H-02.start_authorized = true, status appropriate for authorized but not yet started. Record exact approvals/commit and preserve other tasks/waves unchanged. Do not mark H-01 as tested, H-02 as started/done, or W0 completed. Do not activate agents. Once registered, user goes to Coordinator conversation for H-02 contract baseline within `docs/contracts/**` and `docs/architecture/**` via branch/PR with documented reviews. No code merges or W1 activation; main protected=false is a gate before W1 code merges.
+**Next independent conversation:** Coordinator. Read `.chatgpt-team/prompts/coordinator.md` and own role, `.chatgpt-team/TASKS.json`, `.chatgpt-team/WAVES.json`, `.chatgpt-team/DECISIONS.md`, Planner report, current repo HEAD and file SHAs. Execute ONLY H-02: architecture module boundaries identity/tenancy, companies/fiscal, accounts, journals, reports, audit; contracts /api/v1 OpenAPI with errors, idempotency, tenancy and money/date semantics; file ownership map, dependency and no-conflict review, contract version/freeze rules. H-02 allowed paths `docs/contracts/**` and `docs/architecture/**` using scoped branch/PR; report evidence in own agent report. Do not modify other agent files or task/wave ledgers. Document actual artifact URLs, PR/commit SHA and reviewed status, not imagined completion. Return manager to close W0 after review. W1 remains locked and main unprotected, requiring protective branch/PR rules before code merges.
