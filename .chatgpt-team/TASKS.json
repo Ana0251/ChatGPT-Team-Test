@@ -1475,6 +1475,53 @@
         "Only Coordinator may update architecture/contract docs on separately authorized scope; frozen OpenAPI SHA unchanged.",
         "H04/H18 not automatically activated. No H05 or future wave approval."
       ]
+    },
+    {
+      "id": "APP-HESABYAR-H18-SPEC-QA-ACCEPT-20261114-001",
+      "date": "2026-11-14",
+      "approved_by": "manager",
+      "project": "حسابیار (Hesabyar)",
+      "task_id": "H-18",
+      "wave_id": "W1",
+      "status": "DESIGN_SPEC_COORDINATOR_AND_INDEPENDENT_QA_ACCEPTED_PR17_MERGE_AUTHORIZED",
+      "framework_version": "1.3.0",
+      "contract": "legacy",
+      "review_policy": "coordinator_required",
+      "review_risks": [
+        "authentication and CSRF contract",
+        "company membership/tenant isolation",
+        "invitation and ownership privileges",
+        "fiscal period context",
+        "future runtime accessibility/security"
+      ],
+      "review_reason": "Security-sensitive identity and tenancy UX specifications require Coordinator cross-contract integration review before independent QA; both reviews actually performed at documentation scope. Default legacy routing applies; no retrospective task review_history rewrite.",
+      "pr_number": 17,
+      "expected_pr_head_sha": "a342bafda7da2027f9af14ba276022e2b25cc62a",
+      "reviewed_design_head_sha": "8730866fde49dd61c7f66b85937d020771875e51",
+      "base_main_sha": "a972e31e0f108b97097e26822ceecb14b6e0d1a9",
+      "coordinator_review": "https://github.com/Ana0251/ChatGPT-Team-Test/pull/17#issuecomment-6879398410",
+      "coordinator_disposition": "PASS LIMITED, static design/API/ownership only",
+      "qa_review": "https://github.com/Ana0251/ChatGPT-Team-Test/pull/17#issuecomment-6879505077",
+      "qa_report_blob": "e8d15063b4d61f82f9b018c3dcc8957be2964694",
+      "qa_disposition": "PASS LIMITED, 19/19 design specification criteria SPECIFIED; NO runnable/browser/security/a11y QA claimed",
+      "reviewed_design_blobs": {
+        "design/specs/identity/AUTH_AND_INVITATIONS.md": "9cbad5b4de738a854320502633f254aa69f32ec8",
+        "design/specs/identity/SESSION_STATES.md": "f7b52bc764d839782a74d4ba064c13c8fdf1643c",
+        "design/specs/company-period/COMPANY_FISCAL_SELECTION.md": "3a07553adb7762803023906ab9bf87ebf1f3bf39",
+        "design/specs/company-period/STATE_MATRIX_AND_REVIEW.md": "42009cf5aace6b14bf34cec30eef9592e7e3f7b2"
+      },
+      "allowed_changed_paths": [
+        "design/specs/identity/**",
+        "design/specs/company-period/**",
+        ".chatgpt-team/agents/ui-ux/REPORT.md",
+        ".chatgpt-team/agents/qa/REPORT.md"
+      ],
+      "openapi_contract_blob": "98d34e7bd7b4551c0f429ea5e388781060ceaf63",
+      "tests_scope": "DESIGN_SPECIFICATION_ACCEPTANCE_ONLY",
+      "not_run": "No browser/actual rendered 360px UI, screen-reader/keyboard real tests, light/dark rendering, security/session/CSRF/tenant runtime, HTTP/backend implementation or QA functional tests. H-26 not started.",
+      "merge_conditions": "Only after this manager approval is merged into protected main and PR #17 remains open with exact head SHA and six-file scope, merge PR #17; if changed stop/re-review. Native GitHub code review APPROVED is not claimed.",
+      "post_merge": "PM Assistant may record only H-18 COMPLETED for authorized documentation deliverable with Coordinator+QA PASS LIMITED and exact merge evidence in separate PR. Preserve W1 open, no H-19/H-20/H-05 authorization, QA runtime gates pending.",
+      "task_status_unchanged": true
     }
   ]
 }
