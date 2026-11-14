@@ -1,0 +1,126 @@
+{
+  "$schema": "https://design-tokens.github.io/community-group/format/",
+  "name": "Hesabyar H-17 Foundations",
+  "version": "1.0.0",
+  "status": "proposal",
+  "direction": "rtl",
+  "palette": {
+    "light": {
+      "canvas": "#F7F9FC",
+      "surface": "#FFFFFF",
+      "surfaceSubtle": "#EFF3F8",
+      "text": "#162338",
+      "textMuted": "#526175",
+      "border": "#CED7E2",
+      "primary": "#164E88",
+      "onPrimary": "#FFFFFF",
+      "primaryHover": "#103F72",
+      "focus": "#1459B5",
+      "success": "#176039",
+      "warning": "#805100",
+      "danger": "#A52727",
+      "onDanger": "#FFFFFF",
+      "info": "#154F8A"
+    },
+    "dark": {
+      "canvas": "#101822",
+      "surface": "#1B2634",
+      "surfaceSubtle": "#283648",
+      "text": "#F3F7FD",
+      "textMuted": "#C0CCD9",
+      "border": "#627287",
+      "primary": "#93C8FF",
+      "onPrimary": "#0E233D",
+      "primaryHover": "#C0DFFF",
+      "focus": "#B3D5FF",
+      "success": "#9DE7BB",
+      "warning": "#FFD184",
+      "danger": "#FFACAC",
+      "onDanger": "#431616",
+      "info": "#A9D6FF"
+    }
+  },
+  "spacing": {
+    "0": 0,
+    "1": 4,
+    "2": 8,
+    "3": 12,
+    "4": 16,
+    "5": 20,
+    "6": 24,
+    "8": 32,
+    "10": 40,
+    "12": 48,
+    "16": 64
+  },
+  "radius": {
+    "xs": 4,
+    "sm": 8,
+    "md": 12,
+    "lg": 16,
+    "pill": 999
+  },
+  "typography": {
+    "fontFamily": [
+      "Vazirmatn",
+      "Tahoma",
+      "sans-serif"
+    ],
+    "weights": {
+      "regular": 400,
+      "medium": 500,
+      "semibold": 600,
+      "bold": 700
+    },
+    "size": {
+      "caption": 12,
+      "bodySmall": 14,
+      "body": 16,
+      "titleSmall": 18,
+      "title": 22,
+      "heading": 28
+    },
+    "lineHeight": {
+      "caption": 1.5,
+      "body": 1.75,
+      "heading": 1.4
+    }
+  },
+  "layout": {
+    "minimumViewportWidth": 360,
+    "contentMaxWidth": 1280,
+    "pageGutterMobile": 16,
+    "pageGutterTablet": 24,
+    "pageGutterDesktop": 32,
+    "touchTargetMinimum": 44,
+    "focusRingWidth": 2,
+    "focusRingOffset": 2,
+    "controlHeight": 44,
+    "controlHeightDense": 40,
+    "tableMinRowHeight": 48
+  },
+  "breakpoints": {
+    "smallMax": 599,
+    "mediumMin": 600,
+    "mediumMax": 1023,
+    "largeMin": 1024
+  },
+  "motion": {
+    "fastMs": 120,
+    "standardMs": 200,
+    "slowMs": 300,
+    "reducedMotion": "remove nonessential animation; retain instant status feedback"
+  },
+  "zIndex": {
+    "base": 0,
+    "sticky": 10,
+    "popover": 30,
+    "dialog": 50,
+    "toast": 70
+  },
+  "notes": [
+    "Values are reviewable proposed design tokens, not production CSS.",
+    "Resolve semantic tokens per theme; never communicate state only through color.",
+    "Text/background combinations require WCAG 2.2 AA testing for every theme and interactive state."
+  ]
+}
