@@ -1,18 +1,15 @@
 # manager / HANDOFF
 
-## 2026-11-14 — H-02 follow-up: Coordinator fixes after both consumer reviews
+## 2026-11-14 — H-02 Coordinator rc.3 consumer re-review
 
-**Next conversation:** Coordinator H-02, SAME PR https://github.com/Ana0251/ChatGPT-Team-Test/pull/1; do not activate any other agent yourself.
+**Decision:** `APP-HESABYAR-W0-RC3-REVIEW-20261114-001` (DECISIONS.md and TASKS.json approvals)
+**PR:** https://github.com/Ana0251/ChatGPT-Team-Test/pull/1
+**OpenAPI contract:** `1.0.0-rc.3`
+**Exact Git blob:** `98d34e7bd7b4551c0f429ea5e388781060ceaf63`
+**Manager PR comment:** `6875342228`.
 
-Manager decision: `APP-HESABYAR-H02-CONSUMER-FINDINGS-20261114-001` in DECISIONS and TASKS approvals; manager PR comment `6875071707`. Developer review comment `6875035147`, UI/UX review comment `6875039903`. Both consumers CHANGES_REQUIRED on OpenAPI `1.0.0-rc.2` blob `c7d45ebfb715aea6960f130648ebfde148c93e54`.
+Next user-initiated conversations: **Developer and UI/UX** independent read-only *re*-review. Each must first read own role prompt, central decisions/ledgers and revised PR directly from GitHub, inspect accounting/security or UI consumption, independently report objections or explicitly acknowledge exact same **rc.3/SHA** in PR comment and own role report. No development, UX design implementation, QA, H-03/H-17 or W1 work. No file edits outside agent's own role report. No automatic activation.
 
-**Mandatory repairs, no new tasks:** 
-1. `level=detail` trial balance complete for *all effective postable leaves*, including directly postable subsidiary without DETAIL child; expose actual account_level/account name, maintain stable totals independent of pagination; fixture subsidiary Dr 100 / detail Cr 100 => 100/100.
-2. Allow **company-scoped** owner invitation/activation for new email when invitation is issued by existing company owner; never grant global superadmin. Align both invite and activation contracts/roles/security.
-3. Stable error codes and structured `details` field paths; structured warning code/line_index for draft journal UX; line_id/description and account label/level for reports; CSRF token refresh and explicit user resubmit after failure; session expiry and Jalali half-open period display.
-4. Independently validate unchanged final OpenAPI 3.1 YAML with a standards-conforming tool, exact executed command/version/output/blob SHA, no claims beyond evidence.
-5. Update same PR/docs and own Coordinator report, bump prerelease contract version (suggest rc.3). Supply actual commit/openapi blob SHA and unresolved blockers. Do not modify other agents' reports or central ledgers, implement app/design, merge PR or authorize W1.
+After both agents review, return to Manager. Manager evaluates feedback, may freeze contract/authorize W0 completion only if reviews and independent PR governance are adequate; a changed OpenAPI SHA requires fresh acknowledgement. PR still OPEN/UNMERGED and W1 not approved.
 
-After Coordinator repairs, user returns Manager for renewed Developer/UI/UX read-only review of **final new exact SHA**, independent PR review, possible W0 freeze decision.
-
-**Separate repository owner action:** enable GitHub protection for main (require PR/review; no force push/delete; required checks after CI exists). This is needed before W1 code merges and is not a substitute for H-02 corrections.
+**Owner GitHub action:** `main` observed unprotected. Private repo Rulesets call returns 403 with Pro upgrade or public-repo message. Do not publicize accounting code just to enable; check/enable GitHub Pro for private branch protection or report lack of support, so Manager can approve a compensating process if necessary. CI checks after workflows exist; no W1 code merges before effective guardrails.
