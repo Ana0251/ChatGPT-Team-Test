@@ -21,21 +21,22 @@ The machine-readable baseline is [openapi.yaml](./openapi.yaml); architecture ru
 - **Owner invitation:** Newly activated account may become the **invited owner of exactly the specified company**, if a current owner issued the bound single-use token and server checks authority/role/email/company at acceptance; never global admin. admin may not invite owner. No instant membership at invitation.
 - **No premature freeze:** rc.2 consumer objections are not approvals for rc.3; independent 3.1 validator evidence and fresh consumer signoffs required.
 
-## Static validation evidence
-- [VALIDATION.md](./VALIDATION.md) records actual 2026-11-14 execution of `js-yaml 4.1.0` and `Ajv2020 8.17.1` against the OAI OpenAPI 3.1 structural schema. The recorded result is **prior PARTIAL CHECK ONLY** for version `1.0.0-rc.2`, OpenAPI blob `c7d45ebfb715aea6960f130648ebfde148c93e54`, not a runtime or independent QA result.
-- [validation-result.json](./validation-result.json) is the exact generated result; [validate-openapi.cjs](./validate-openapi.cjs) and [package.json](./package.json) provide a reproducible docs-only validator. Full unmodified OAI dialect validation is an explicitly disclosed remaining technical caveat.
+## Current contract validation and review gates
+- [VALIDATION.md](./VALIDATION.md) and [validation-result.json](./validation-result.json) record **actual** `@apidevtools/swagger-parser 11.0.0` OpenAPI 3.1 schema validation function execution on unchanged `1.0.0-rc.3` Git blob `98d34e7bd7b4551c0f429ea5e388781060ceaf63` (PASS), plus local static checks. The vendor has an internal `$dynamicRef` workaround; full parser/dereference and runtime/QA were **not** executed. A documented Node CLI is reproducible but not claimed executed.
+- [validate-standard.cjs](./validate-standard.cjs) and [package.json](./package.json) are docs-only vendor-validator reproduction tools; [validate-openapi.cjs](./validate-openapi.cjs) is supplemental internal static checking. No W1 application source changed.
+- [ERRORS.md](./ERRORS.md) provides error-code applicability, stable field/line diagnostics, structured warnings and explicit CSRF recovery.
+- [TRIAL_BALANCE_FIXTURE.md](./TRIAL_BALANCE_FIXTURE.md) documents complete posting-leaf mixed-level detail-view fixture and page-independent totals.
 
 ## Review evidence still required
-- [ ] Developer consumer acknowledgment with exact contract SHA
-- [ ] UI/UX consumer acknowledgment with exact contract SHA
-- [ ] Security/accounting review and Manager freeze
-- [ ] Future implementation conformance, PostgreSQL fixtures, CI and QA; nothing marked passed here
+- [ ] Developer acknowledges final `1.0.0-rc.3` and **exact SHA `98d34e7bd7b4551c0f429ea5e388781060ceaf63`** (Manager coordinates).
+- [ ] UI/UX acknowledges the **same** version/SHA (Manager coordinates).
+- [ ] Independent PR review, Manager contract freeze and W0 exit decision.
+- [ ] Runtime implementation, PostgreSQL/HTTP scenarios, CI and independent QA (none claimed).
 
 ## Contract revisions
-- `1.0.0-rc.1`: initial proposal; Manager CHANGES_REQUIRED (PR #1 comment 6874642836).
-- `1.0.0-rc.3`: separate `TrialBalanceTotals`, level/pagination rules, initial owner activation, pending invitations/acceptance, bound CSRF lifecycle. Review and validation still pending.
-
-- `1.0.0-rc.3`: resolves Developer/UI/UX P0/P1 findings, mixed posting leaves and company-scoped owner invitations, structured UI signals and full ledger identifiers. Independent validation evidence is recorded separately.
+- `1.0.0-rc.1`: original proposal; Manager CHANGES_REQUIRED.
+- `1.0.0-rc.2`: separate trial balance totals, first owner bootstrap, invitation paths, browser-bound CSRF; Developer/UI/UX CHANGES_REQUIRED.
+- `1.0.0-rc.3`: complete detail-level postable-leaf view (including standalone subsidiary), company-scoped owner invitation, structured error/warnings and ledger movement IDs, human-initiated CSRF recovery and validation evidence.
 
 ## Version change protocol
 See ../architecture/OWNERSHIP_AND_REVIEW.md. Keep /api/v1 stable after freeze. Additive optional changes => minor; breaking behavior => major URL-version migration; docs-only => patch. Reviewer must verify breaking-change impact and regeneration of typed frontend client by H-21 authorized owner only.
