@@ -31,3 +31,28 @@ Read directly on GitHub: .chatgpt-team/prompts/coordinator.md, .chatgpt-team/rol
 
 ### Scope boundary
 No work on H-27, W1 or application code. No changes to other agents' reports or authorized task/wave ledgers. Do not merge PR autonomously. Return to Manager for W0 exit decision.
+
+## 2026-11-14 — H-02 PR #1 response to Manager CHANGES_REQUIRED
+
+**Source:** Manager PR #1 comment 6874642836 (https://github.com/Ana0251/ChatGPT-Team-Test/pull/1#issuecomment-6874642836) and manager REPORT, read directly from GitHub.
+**Decision:** RESUBMITTED_FOR_REVIEW, not manager-approved. W0/H-02 remains pending; no W1 or PR merge.
+
+### Revised contract 1.0.0-rc.2
+- `docs/contracts/openapi.yaml` blob SHA: `c7d45ebfb715aea6960f130648ebfde148c93e54`.
+- TrialBalance.totals now references account-identity-free `TrialBalanceTotals`; one selected account hierarchy level, posted-only, full filtered totals before pagination, F1/F2 invariants and F3 isolation.
+- First user: restricted audited operator creates pending initial owner/company; 256-bit hashed expiring one-use setup token (<=15min); `POST /auth/activate` then separate login, no default credentials or public owner registration.
+- Membership: 202 pending invitation for existing or new email, company/email/role bound hashed one-use token (<=48h), no immediate membership. Existing logged-in recipient accepts via `/auth/invitations/accept`; new recipient creates internal account via `/auth/invitations/activate`. Owner-only owner-role invitation; no cross-tenant privilege escalation.
+- CSRF: anonymous cookie-bound pre-session from `/auth/csrf`, HMAC/origin/expiration binding, session/CSRF rotation after login, authenticated CSRF refresh, 403 CSRF_INVALID without mutation replay.
+- Docs architecture, ownership, contract rules and revision changelog synchronized.
+
+### Actual validation evidence
+- Parsed exact GitHub `openapi.yaml` with js-yaml 4.1.0: PASS.
+- Executed checked-in `docs/contracts/validate-openapi.cjs` `validateH02()` in isolated JS tool with Ajv2020 bundle labeled 8.17.1 and pinned OAI OpenAPI 3.1 structural schema 2026-08-03: PASS after documented dialect workaround. Results: 0 findings, 23 paths, 33 operations, 18 unsafe-method CSRF headers, 236 component references, 69 embedded/inline JSON Schema checks.
+- Exact persisted result: `docs/contracts/validation-result.json`; procedure and limitations: `docs/contracts/VALIDATION.md`; helper blob `1a44b1760398b80a16b0416c489b2995284902ac`.
+- Caveat: full unmodified OAI schema-base/dynamic-dialect validation did NOT pass (329 errors with tested Ajv bundle). Structural validator substitutes four in-memory #meta dynamic refs with local schema-object refs and separately validates Draft 2020-12 schema syntax. No claim of unmodified dialect PASS.
+- Reproduction command (documented but NOT run here): `npm --prefix docs/contracts install --no-package-lock --ignore-scripts` then `node docs/contracts/validate-openapi.cjs`. No runtime HTTP/database or independent QA tests performed.
+
+### Pending
+- Manager must decide whether documented dialect limitation is acceptable, independently review PR, and freeze baseline.
+- Manager will arrange Developer and UI/UX read-only acknowledgments for SAME version `1.0.0-rc.2` and OpenAPI blob SHA `c7d45ebfb715aea6960f130648ebfde148c93e54`. No acknowledgments claimed.
+- W0 exit and W1 authorization not approved. Only H-02 docs/architecture/contracts and Coordinator's own report changed; TASKS/WAVES and application code remain untouched.
