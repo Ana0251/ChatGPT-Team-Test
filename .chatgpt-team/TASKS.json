@@ -124,11 +124,12 @@
       "allowed_paths": [
         "backend/app/db/**",
         "backend/alembic/**",
-        "backend/tests/db/**"
+        "backend/tests/db/**",
+        "backend/pyproject.toml"
       ],
-      "acceptance_criteria": "PostgreSQL connection/migration, reversible migration of empty schema, test DB isolation",
-      "mandatory_amendments": "Own Alembic baseline, shared configuration and migration protocol. Modules append only unique h-XX_*.py revisions under coordinator review; no edits to old revisions.",
-      "evidence_required": "Up/down migration log + schema diff",
+      "acceptance_criteria": "Real file-based local SQLite 3.50.4 connection on Windows/Python 3.14.7 using SQLAlchemy 2 and Alembic; reproducible baseline migration with actual upgrade/downgrade/upgrade; dedicated isolated test database, schema comparison before/after, and PRAGMA foreign_keys=ON verified on every SQLite connection. No committed secrets, .db files or real customer data. PostgreSQL-only NUMERIC(20,0), row-locking/concurrency and production-engine validation DEFERRED/NOT_TESTED, never PASS; no production DB choice implied.",
+      "mandatory_amendments": "Own Alembic baseline, shared configuration and migration protocol. Modules append only unique h-XX_*.py revisions under coordinator review; no edits to old revisions. Temporary manager-approved local-only SQLite exception APP-HESABYAR-DB-LOCAL-SQLITE-20261114-001: SQLAlchemy 2 + Alembic; SQLite NUMERIC affinity does not prove exact 20-digit IRR storage. Financial money must use exact validated integer strings/Decimal (or independently proven lossless representation), forbid float, preserve leading-zero account codes and tenant isolation. Enforce PRAGMA foreign_keys=ON for every connection; protect secrets/DB files. PostgreSQL-specific transaction races, row locks, NUMERIC(20,0), real multi-tenant security and release-engine suitability remain DEFERRED/NOT_TESTED and require final-engine tests and independent QA. Only H-04 may add its durable dependencies in backend/pyproject.toml; backend/app/core/config.py and other shared paths remain forbidden without approval. Manual tests with evidence; GitHub Actions optional.",
+      "evidence_required": "Actual user-run Windows PowerShell command transcript and exit codes with Python 3.14.7, SQLite 3.50.4, SQLAlchemy 2/Alembic/Pytest versions, exact source commit SHA, connection check, independent test DB path/isolation, PRAGMA foreign_keys=ON verification for each connection, migration upgrade/downgrade/upgrade logs, schema before/after diff, authentic PASS/FAIL and PR evidence. PostgreSQL-specific numeric/concurrency/locking tests DEFERRED/NOT_TESTED, not PASS. Independent QA remains required when applicable.",
       "evidence_refs": [],
       "status": "AUTHORIZED_NOT_STARTED",
       "validation_status": "NOT_TESTED",
