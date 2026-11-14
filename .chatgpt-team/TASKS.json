@@ -130,9 +130,9 @@
       "mandatory_amendments": "Own Alembic baseline, shared configuration and migration protocol. Modules append only unique h-XX_*.py revisions under coordinator review; no edits to old revisions.",
       "evidence_required": "Up/down migration log + schema diff",
       "evidence_refs": [],
-      "status": "NOT_STARTED",
+      "status": "AUTHORIZED_NOT_STARTED",
       "validation_status": "NOT_TESTED",
-      "start_authorized": false,
+      "start_authorized": true,
       "notes": null
     },
     {
@@ -556,9 +556,9 @@
       "mandatory_amendments": "Design-only, state maps for internal email/password auth, company membership and fiscal selection, permission and expired session.",
       "evidence_required": "Screen flow and state matrix",
       "evidence_refs": [],
-      "status": "NOT_STARTED",
+      "status": "AUTHORIZED_NOT_STARTED",
       "validation_status": "NOT_TESTED",
-      "start_authorized": false,
+      "start_authorized": true,
       "notes": null
     },
     {
