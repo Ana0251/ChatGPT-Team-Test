@@ -308,7 +308,7 @@ def logout(request: Request):
         audit_event(connection, "logout", current["user_id"])
     result = Response(status_code=204, headers={"Cache-Control": "no-store"})
     result.delete_cookie(AUTH_COOKIE, path="/api/v1", secure=True, httponly=True, samesite="lax")
-    result.delete_cookie(PRE_COOKIE, path="/api/v1")
+    result.delete_cookie(PRE_COOKIE, path="/api/v1", secure=True, httponly=True, samesite="lax")
     return result
 
 
