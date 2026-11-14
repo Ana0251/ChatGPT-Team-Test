@@ -130,11 +130,26 @@
       "acceptance_criteria": "Real file-based local SQLite 3.50.4 connection on Windows/Python 3.14.7 using SQLAlchemy 2 and Alembic; reproducible baseline migration with actual upgrade/downgrade/upgrade; dedicated isolated test database, schema comparison before/after, and PRAGMA foreign_keys=ON verified on every SQLite connection. No committed secrets, .db files or real customer data. PostgreSQL-only NUMERIC(20,0), row-locking/concurrency and production-engine validation DEFERRED/NOT_TESTED, never PASS; no production DB choice implied.",
       "mandatory_amendments": "Own Alembic baseline, shared configuration and migration protocol. Modules append only unique h-XX_*.py revisions under coordinator review; no edits to old revisions. Temporary manager-approved local-only SQLite exception APP-HESABYAR-DB-LOCAL-SQLITE-20261114-001: SQLAlchemy 2 + Alembic; SQLite NUMERIC affinity does not prove exact 20-digit IRR storage. Financial money must use exact validated integer strings/Decimal (or independently proven lossless representation), forbid float, preserve leading-zero account codes and tenant isolation. Enforce PRAGMA foreign_keys=ON for every connection; protect secrets/DB files. PostgreSQL-specific transaction races, row locks, NUMERIC(20,0), real multi-tenant security and release-engine suitability remain DEFERRED/NOT_TESTED and require final-engine tests and independent QA. Only H-04 may add its durable dependencies in backend/pyproject.toml; backend/app/core/config.py and other shared paths remain forbidden without approval. Manual tests with evidence; GitHub Actions optional.",
       "evidence_required": "Actual user-run Windows PowerShell command transcript and exit codes with Python 3.14.7, SQLite 3.50.4, SQLAlchemy 2/Alembic/Pytest versions, exact source commit SHA, connection check, independent test DB path/isolation, PRAGMA foreign_keys=ON verification for each connection, migration upgrade/downgrade/upgrade logs, schema before/after diff, authentic PASS/FAIL and PR evidence. PostgreSQL-specific numeric/concurrency/locking tests DEFERRED/NOT_TESTED, not PASS. Independent QA remains required when applicable.",
-      "evidence_refs": [],
-      "status": "AUTHORIZED_NOT_STARTED",
-      "validation_status": "NOT_TESTED",
+      "evidence_refs": [
+        ".chatgpt-team/DECISIONS.md#APP-HESABYAR-H04-SQLITE-QA-ACCEPT-20261114-001",
+        ".chatgpt-team/DECISIONS.md#APP-HESABYAR-H04-PR18-MERGE-UNBLOCK-20261114-001",
+        "https://github.com/Ana0251/ChatGPT-Team-Test/pull/21",
+        "https://github.com/Ana0251/ChatGPT-Team-Test/pull/22",
+        "https://github.com/Ana0251/ChatGPT-Team-Test/pull/18",
+        "https://github.com/Ana0251/ChatGPT-Team-Test/commit/2ac81eca7491131ebeb2a6ac061e6d6708f591cd",
+        "https://github.com/Ana0251/ChatGPT-Team-Test/pull/18#issuecomment-6880269744",
+        "https://github.com/Ana0251/ChatGPT-Team-Test/pull/18#issuecomment-6880332388",
+        "https://github.com/Ana0251/ChatGPT-Team-Test/pull/18#issuecomment-6880620698",
+        "https://github.com/Ana0251/ChatGPT-Team-Test/pull/18#issuecomment-6880991022",
+        ".chatgpt-team/agents/qa/REPORT.md@78befa2357e3c2e02dfd6666b795d7b02062d019",
+        "PR #18 reviewed/tested code head c6b3c20da04ac5a381869f2ee10eabc2af20744e",
+        "PR #18 merged head 6265578b8b826c57f7e9287503ff1c05235cf2ec"
+      ],
+      "status": "COMPLETED",
+      "validation_status": "LOCAL_SQLITE_INFRA_PASS_LIMITED_COORDINATOR_QA_REVIEW_OWNER_TESTS_QA_RERUN_NOT_TESTED",
       "start_authorized": true,
-      "notes": null
+      "notes": "Manager-accepted COMPLETED solely for local development H-04 SQLite file-backed database infrastructure (SQLAlchemy 2.1.8, Alembic 1.20.1, file-backed connection, isolated disposable test DB, PRAGMA foreign_keys=1, reversible baseline migration and adapter-level exact 20-digit IRR TEXT/Decimal, no float). Owner executed actual Windows Python 3.14.7 / SQLite 3.50.4 / Pytest 9.2.0 tests on code SHA c6b3c20da04ac5a381869f2ee10eabc2af20744e: 24/24 Pytest PASS, exit code 0, with 3 nonblocking Alembic path_separator deprecation warnings. Actual CLI upgrade -> downgrade -> upgrade all exit code 0, FK PRAGMA=1 across checks; first and second upgraded schemas match for columns, primary key, foreign keys, unique/check constraints, and downgrade removes baseline table. Coordinator PR #18 comment 6880332388 PASS LIMITED; independent QA comment 6880620698 PASS LIMITED through source and owner-log review only: QA_RERUN=NOT_TESTED, QA did not re-execute Windows tests. QA conflict resolved preserving H-18 and H-04 reports in blob 78befa2357e3c2e02dfd6666b795d7b02062d019; PR #18 approved head 6265578b8b826c57f7e9287503ff1c05235cf2ec merged 2ac81eca7491131ebeb2a6ac061e6d6708f591cd. PostgreSQL NUMERIC(20,0)/row-locking and concurrency, real multi-company tenant/IDOR/raw-SQL security, full financial/accounting correctness and HTTP/API, backup/restore/recovery, final production/release database selection and independent QA runtime execution are DEFERRED/NOT_TESTED, never PASS. W1 not complete; H-05 and future waves not authorized.",
+      "completed_on": "2026-11-14"
     },
     {
       "id": "H-05",
