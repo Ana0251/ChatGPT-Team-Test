@@ -31,7 +31,10 @@ class ExactRial(TypeDecorator[Decimal]):
         elif isinstance(value, Decimal):
             if not value.is_finite() or value != value.to_integral_value():
                 raise ValueError("IRR amounts must be finite whole-rial values")
-            canonical = format(value, "f")
+            # Preserve input notation for validation: Decimal("1E+3") is not
+            # canonical even though its mathematical value is the integer 1000.
+            # Explicit decimal-string/integer input is required; no normalization.
+            canonical = str(value)
         elif isinstance(value, str):
             canonical = value
         else:
