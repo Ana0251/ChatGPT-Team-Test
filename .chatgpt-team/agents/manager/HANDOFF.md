@@ -1,16 +1,18 @@
 # manager / HANDOFF
 
-## 2026-11-14 — W0/H-02 revised contract consumer review
+## 2026-11-14 — H-02 follow-up: Coordinator fixes after both consumer reviews
 
-**Manager decision:** `APP-HESABYAR-W0-CONTRACT-REVIEW-20261114-001`.
-**PR:** https://github.com/Ana0251/ChatGPT-Team-Test/pull/1
-**Contract version:** `1.0.0-rc.2`
-**OpenAPI Git blob SHA:** `c7d45ebfb715aea6960f130648ebfde148c93e54`
-**Manager findings PR comment:** `6874976613`
-**Source branch:** `feature/h-02-contract-architecture-v1`, head at review `d0067c98c6c5fc2f883dbf0baf715ad797818119`.
+**Next conversation:** Coordinator H-02, SAME PR https://github.com/Ana0251/ChatGPT-Team-Test/pull/1; do not activate any other agent yourself.
 
-The previous four corrections are documented. The structural/YAML validator evidence is authentic **but qualified**: full unmodified official OAI dialect validation did not pass; Node CLI was not executed. Two accounting/role ambiguities are flagged in manager comment: detail-level trial balance must cover directly postable subsidiary leaves consistently; invited company owner role is contradictory between API descriptions.
+Manager decision: `APP-HESABYAR-H02-CONSUMER-FINDINGS-20261114-001` in DECISIONS and TASKS approvals; manager PR comment `6875071707`. Developer review comment `6875035147`, UI/UX review comment `6875039903`. Both consumers CHANGES_REQUIRED on OpenAPI `1.0.0-rc.2` blob `c7d45ebfb715aea6960f130648ebfde148c93e54`.
 
-**Next user-initiated independent conversations:** Developer and UI/UX (either order). Their permission is limited to GitHub read-only review of docs and comment/reporting of findings or precise version/SHA acknowledgment. Developer must inspect API implementability, accounting/security and validator limitations; UI/UX must inspect RTL/Jalali, error flows, onboarding/invite/CSRF and report presentation. No code, UI implementation, repo source edits, changed ledgers, QA test or W1 work may begin. Do not automatically activate chats. Their role reports may be updated only within their own report directories if permitted by their role instruction.
+**Mandatory repairs, no new tasks:** 
+1. `level=detail` trial balance complete for *all effective postable leaves*, including directly postable subsidiary without DETAIL child; expose actual account_level/account name, maintain stable totals independent of pagination; fixture subsidiary Dr 100 / detail Cr 100 => 100/100.
+2. Allow **company-scoped** owner invitation/activation for new email when invitation is issued by existing company owner; never grant global superadmin. Align both invite and activation contracts/roles/security.
+3. Stable error codes and structured `details` field paths; structured warning code/line_index for draft journal UX; line_id/description and account label/level for reports; CSRF token refresh and explicit user resubmit after failure; session expiry and Jalali half-open period display.
+4. Independently validate unchanged final OpenAPI 3.1 YAML with a standards-conforming tool, exact executed command/version/output/blob SHA, no claims beyond evidence.
+5. Update same PR/docs and own Coordinator report, bump prerelease contract version (suggest rc.3). Supply actual commit/openapi blob SHA and unresolved blockers. Do not modify other agents' reports or central ledgers, implement app/design, merge PR or authorize W1.
 
-After both reviews the user returns to Manager. Manager decides what Coordinator must correct in same PR and when to request final acknowledgments. No H-02 completion, PR merge, W0 exit or W1 authorization until unresolved blockers, independent OpenAPI validation and final SHA consumer review gates are satisfied.
+After Coordinator repairs, user returns Manager for renewed Developer/UI/UX read-only review of **final new exact SHA**, independent PR review, possible W0 freeze decision.
+
+**Separate repository owner action:** enable GitHub protection for main (require PR/review; no force push/delete; required checks after CI exists). This is needed before W1 code merges and is not a substitute for H-02 corrections.
