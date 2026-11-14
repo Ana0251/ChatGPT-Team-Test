@@ -30,3 +30,23 @@
 
 ### Restrictions and next gate
 No product or design files were edited; no H-17/H-03, QA, TASKS/WAVES, W1 or merge work was started. Coordinator should resolve P0/P1 findings and provide a new contract version/SHA if the OpenAPI changes. UI/UX acknowledgment must be repeated on that **final exact blob**, after manager authorization and successful validation; current SHA is **not approved**.
+
+## 2026-11-14 — H-02 rc.3 re-review: UI/UX CONSUMER APPROVED
+
+- Manager read-only authorization: `APP-HESABYAR-W0-RC3-REVIEW-20261114-001`; PR #1.
+- **Exact reviewed contract:** `docs/contracts/openapi.yaml`, **`1.0.0-rc.3`**, GitHub **blob SHA `98d34e7bd7b4551c0f429ea5e388781060ceaf63`**, independently matched via direct GitHub file fetch. PR branch HEAD at review: `586f7b70e6280264e9c423b540a2a2a4306b8cc4`.
+- Read directly: UI/UX prompt/role, Manager DECISIONS, task/wave ledgers, UI/UX inbox/memory, OpenAPI source and contract README, ERRORS.md, TRIAL_BALANCE_FIXTURE.md, validation evidence, architecture/ownership docs and prior own report.
+- **Verdict: APPROVED as UI/UX contract consumer for this exact rc.3 SHA.** All previous blocking UI-contract objections have been addressed in normative fields and linked documentation; no remaining UI/UX contract blocker found.
+
+### Prior findings disposition
+1. **P0 trial balance — RESOLVED.** `level=detail` includes DETAIL leaves and directly postable SUBSIDIARY leaves. `TrialBalanceRow.account_name/account_level` required; `TrialBalanceTotals` includes all matching rows before pagination without double-counting. Fixture shows 100 debit at standalone subsidiary and 100 credit at detail, split across pages but totals 100/100 on both.
+2. **P0 new-email company owner invitation — RESOLVED.** Company owner (not admin) may invite new email as owner of only the selected company. Token/email/company/role and inviter authority verified at issuance/acceptance; no global superadmin.
+3. **P1 error localization — RESOLVED.** `ErrorCode`, `FieldIssue`, JSON Pointer `field`, zero-based `line_index`, stable `reason` and `ERRORS.md` operation mapping enable localized Persian fields/errors without parsing raw server messages.
+4. **P1 voucher warnings — RESOLVED.** `JournalWarning[]` typed code/field/line_index, and required `Journal.total_debit/total_credit` on draft and posted responses; incomplete drafts can be retained with actionable warnings, posting checks remain strict.
+5. **P1 CSRF recovery — RESOLVED.** Refresh token once, freeze original mutation, no automatic replay, human review and explicit resubmit; session expiry requires reauthentication/company+period recheck, error panel on repeated failure; token never persisted in browser storage or URL.
+6. **Ledger/daybook — RESOLVED.** Movement requires `line_id`, `line_index`, description, account code/name/level with stable ordering, supporting RTL tables and row keys.
+7. **Jalali/IRR — RESOLVED.** API date-only Gregorian, UI Jalali conversion, previous Gregorian day for display of exclusive end boundary, Tehran cutoff; amounts remain exact decimal strings in whole IRR (frontend must not coerce to floating-point Number).
+8. **OpenAPI validation — QUALIFIED, non-UX gate.** Independent `@apidevtools/swagger-parser 11.0.0` vendor schema validation function is recorded PASS on unchanged YAML; full `SwaggerParser.validate()`, Node CLI, runtime/DB and independent QA are explicitly NOT_RUN. Validation/CI/freeze remains Coordinator/Manager gate, not implied by consumer approval.
+
+### Scope and restrictions
+Only the UI/UX consumer contract is approved, not technical conformance, security acceptance, runtime implementation, PR merge, H-02 completion, W0 exit or W1 start. New contract blob requires fresh UI/UX acknowledgment. No H-17/H-18/H-19/H-20 design tasks, code, QA, ledger changes or other-agent activations performed. This report update and PR comment are the only authorized writes.
