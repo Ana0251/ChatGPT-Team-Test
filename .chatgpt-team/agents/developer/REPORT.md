@@ -60,3 +60,32 @@ Readable and largely implementable contract shape, but **no explicit consumer ac
 **Manual tests:** `NOT_RUN` in this GitHub-only session. No dependency installation, Pytest process, Uvicorn process, live HTTP call, CI/Actions, independent QA, or security/accounting testing was performed. Expected outputs are NOT actual PASS evidence. Detailed commands are in PR #7 description. On a clean Windows PowerShell worktree at exact final PR HEAD: inspect Python `py -3.11 --version`; create venv; `python -m pip install -e ".[test]"`; `python -m pip freeze`; `python -m pytest -v tests/test_health.py`; `python -m uvicorn app.main:app --host 127.0.0.1 --port 8000`; second PowerShell `Invoke-RestMethod http://127.0.0.1:8000/health` and `Invoke-WebRequest` for HTTP status. Capture stdout/stderr, process exit codes, tool versions, tested git SHA and PR comment. If failures occur, report FAIL and fix on same H-03 branch only.
 
 **Disposition:** IMPLEMENTATION SUBMITTED / PENDING_MANUAL_VALIDATION_AND_MANAGER_REVIEW. H-03 not claimed COMPLETED; no ledger changed, no W1 exit, no merge. H-04, DB/migrations, H-05/auth and unrelated work remain unauthorized. GitHub Actions optional, not performed.
+
+
+## 2026-11-14 — H-04 SQLite / SQLAlchemy 2 / Alembic baseline (Framework 1.3.0)
+
+**Owner:** Developer; **review policy:** legacy Coordinator → QA.  
+**Authorized:** `APP-HESABYAR-W1-H04-H18-ENTRY-20261114-001` + `APP-HESABYAR-DB-LOCAL-SQLITE-20261114-001`. Formal main ledger: H-03 COMPLETED; H-04 AUTHORIZED_NOT_STARTED and start_authorized=true; W1 entry_authorized=true. `FRAMEWORK_VERSION.json=1.3.0`.  
+**PR:** https://github.com/Ana0251/ChatGPT-Team-Test/pull/18  
+**Branch:** `feature/h-04-sqlite-alembic-baseline`  
+**Base main SHA before work:** `a972e31e0f108b97097e26822ceecb14b6e0d1a9`  
+**Source commit before this report:** `bece767b72ec86bf1492dfd8e0c9a43a2c2a74d8`.
+
+### Implementation scope and verified paths
+Exactly nine H-04-authorized paths, checked with GitHub compare (9 commits ahead, 0 behind at implementation head):
+- `backend/pyproject.toml`: SQLAlchemy >=2.0.44,<3 and Alembic >=1.17,<2 appended while preserving H-03 dependencies.
+- `backend/app/db/engine.py`: explicit `HESABYAR_DATABASE_URL` SQLite engine and SQLAlchemy connect listener enabling + verifying `PRAGMA foreign_keys=ON` on every new physical connection; rejects absent/other engine URLs.
+- `backend/app/db/money.py`: `ExactRial` Text-backed canonical 0..(10^20-1) IRR representation and Decimal conversion; forbids float/non-integer/exponent/negative and avoids SQLite NUMERIC affinity loss.
+- `backend/alembic/alembic.ini`, `backend/alembic/env.py`, `backend/alembic/versions/h-04_0001_baseline.py`: SQLite-only Alembic environment, reversible initial infrastructure marker table `h04_schema_baseline`; no domain tables.
+- `backend/tests/db/test_sqlite_storage.py`: file DB isolation, distinct physical FK connection checks, FK integrity rejection, lossless 20-digit monetary string/leading-zero code test, absent/unsupported URL checks.
+- `backend/tests/db/test_migrations.py`: isolated database migration `upgrade → downgrade → upgrade`, table before/after verification, revision ID verification, untouched second database.
+- `backend/alembic/README.md`: documented owner-reproducible PowerShell commands, schema inspection, SQLAlchemy versions, downgrade and limitations.
+
+### Execution and evidence accuracy
+**Source/diff checks: VERIFIED** using GitHub compare and blob read-back. No out-of-scope files, no committed .db/credentials. Attempted external checkout via `git clone --depth 1 --branch feature/h-04-sqlite-alembic-baseline` but isolated tool container could not resolve github.com (`fatal: Could not resolve host: github.com`; command exit 128), therefore **NO downloaded runtime tests were performed here**. The local container Python 3.13.5 / SQLite differs from the user's Python 3.14.7 / SQLite 3.50.4 and does not constitute acceptance evidence.
+
+**Actual SQLAlchemy/Pytest/Alembic execution on user's Windows: NOT_RUN.** Do not infer PASS. Required next evidence: exact final PR HEAD SHA, Python/SQLite/SQLAlchemy/Alembic/Pytest versions, real `pytest -v tests/db` output/exit code, migration `upgrade/downgrade/upgrade` outputs plus before/after schema table differences, per-connection FK PRAGMA and isolation checks. PowerShell steps in PR #18 and `backend/alembic/README.md`.
+
+**No H-05, real tenancy, business-account migrations, auth, multi-company security, or production setup** were implemented. PostgreSQL row-locking, `NUMERIC(20,0)`, production transaction race tests and engine selection are **DEFERRED/NOT_TESTED**, not PASS; SQLite is a manager-approved temporary local exception only.
+
+**H-04 disposition:** CODE SUBMITTED / PENDING MANUAL VALIDATION; owner report to **Coordinator first**, then **independent QA** and Manager approval. H-04 status ledger untouched; no merge or W1 completion claimed.
