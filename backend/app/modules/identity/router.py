@@ -19,7 +19,7 @@ from sqlalchemy import select
 from app.modules.identity import tables as t
 from app.modules.identity.delivery import smtp_delivery_from_env
 from app.modules.identity.security import (
-    digest, equal_digest, expiry, login_email_key, new_secret,
+    bound_csrf, csrf_hmac_valid, digest, equal_digest, expiry, login_email_key,
     normalize_email, now_string, password_hash, verify_known_or_dummy,
 )
 from app.modules.identity.store import (
@@ -131,7 +131,7 @@ def check_mutation(
         session, sid = session_for(connection, request, authenticated)
     expected_origin(request)
     token = request.headers.get("X-CSRF-Token", "")
-    if not session or not token or not equal_digest(digest(token), session["csrf_hash"]):
+    if not session or not token or not equal_digest(digest(token), session["csrf_hash"]) or not csrf_hmac_valid(sid, session["expires_at"], token):
         raise IdentityError(403, "CSRF_INVALID")
     return session, sid
 
@@ -172,8 +172,8 @@ def csrf(request: Request):
     engine = engine_for(request)
     with locked(engine) as connection:
         current, sid = session_for(connection, request)
-        token = new_secret()
         if current:
+            token = bound_csrf(sid, current["expires_at"])
             connection.execute(t.sessions.update().where(t.sessions.c.id_hash == digest(sid)).values(csrf_hash=digest(token)))
         else:
             sid, token = new_session(connection, "pre")
