@@ -1,5 +1,170 @@
 {
   "mode": "chatgpt-github",
   "version": "1.2.0",
-  "waves": []
+  "waves": [
+    {
+      "id": "W0",
+      "name": "Decision & contracts",
+      "approval_id": "APP-HESABYAR-V1-20261114-001",
+      "sequence": 0,
+      "task_ids": [
+        "H-01",
+        "H-02"
+      ],
+      "depends_on": [],
+      "entry_criteria": "Manager reconfirms entry to W0; approved scope/stack/roles available",
+      "exit_criteria": "Approved scope/stack/roles, reviewed contract baseline and non-overlapping file ownership",
+      "status": "PENDING_MANAGER_GATE",
+      "entry_authorized": false,
+      "started_at": null,
+      "completed_at": null,
+      "evidence_refs": [],
+      "policy": "No automatic agent activation; per-task dependencies and exclusive allowed paths; independent branch/PR code and real QA evidence. Do not mark complete on registration alone."
+    },
+    {
+      "id": "W1",
+      "name": "Foundation",
+      "approval_id": "APP-HESABYAR-V1-20261114-001",
+      "sequence": 1,
+      "task_ids": [
+        "H-03",
+        "H-04",
+        "H-05",
+        "H-06",
+        "H-07",
+        "H-08",
+        "H-17",
+        "H-18"
+      ],
+      "depends_on": [
+        "W0"
+      ],
+      "entry_criteria": "W0 contracts reviewed and manager authorizes W1",
+      "exit_criteria": "Backend health CI, PostgreSQL migrations, tenancy/auth/fiscal/IRR evidence, UX specs",
+      "status": "PENDING_MANAGER_GATE",
+      "entry_authorized": false,
+      "started_at": null,
+      "completed_at": null,
+      "evidence_refs": [],
+      "policy": "No automatic agent activation; per-task dependencies and exclusive allowed paths; independent branch/PR code and real QA evidence. Do not mark complete on registration alone."
+    },
+    {
+      "id": "W2",
+      "name": "Domain + interface",
+      "approval_id": "APP-HESABYAR-V1-20261114-001",
+      "sequence": 2,
+      "task_ids": [
+        "H-09",
+        "H-10",
+        "H-11",
+        "H-19",
+        "H-21",
+        "H-26"
+      ],
+      "depends_on": [
+        "W1"
+      ],
+      "entry_criteria": "W1 prerequisites; independent QA begins when actual module exists",
+      "exit_criteria": "Account hierarchy, audit, draft warnings and frontend shell/test checks validated",
+      "status": "PENDING_MANAGER_GATE",
+      "entry_authorized": false,
+      "started_at": null,
+      "completed_at": null,
+      "evidence_refs": [],
+      "policy": "No automatic agent activation; per-task dependencies and exclusive allowed paths; independent branch/PR code and real QA evidence. Do not mark complete on registration alone."
+    },
+    {
+      "id": "W3",
+      "name": "Posting + operational views",
+      "approval_id": "APP-HESABYAR-V1-20261114-001",
+      "sequence": 3,
+      "task_ids": [
+        "H-12",
+        "H-13",
+        "H-14",
+        "H-20",
+        "H-22",
+        "H-23",
+        "H-26"
+      ],
+      "depends_on": [
+        "W2"
+      ],
+      "entry_criteria": "W2 task dependencies and manager entry authorization",
+      "exit_criteria": "Atomic posting, linked reversal, real PostgreSQL races, tenant/period and account flows",
+      "status": "PENDING_MANAGER_GATE",
+      "entry_authorized": false,
+      "started_at": null,
+      "completed_at": null,
+      "evidence_refs": [],
+      "policy": "No automatic agent activation; per-task dependencies and exclusive allowed paths; independent branch/PR code and real QA evidence. Do not mark complete on registration alone."
+    },
+    {
+      "id": "W4",
+      "name": "Financial queries + journal screen",
+      "approval_id": "APP-HESABYAR-V1-20261114-001",
+      "sequence": 4,
+      "task_ids": [
+        "H-15",
+        "H-16",
+        "H-24",
+        "H-26"
+      ],
+      "depends_on": [
+        "W3"
+      ],
+      "entry_criteria": "H-12/H-13/H-14 and UX/frontend dependencies accepted",
+      "exit_criteria": "F1/F2 reconciling posted-only reports, browser journal scenarios and negative QA",
+      "status": "PENDING_MANAGER_GATE",
+      "entry_authorized": false,
+      "started_at": null,
+      "completed_at": null,
+      "evidence_refs": [],
+      "policy": "No automatic agent activation; per-task dependencies and exclusive allowed paths; independent branch/PR code and real QA evidence. Do not mark complete on registration alone."
+    },
+    {
+      "id": "W5",
+      "name": "Reporting + integration",
+      "approval_id": "APP-HESABYAR-V1-20261114-001",
+      "sequence": 5,
+      "task_ids": [
+        "H-25",
+        "H-26",
+        "H-27",
+        "H-28"
+      ],
+      "depends_on": [
+        "W4"
+      ],
+      "entry_criteria": "W4 domain/report prerequisites passed; H-26 independent QA ongoing",
+      "exit_criteria": "Reports UI, integration PR/contract review and complete CI/restore drill",
+      "status": "PENDING_MANAGER_GATE",
+      "entry_authorized": false,
+      "started_at": null,
+      "completed_at": null,
+      "evidence_refs": [],
+      "policy": "No automatic agent activation; per-task dependencies and exclusive allowed paths; independent branch/PR code and real QA evidence. Do not mark complete on registration alone."
+    },
+    {
+      "id": "W6",
+      "name": "QA release gate",
+      "approval_id": "APP-HESABYAR-V1-20261114-001",
+      "sequence": 6,
+      "task_ids": [
+        "H-29",
+        "H-30"
+      ],
+      "depends_on": [
+        "W5"
+      ],
+      "entry_criteria": "All V1.0 paths integrated with H-13/H-14/F1/F2/F3/security/period guards; manager W6 entry",
+      "exit_criteria": "Independent QA evidence with zero unresolved critical/high and manager accept/reject decision",
+      "status": "PENDING_MANAGER_GATE",
+      "entry_authorized": false,
+      "started_at": null,
+      "completed_at": null,
+      "evidence_refs": [],
+      "policy": "No automatic agent activation; per-task dependencies and exclusive allowed paths; independent branch/PR code and real QA evidence. Do not mark complete on registration alone."
+    }
+  ]
 }
