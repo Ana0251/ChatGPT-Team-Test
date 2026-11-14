@@ -16,3 +16,8 @@
 **After manager-governance PR and exact-HEAD PR #18 merge:** PM Assistant must re-read role/prompt and current protected main TASKS/WAVES/DECISIONS and verify merge SHA. In own authorized governance PR update **H-04 only** to COMPLETED *for local SQLite infrastructure*, mark `validation_status` with BOTH Coordinator+QA PASS LIMITED, owner-run tests as owner-executed, QA rerun NOT_TESTED, PostgreSQL/tenant/security/financial runtime/backup DEFERRED/NOT_TESTED, refs to all comments and merge commits. Keep W1 AUTHORIZED_NOT_STARTED; H05/H06/H07/H08 and W2–W6 unauthorized. Do not change other tasks, wave policy, approved OpenAPI or H18 docs status.
 
 **Later Manager gate:** Review proposed next W1 tasks only after sync and a distinct explicit decision. No automatic wave exit or release engine choice.
+
+
+### STOP — H-04 PR #18 merge conflict, QA report ownership
+
+**This STOP supersedes preceding H04 merge plan.** GitHub REST PR #18 `mergeable_state=dirty` at HEAD `748fa948d82332387e14a7b24e5af4c255c52f13`. main `.chatgpt-team/agents/qa/REPORT.md` has H18 PASS LIMITED record; H04 PR version has H04 PASS LIMITED record but not H18. QA must reconcile its own REPORT preserving **both** historic reviews and integrate current main into the same PR18 branch. No manager/Developer edit of QA report. After QA-only conflict resolution, Manager must verify resulting head, unchanged H04 source/test blobs, no removed H18 evidence and changed-path scope; issue an explicit follow-up merge authorization. No PR18 merge, H04 COMPLETED ledger update, W1 closure or H05 authorization before this stop is cleared. Other local SQLite H04 QA/Coordinator PASS LIMITED reviewed evidence remains accepted within its scope.
