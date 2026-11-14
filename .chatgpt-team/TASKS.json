@@ -169,16 +169,36 @@
       "allowed_paths": [
         "backend/app/modules/identity/**",
         "backend/tests/identity/**",
-        "backend/alembic/versions/h-05_*.py"
+        "backend/alembic/versions/h-05_*.py",
+        "backend/app/main.py",
+        "backend/pyproject.toml"
       ],
-      "acceptance_criteria": "Authentication, password hash policy, sessions/tokens, membership & role guard; unauthorized denied",
-      "mandatory_amendments": "Internal email/password using standard secure hashes, secure HttpOnly/Secure/SameSite sessions and CSRF for state changes; membership-scoped owner/admin/accountant/viewer; no super-admin or default credentials.",
-      "evidence_required": "API 401/403 + expiry tests",
-      "evidence_refs": [],
-      "status": "NOT_STARTED",
+      "acceptance_criteria": "Implement only internal company-scoped email/password identity APIs exactly matching frozen OpenAPI 1.0.0-rc.3 (GET /auth/csrf, POST /auth/login, /auth/activate, /auth/invitations/activate, /auth/invitations/accept, /auth/logout, GET /auth/me and identity/membership guards for /companies/{companyId}/members). No public registration or global super-admin. Secure adaptive password hashing; audited restricted operator-provisioned first owner with company-bound hashed 256-bit single-use activation token expiring within 15 minutes. Pre-session and authenticated Secure/HttpOnly/SameSite=Lax cookies over same-origin HTTPS; enforce Origin and X-CSRF-Token for mutations, session/CSRF rotation, expiry, logout revocation, no unsafe automatic replay or plaintext tokens in storage/URLs/logs. Server-side company-scoped owner/admin/accountant/viewer authorization, only company owner may invite an owner, atomically consumed invitations and no cross-company IDOR. Demonstrate real local SQLite tests for successful and rejected auth, 401/403/409/422, CSRF/Origin, expired/revoked sessions, invalid/stale/reused tokens, privilege escalation/cross-tenant denial, plus H-03 health and H-04 DB regression; owner/QA execution must be distinguished. PostgreSQL production/concurrency/security/backup engine gates remain DEFERRED/NOT_TESTED.",
+      "mandatory_amendments": "Internal email/password using standard secure hashes, secure HttpOnly/Secure/SameSite sessions and CSRF for state changes; membership-scoped owner/admin/accountant/viewer; no super-admin or default credentials. Manager H-05 phased entry APP-HESABYAR-W1-H05-ENTRY-20261114-001: preserve frozen OpenAPI rc.3 blob 98d34e7bd7b4551c0f429ea5e388781060ceaf63 and accepted H-18 identity specs. Restrict backend/app/main.py to importing/registering identity APIRouter only, retaining /health behavior; restrict backend/pyproject.toml to minimal reproducible approved security/password hashing (e.g. Argon2id) and identity test dependencies only. Existing identity module/tests and new unique h-05_*.py Alembic revisions only; no edits to previous migration, backend/app/core/config.py, backend/app/db/**, backend/alembic/env.py, frontend, design, contracts or other agents' reports. If shared edits needed outside scope, stop for separate manager approval. No H-06/H-07/H-08 implementation except minimal synthetic identity fixtures; no secrets/customer DB committed. Legacy review_policy=coordinator_required: Coordinator integration review then independent QA, final Manager acceptance; no PASS before actual evidence. QA runtime test execution status must be separately reported.",
+      "evidence_required": "Manager-approved H-05 scope/decision ref and frozen OpenAPI exact SHA; Developer PR and exact tested commit, Windows Python 3.14.7 / SQLite 3.50.4 / installed dependency versions, reproducible manual commands, stdout/stderr, exit codes, redacted traces; security-negative test logs for login, cookies/CSRF/Origin, 401/403/409/422, invitation setup/acceptance one-time token expiry/reuse, logout/session revoke/rotate, company roles and cross-tenant IDOR; regression of H-03 /health and H-04 SQLite tests; independent Coordinator integration report then QA report with actual QA-run vs owner-run distinction and Manager gate. Local SQLite results not proof of PostgreSQL row-lock/concurrency/production security; such tests DEFERRED/NOT_TESTED.",
+      "evidence_refs": [
+        ".chatgpt-team/DECISIONS.md#APP-HESABYAR-W1-H05-ENTRY-20261114-001",
+        "https://github.com/Ana0251/ChatGPT-Team-Test/pull/24",
+        "https://github.com/Ana0251/ChatGPT-Team-Test/commit/cd7ee63b1e7615d50b046c1470417fe5562712ff",
+        "docs/contracts/openapi.yaml@98d34e7bd7b4551c0f429ea5e388781060ceaf63",
+        "design/specs/identity/AUTH_AND_INVITATIONS.md",
+        "design/specs/identity/SESSION_STATES.md"
+      ],
+      "status": "AUTHORIZED_NOT_STARTED",
       "validation_status": "NOT_TESTED",
-      "start_authorized": false,
-      "notes": null
+      "start_authorized": true,
+      "notes": "Administrative manager entry authorization ONLY; H-05 is AUTHORIZED_NOT_STARTED, validation NOT_TESTED. Developer may start solely after this ledger PR is reviewed/merged and Manager issues explicit handoff. Password/CSRF/session/invitation/company membership security, real Windows SQLite tests, independent Coordinator and QA review are required and NOT_RUN for H-05 at this point. backend/app/main.py router connection only and backend/pyproject.toml H-05 security/test dependencies only. H-04 infrastructure acceptance is local SQLite PASS LIMITED, not a real tenant security or PostgreSQL production gate. H-06/H-07/H-08/H-26 and W2–W6 remain unauthorized.",
+      "review_policy": "coordinator_required",
+      "review_risks": [
+        "Password hashing, credential handling and no account enumeration",
+        "Pre-session and authenticated session rotation, secure cookies, expiration and revocation",
+        "CSRF including Origin enforcement, token expiry and forbidden replay",
+        "Invitations and operator-provisioned first owner with atomic one-use tokens",
+        "Company membership authorization and owner/admin/accountant/viewer privilege boundaries",
+        "Concurrent identity/invitation state integrity and SQLite local-only limitations",
+        "Shared file ownership exceptions for app routing and dependencies"
+      ],
+      "review_reason": "H-05 touches sensitive credential/session/CSRF/company-permission and token flows; independent integration review by Coordinator is mandatory before independent QA and Manager acceptance. Existing H-05 legacy record has no review_policy; Manager explicitly selects coordinator_required for H-05 under v1.3.0."
     },
     {
       "id": "H-06",
