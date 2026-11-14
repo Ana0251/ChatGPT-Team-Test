@@ -18,7 +18,7 @@ function validateH02({source, yaml, Ajv2020, officialSchema, gitBlobSha}) {
   const spec = yaml.load(source, {json:false}); // fail on malformed/duplicate YAML mappings
   const problems = [];
   if (spec.openapi !== '3.1.0') problems.push('OpenAPI root must be 3.1.0');
-  if (spec.info?.version !== '1.0.0-rc.2') problems.push('Contract version mismatch');
+  if (spec.info?.version !== '1.0.0-rc.3') problems.push('Contract version mismatch');
   const ajv = new Ajv2020({
     strict:false, allErrors:true, validateFormats:false,
     logger:{log:()=>{},warn:()=>{},error:()=>{}}
@@ -106,11 +106,12 @@ function validateH02({source, yaml, Ajv2020, officialSchema, gitBlobSha}) {
     problems.push('TrialBalanceTotals six financial totals missing');
   if (totals && (totals.properties?.account_id || totals.properties?.account_code))
     problems.push('Totals must not have account identity fields');
-  if (!row?.required?.includes('account_id') || !row.required.includes('account_code'))
+  if (!row?.required?.includes('account_id') || !row.required.includes('account_code') || !row.required.includes('account_level') || !row.required.includes('account_name'))
     problems.push('TrialBalanceRow must retain account identity');
   for (const path of ['/auth/csrf','/auth/activate','/auth/invitations/activate','/auth/invitations/accept','/companies/{companyId}/members','/companies/{companyId}/reports/trial-balance']) {
     if (!spec.paths?.[path]) problems.push('Missing required endpoint '+path);
   }
+  if (!schemas.JournalWarning || !schemas.FieldIssue || !schemas.ErrorCode || !schemas.Movement?.required?.includes('line_id')) problems.push('Missing stable UI / ledger contracts');
   if (!spec.components?.securitySchemes?.sessionCookie) problems.push('Session cookie scheme missing');
 
   return {
