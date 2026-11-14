@@ -52,9 +52,9 @@
       "mandatory_amendments": "Contract freeze before API consumers; module boundaries identity/tenancy, fiscal, accounts, journals, reporting and audit. Coordinator owns contract and architecture docs.",
       "evidence_required": "Contract review + no-overlap checklist",
       "evidence_refs": [],
-      "status": "NOT_STARTED",
+      "status": "AUTHORIZED_NOT_STARTED",
       "validation_status": "NOT_TESTED",
-      "start_authorized": false,
+      "start_authorized": true,
       "notes": null
     },
     {
