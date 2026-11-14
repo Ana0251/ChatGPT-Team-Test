@@ -1,7 +1,925 @@
 {
   "mode": "chatgpt-github",
   "version": "1.2.0",
-  "tasks": [],
+  "tasks": [
+    {
+      "id": "H-01",
+      "project": "حسابیار (Hesabyar)",
+      "release": "V1.0",
+      "approval_id": "APP-HESABYAR-V1-20261114-001",
+      "owner": "manager",
+      "priority": "P0",
+      "wave": "W0",
+      "waves": [
+        "W0"
+      ],
+      "depends_on": [],
+      "dependency_policy": null,
+      "allowed_paths": [
+        ".chatgpt-team/agents/manager/REPORT.md"
+      ],
+      "acceptance_criteria": "Approve scope, money/date rules, auth, stack, status model, numbering, task ownership; decision IDs recorded",
+      "mandatory_amendments": "Already evidenced by APP-HESABYAR-V1-20261114-001; this is a manager decision gate only, not tested or development-complete.",
+      "evidence_required": "Dated manager approval and exact version",
+      "evidence_refs": [
+        ".chatgpt-team/DECISIONS.md#APP-HESABYAR-V1-20261114-001"
+      ],
+      "status": "GATE_EVIDENCED",
+      "validation_status": "NOT_TESTED",
+      "start_authorized": false,
+      "notes": "Decision already recorded; W0 entry still requires manager confirmation."
+    },
+    {
+      "id": "H-02",
+      "project": "حسابیار (Hesabyar)",
+      "release": "V1.0",
+      "approval_id": "APP-HESABYAR-V1-20261114-001",
+      "owner": "coordinator",
+      "priority": "P0",
+      "wave": "W0",
+      "waves": [
+        "W0"
+      ],
+      "depends_on": [
+        "H-01"
+      ],
+      "dependency_policy": null,
+      "allowed_paths": [
+        "docs/contracts/**",
+        "docs/architecture/**"
+      ],
+      "acceptance_criteria": "Module boundaries, OpenAPI baseline, ownership map; all consumers acknowledge version",
+      "mandatory_amendments": "Contract freeze before API consumers; module boundaries identity/tenancy, fiscal, accounts, journals, reporting and audit. Coordinator owns contract and architecture docs.",
+      "evidence_required": "Contract review + no-overlap checklist",
+      "evidence_refs": [],
+      "status": "NOT_STARTED",
+      "validation_status": "NOT_TESTED",
+      "start_authorized": false,
+      "notes": null
+    },
+    {
+      "id": "H-03",
+      "project": "حسابیار (Hesabyar)",
+      "release": "V1.0",
+      "approval_id": "APP-HESABYAR-V1-20261114-001",
+      "owner": "developer",
+      "priority": "P0",
+      "wave": "W1",
+      "waves": [
+        "W1"
+      ],
+      "depends_on": [
+        "H-01",
+        "H-02"
+      ],
+      "dependency_policy": null,
+      "allowed_paths": [
+        "backend/pyproject.toml",
+        "backend/app/main.py",
+        "backend/app/core/config.py",
+        "backend/tests/test_health.py",
+        ".github/workflows/backend-smoke.yml"
+      ],
+      "acceptance_criteria": "Run FastAPI service, health endpoint, deterministic env sample; test boot succeeds",
+      "mandatory_amendments": "Early CI includes backend Pytest/health smoke and PR check in .github/workflows/backend-smoke.yml. Serial workflow ownership with H-21/H-28.",
+      "evidence_required": "CI backend boot/test log",
+      "evidence_refs": [],
+      "status": "NOT_STARTED",
+      "validation_status": "NOT_TESTED",
+      "start_authorized": false,
+      "notes": null
+    },
+    {
+      "id": "H-04",
+      "project": "حسابیار (Hesabyar)",
+      "release": "V1.0",
+      "approval_id": "APP-HESABYAR-V1-20261114-001",
+      "owner": "developer",
+      "priority": "P0",
+      "wave": "W1",
+      "waves": [
+        "W1"
+      ],
+      "depends_on": [
+        "H-03"
+      ],
+      "dependency_policy": null,
+      "allowed_paths": [
+        "backend/app/db/**",
+        "backend/alembic/**",
+        "backend/tests/db/**"
+      ],
+      "acceptance_criteria": "PostgreSQL connection/migration, reversible migration of empty schema, test DB isolation",
+      "mandatory_amendments": "Own Alembic baseline, shared configuration and migration protocol. Modules append only unique h-XX_*.py revisions under coordinator review; no edits to old revisions.",
+      "evidence_required": "Up/down migration log + schema diff",
+      "evidence_refs": [],
+      "status": "NOT_STARTED",
+      "validation_status": "NOT_TESTED",
+      "start_authorized": false,
+      "notes": null
+    },
+    {
+      "id": "H-05",
+      "project": "حسابیار (Hesabyar)",
+      "release": "V1.0",
+      "approval_id": "APP-HESABYAR-V1-20261114-001",
+      "owner": "developer",
+      "priority": "P0",
+      "wave": "W1",
+      "waves": [
+        "W1"
+      ],
+      "depends_on": [
+        "H-04"
+      ],
+      "dependency_policy": null,
+      "allowed_paths": [
+        "backend/app/modules/identity/**",
+        "backend/tests/identity/**",
+        "backend/alembic/versions/h-05_*.py"
+      ],
+      "acceptance_criteria": "Authentication, password hash policy, sessions/tokens, membership & role guard; unauthorized denied",
+      "mandatory_amendments": "Internal email/password using standard secure hashes, secure HttpOnly/Secure/SameSite sessions and CSRF for state changes; membership-scoped owner/admin/accountant/viewer; no super-admin or default credentials.",
+      "evidence_required": "API 401/403 + expiry tests",
+      "evidence_refs": [],
+      "status": "NOT_STARTED",
+      "validation_status": "NOT_TESTED",
+      "start_authorized": false,
+      "notes": null
+    },
+    {
+      "id": "H-06",
+      "project": "حسابیار (Hesabyar)",
+      "release": "V1.0",
+      "approval_id": "APP-HESABYAR-V1-20261114-001",
+      "owner": "developer",
+      "priority": "P0",
+      "wave": "W1",
+      "waves": [
+        "W1"
+      ],
+      "depends_on": [
+        "H-04",
+        "H-05"
+      ],
+      "dependency_policy": null,
+      "allowed_paths": [
+        "backend/app/modules/companies/**",
+        "backend/tests/companies/**",
+        "backend/alembic/versions/h-06_*.py"
+      ],
+      "acceptance_criteria": "Create/list/select company only via membership; scoped identifiers unique",
+      "mandatory_amendments": "Company membership enforced server-side; cross-tenant IDOR API negative tests, no user-provided tenant identity trusted.",
+      "evidence_required": "Cross-company API negative tests",
+      "evidence_refs": [],
+      "status": "NOT_STARTED",
+      "validation_status": "NOT_TESTED",
+      "start_authorized": false,
+      "notes": null
+    },
+    {
+      "id": "H-07",
+      "project": "حسابیار (Hesabyar)",
+      "release": "V1.0",
+      "approval_id": "APP-HESABYAR-V1-20261114-001",
+      "owner": "developer",
+      "priority": "P0",
+      "wave": "W1",
+      "waves": [
+        "W1"
+      ],
+      "depends_on": [
+        "H-04",
+        "H-06"
+      ],
+      "dependency_policy": null,
+      "allowed_paths": [
+        "backend/app/modules/fiscal/**",
+        "backend/tests/fiscal/**",
+        "backend/alembic/versions/h-07_*.py"
+      ],
+      "acceptance_criteria": "Fiscal year + periods cannot overlap within company; open/close rules and year boundary",
+      "mandatory_amendments": "Company-specific non-overlapping fiscal periods with exclusive end; DATE Gregorian and Asia/Tehran cutoff, UTC events; transactionally guard closed period vs posting race.",
+      "evidence_required": "Overlap/closed-period concurrency tests",
+      "evidence_refs": [],
+      "status": "NOT_STARTED",
+      "validation_status": "NOT_TESTED",
+      "start_authorized": false,
+      "notes": null
+    },
+    {
+      "id": "H-08",
+      "project": "حسابیار (Hesabyar)",
+      "release": "V1.0",
+      "approval_id": "APP-HESABYAR-V1-20261114-001",
+      "owner": "developer",
+      "priority": "P0",
+      "wave": "W1",
+      "waves": [
+        "W1"
+      ],
+      "depends_on": [
+        "H-04",
+        "H-06"
+      ],
+      "dependency_policy": null,
+      "allowed_paths": [
+        "backend/app/core/money.py",
+        "backend/tests/core/test_money.py"
+      ],
+      "acceptance_criteria": "Decimal normalization, currency and range rules; floats rejected",
+      "mandatory_amendments": "IRR only, nonnegative integer rial via Decimal; PostgreSQL NUMERIC(20,0), decimal string API, reject float, overprecision and out-of-range values.",
+      "evidence_required": "Precision, overflow and invalid amount cases",
+      "evidence_refs": [],
+      "status": "NOT_STARTED",
+      "validation_status": "NOT_TESTED",
+      "start_authorized": false,
+      "notes": null
+    },
+    {
+      "id": "H-09",
+      "project": "حسابیار (Hesabyar)",
+      "release": "V1.0",
+      "approval_id": "APP-HESABYAR-V1-20261114-001",
+      "owner": "developer",
+      "priority": "P0",
+      "wave": "W2",
+      "waves": [
+        "W2"
+      ],
+      "depends_on": [
+        "H-06",
+        "H-07",
+        "H-08"
+      ],
+      "dependency_policy": null,
+      "allowed_paths": [
+        "backend/app/modules/accounts/**",
+        "backend/tests/accounts/**",
+        "backend/alembic/versions/h-09_*.py"
+      ],
+      "acceptance_criteria": "Group/کل/معین/تفصیلی hierarchy; scoped codes unique; no posting to non-leaves; used accounts not deletable",
+      "mandatory_amendments": "Hierarchical detail subordinate to subsidiary, not floating detail; unique fully qualified company codes, only postable detail leaves or subsidiary without detail; protect used accounts.",
+      "evidence_required": "Duplicate/parent/type/company integrity tests",
+      "evidence_refs": [],
+      "status": "NOT_STARTED",
+      "validation_status": "NOT_TESTED",
+      "start_authorized": false,
+      "notes": null
+    },
+    {
+      "id": "H-10",
+      "project": "حسابیار (Hesabyar)",
+      "release": "V1.0",
+      "approval_id": "APP-HESABYAR-V1-20261114-001",
+      "owner": "developer",
+      "priority": "P0",
+      "wave": "W2",
+      "waves": [
+        "W2"
+      ],
+      "depends_on": [
+        "H-05",
+        "H-06"
+      ],
+      "dependency_policy": null,
+      "allowed_paths": [
+        "backend/app/modules/audit/**",
+        "backend/tests/audit/**",
+        "backend/alembic/versions/h-10_*.py"
+      ],
+      "acceptance_criteria": "Append-only actor/time/company/action audit trail; no secret leakage",
+      "mandatory_amendments": "Persist sensitive event actor/company/time and safe changes, immutable through UI; redact credentials and prevent cross-company audit leakage.",
+      "evidence_required": "Mutation audit/role denial tests",
+      "evidence_refs": [],
+      "status": "NOT_STARTED",
+      "validation_status": "NOT_TESTED",
+      "start_authorized": false,
+      "notes": null
+    },
+    {
+      "id": "H-11",
+      "project": "حسابیار (Hesabyar)",
+      "release": "V1.0",
+      "approval_id": "APP-HESABYAR-V1-20261114-001",
+      "owner": "developer",
+      "priority": "P0",
+      "wave": "W2",
+      "waves": [
+        "W2"
+      ],
+      "depends_on": [
+        "H-07",
+        "H-08",
+        "H-09",
+        "H-10"
+      ],
+      "dependency_policy": null,
+      "allowed_paths": [
+        "backend/app/modules/journals/models.py",
+        "backend/app/modules/journals/draft.py",
+        "backend/tests/journals/test_draft.py",
+        "backend/alembic/versions/h-11_*.py"
+      ],
+      "acceptance_criteria": "Draft journal CRUD; valid lines, account/company/period checked; drafts never appear in ledgers",
+      "mandatory_amendments": "Drafts may save incomplete and unbalanced with visible validation warnings; validate safe company/account scope; excluded from posted financial aggregates. Strict balance only at H-12 posting.",
+      "evidence_required": "Draft, invalid lines and cross-tenant tests",
+      "evidence_refs": [],
+      "status": "NOT_STARTED",
+      "validation_status": "NOT_TESTED",
+      "start_authorized": false,
+      "notes": null
+    },
+    {
+      "id": "H-12",
+      "project": "حسابیار (Hesabyar)",
+      "release": "V1.0",
+      "approval_id": "APP-HESABYAR-V1-20261114-001",
+      "owner": "developer",
+      "priority": "P0",
+      "wave": "W3",
+      "waves": [
+        "W3"
+      ],
+      "depends_on": [
+        "H-11"
+      ],
+      "dependency_policy": null,
+      "allowed_paths": [
+        "backend/app/modules/journals/posting.py",
+        "backend/tests/journals/test_posting.py",
+        "backend/alembic/versions/h-12_*.py"
+      ],
+      "acceptance_criteria": "Server-side exact balance, atomic posting, no overwrite of posted lines, role/period/number guards",
+      "mandatory_amendments": "Posting only: at least 2 valid rows, positive debit=credit, exact Decimal; immutable posted lines, atomic transaction, authorization and open-period checks, unique never-reused fiscal voucher sequence with traceable gaps.",
+      "evidence_required": "Atomic rollback, imbalance and state tests",
+      "evidence_refs": [],
+      "status": "NOT_STARTED",
+      "validation_status": "NOT_TESTED",
+      "start_authorized": false,
+      "notes": null
+    },
+    {
+      "id": "H-13",
+      "project": "حسابیار (Hesabyar)",
+      "release": "V1.0",
+      "approval_id": "APP-HESABYAR-V1-20261114-001",
+      "owner": "developer",
+      "priority": "P0",
+      "wave": "W3",
+      "waves": [
+        "W3"
+      ],
+      "depends_on": [
+        "H-12"
+      ],
+      "dependency_policy": null,
+      "allowed_paths": [
+        "backend/app/modules/journals/reversal.py",
+        "backend/tests/journals/test_reversal.py",
+        "backend/alembic/versions/h-13_*.py"
+      ],
+      "acceptance_criteria": "Linked full reversal, no modifying original, prevention of duplicate reversals unless explicitly defined",
+      "mandatory_amendments": "Reverse only via a new linked immutable balanced posted voucher, original unchanged; reversed label derived; prohibit duplicate reversal without defined policy. F2 mandatory.",
+      "evidence_required": "Original + reversal zero-net reconciliation",
+      "evidence_refs": [],
+      "status": "NOT_STARTED",
+      "validation_status": "NOT_TESTED",
+      "start_authorized": false,
+      "notes": null
+    },
+    {
+      "id": "H-14",
+      "project": "حسابیار (Hesabyar)",
+      "release": "V1.0",
+      "approval_id": "APP-HESABYAR-V1-20261114-001",
+      "owner": "developer",
+      "priority": "P0",
+      "wave": "W3",
+      "waves": [
+        "W3"
+      ],
+      "depends_on": [
+        "H-12"
+      ],
+      "dependency_policy": null,
+      "allowed_paths": [
+        "backend/app/modules/journals/concurrency.py",
+        "backend/tests/journals/test_races.py",
+        "backend/alembic/versions/h-14_*.py"
+      ],
+      "acceptance_criteria": "Double-submit idempotency; concurrent post vs close protected; conflict responses deterministic",
+      "mandatory_amendments": "Real PostgreSQL tests for simultaneous posting, retry idempotency, number uniqueness, posting vs fiscal close and deterministic conflicts; release-blocking.",
+      "evidence_required": "Parallel DB transaction tests",
+      "evidence_refs": [],
+      "status": "NOT_STARTED",
+      "validation_status": "NOT_TESTED",
+      "start_authorized": false,
+      "notes": null
+    },
+    {
+      "id": "H-15",
+      "project": "حسابیار (Hesabyar)",
+      "release": "V1.0",
+      "approval_id": "APP-HESABYAR-V1-20261114-001",
+      "owner": "developer",
+      "priority": "P0",
+      "wave": "W4",
+      "waves": [
+        "W4"
+      ],
+      "depends_on": [
+        "H-12",
+        "H-13"
+      ],
+      "dependency_policy": null,
+      "allowed_paths": [
+        "backend/app/modules/reports/ledger.py",
+        "backend/tests/reports/test_ledger.py",
+        "backend/alembic/versions/h-15_*.py"
+      ],
+      "acceptance_criteria": "Posted-only journal/daybook and 3 ledger levels; ordered movements, opening/closing/running balance, period filters",
+      "mandatory_amendments": "Posted-only daybook/general/subsidiary/detail account ledgers with running balance, opening and closing, pagination and filters, F1/F2 reconciliation.",
+      "evidence_required": "Golden ledger fixtures + SQL reconciliation",
+      "evidence_refs": [],
+      "status": "NOT_STARTED",
+      "validation_status": "NOT_TESTED",
+      "start_authorized": false,
+      "notes": null
+    },
+    {
+      "id": "H-16",
+      "project": "حسابیار (Hesabyar)",
+      "release": "V1.0",
+      "approval_id": "APP-HESABYAR-V1-20261114-001",
+      "owner": "developer",
+      "priority": "P0",
+      "wave": "W4",
+      "waves": [
+        "W4"
+      ],
+      "depends_on": [
+        "H-15"
+      ],
+      "dependency_policy": null,
+      "allowed_paths": [
+        "backend/app/modules/reports/trial_balance.py",
+        "backend/tests/reports/test_trial_balance.py",
+        "backend/alembic/versions/h-16_*.py"
+      ],
+      "acceptance_criteria": "Trial balance by company/year/date; debit/credit sums reconcile to journal; no draft impact",
+      "mandatory_amendments": "Actual posted journal-derived trial balance by tenant/fiscal/date, no draft effect; F1/F2 sums and F3 isolation mandatory; no V1.0 CSV export.",
+      "evidence_required": "Trial-balance fixture and invariant checks",
+      "evidence_refs": [],
+      "status": "NOT_STARTED",
+      "validation_status": "NOT_TESTED",
+      "start_authorized": false,
+      "notes": null
+    },
+    {
+      "id": "H-17",
+      "project": "حسابیار (Hesabyar)",
+      "release": "V1.0",
+      "approval_id": "APP-HESABYAR-V1-20261114-001",
+      "owner": "ui-ux",
+      "priority": "P1",
+      "wave": "W1",
+      "waves": [
+        "W1"
+      ],
+      "depends_on": [
+        "H-01",
+        "H-02"
+      ],
+      "dependency_policy": null,
+      "allowed_paths": [
+        "design/tokens/**",
+        "design/specs/global/**"
+      ],
+      "acceptance_criteria": "Persian RTL tokens, light/dark, typography, numeric fields, accessibility and 360px responsive rules",
+      "mandatory_amendments": "Design-only ownership; accessible Persian RTL, Jalali, IRR and responsive 360px light/dark specs. Do not modify frontend implementation.",
+      "evidence_required": "Design audit checklist + annotated specs",
+      "evidence_refs": [],
+      "status": "NOT_STARTED",
+      "validation_status": "NOT_TESTED",
+      "start_authorized": false,
+      "notes": null
+    },
+    {
+      "id": "H-18",
+      "project": "حسابیار (Hesabyar)",
+      "release": "V1.0",
+      "approval_id": "APP-HESABYAR-V1-20261114-001",
+      "owner": "ui-ux",
+      "priority": "P1",
+      "wave": "W1",
+      "waves": [
+        "W1"
+      ],
+      "depends_on": [
+        "H-02",
+        "H-17"
+      ],
+      "dependency_policy": null,
+      "allowed_paths": [
+        "design/specs/identity/**",
+        "design/specs/company-period/**"
+      ],
+      "acceptance_criteria": "Login, company and period selector journeys; error/empty/loading/permission states",
+      "mandatory_amendments": "Design-only, state maps for internal email/password auth, company membership and fiscal selection, permission and expired session.",
+      "evidence_required": "Screen flow and state matrix",
+      "evidence_refs": [],
+      "status": "NOT_STARTED",
+      "validation_status": "NOT_TESTED",
+      "start_authorized": false,
+      "notes": null
+    },
+    {
+      "id": "H-19",
+      "project": "حسابیار (Hesabyar)",
+      "release": "V1.0",
+      "approval_id": "APP-HESABYAR-V1-20261114-001",
+      "owner": "ui-ux",
+      "priority": "P1",
+      "wave": "W2",
+      "waves": [
+        "W2"
+      ],
+      "depends_on": [
+        "H-02",
+        "H-17"
+      ],
+      "dependency_policy": null,
+      "allowed_paths": [
+        "design/specs/accounts/**",
+        "design/specs/journals/**"
+      ],
+      "acceptance_criteria": "Chart editor + multi-line voucher UX; balancing feedback, confirmations and posted read-only states",
+      "mandatory_amendments": "Design-only journal flows must allow incomplete/unbalanced drafts with explicit warning, but block post until valid; immutable posted and reversal states.",
+      "evidence_required": "Prototype spec + keyboard/focus checklist",
+      "evidence_refs": [],
+      "status": "NOT_STARTED",
+      "validation_status": "NOT_TESTED",
+      "start_authorized": false,
+      "notes": null
+    },
+    {
+      "id": "H-20",
+      "project": "حسابیار (Hesabyar)",
+      "release": "V1.0",
+      "approval_id": "APP-HESABYAR-V1-20261114-001",
+      "owner": "ui-ux",
+      "priority": "P1",
+      "wave": "W3",
+      "waves": [
+        "W3"
+      ],
+      "depends_on": [
+        "H-02",
+        "H-17"
+      ],
+      "dependency_policy": null,
+      "allowed_paths": [
+        "design/specs/reports/**",
+        "design/specs/accessibility/**"
+      ],
+      "acceptance_criteria": "Ledger/trial balance table, large-data paging, Persian/Jalali, printable view as optional browser print",
+      "mandatory_amendments": "Design-only ledger and trial balance flows; browser print optional, not V1.0 PDF/CSV export.",
+      "evidence_required": "Screens + a11y/responsive matrix",
+      "evidence_refs": [],
+      "status": "NOT_STARTED",
+      "validation_status": "NOT_TESTED",
+      "start_authorized": false,
+      "notes": null
+    },
+    {
+      "id": "H-21",
+      "project": "حسابیار (Hesabyar)",
+      "release": "V1.0",
+      "approval_id": "APP-HESABYAR-V1-20261114-001",
+      "owner": "developer",
+      "priority": "P1",
+      "wave": "W2",
+      "waves": [
+        "W2"
+      ],
+      "depends_on": [
+        "H-02",
+        "H-17"
+      ],
+      "dependency_policy": null,
+      "allowed_paths": [
+        "frontend/package.json",
+        "frontend/src/app/**",
+        "frontend/src/shared/**",
+        "frontend/tests/app/**",
+        "frontend/package-lock.json",
+        "frontend/pnpm-lock.yaml",
+        "frontend/yarn.lock",
+        "frontend/vite.config.ts",
+        "frontend/vitest.config.ts",
+        "frontend/tsconfig*.json",
+        "frontend/tailwind.config.*",
+        "frontend/postcss.config.*",
+        "frontend/src/generated/**",
+        ".github/workflows/frontend-checks.yml"
+      ],
+      "acceptance_criteria": "Frontend shell, routing, RTL/theme/accessible primitives, typed contract; no business mock shown as real",
+      "mandatory_amendments": "Own frontend package.json and lockfile, vite/tailwind/ts/vitest config, generated typed client and build configuration. Early frontend CI/PR checks; shared workflow changes serial with H-03/H-28.",
+      "evidence_required": "Vitest accessibility/shell tests",
+      "evidence_refs": [],
+      "status": "NOT_STARTED",
+      "validation_status": "NOT_TESTED",
+      "start_authorized": false,
+      "notes": null
+    },
+    {
+      "id": "H-22",
+      "project": "حسابیار (Hesabyar)",
+      "release": "V1.0",
+      "approval_id": "APP-HESABYAR-V1-20261114-001",
+      "owner": "developer",
+      "priority": "P1",
+      "wave": "W3",
+      "waves": [
+        "W3"
+      ],
+      "depends_on": [
+        "H-18",
+        "H-21",
+        "H-05",
+        "H-06",
+        "H-07"
+      ],
+      "dependency_policy": null,
+      "allowed_paths": [
+        "frontend/src/features/auth/**",
+        "frontend/src/features/company-period/**",
+        "frontend/tests/features/auth/**"
+      ],
+      "acceptance_criteria": "Auth and tenant/period flows integrated; expired access handled safely",
+      "mandatory_amendments": "Secure live tenant/period auth integration, membership guard, 401/403 and CSRF-related error flows, no mock activity shown as real.",
+      "evidence_required": "RTL/authorization/browser E2E evidence",
+      "evidence_refs": [],
+      "status": "NOT_STARTED",
+      "validation_status": "NOT_TESTED",
+      "start_authorized": false,
+      "notes": null
+    },
+    {
+      "id": "H-23",
+      "project": "حسابیار (Hesabyar)",
+      "release": "V1.0",
+      "approval_id": "APP-HESABYAR-V1-20261114-001",
+      "owner": "developer",
+      "priority": "P1",
+      "wave": "W3",
+      "waves": [
+        "W3"
+      ],
+      "depends_on": [
+        "H-19",
+        "H-21",
+        "H-09"
+      ],
+      "dependency_policy": null,
+      "allowed_paths": [
+        "frontend/src/features/accounts/**",
+        "frontend/tests/features/accounts/**"
+      ],
+      "acceptance_criteria": "Account hierarchy CRUD, validation and duplicate errors integrated",
+      "mandatory_amendments": "Only feature accounts paths, integrate validated account hierarchy, postable leaves and isolated companies.",
+      "evidence_required": "UI/API integration test",
+      "evidence_refs": [],
+      "status": "NOT_STARTED",
+      "validation_status": "NOT_TESTED",
+      "start_authorized": false,
+      "notes": null
+    },
+    {
+      "id": "H-24",
+      "project": "حسابیار (Hesabyar)",
+      "release": "V1.0",
+      "approval_id": "APP-HESABYAR-V1-20261114-001",
+      "owner": "developer",
+      "priority": "P0",
+      "wave": "W4",
+      "waves": [
+        "W4"
+      ],
+      "depends_on": [
+        "H-19",
+        "H-21",
+        "H-11",
+        "H-12",
+        "H-13",
+        "H-14"
+      ],
+      "dependency_policy": null,
+      "allowed_paths": [
+        "frontend/src/features/journals/**",
+        "frontend/tests/features/journals/**"
+      ],
+      "acceptance_criteria": "Draft/edit/post/reverse; line totals display; posted immutability; double click doesn't double-post",
+      "mandatory_amendments": "Live draft/save warning, post, reverse, immutable posted, concurrent click protection; F1/F2 browser scenario mandatory.",
+      "evidence_required": "Multi-step browser financial scenario",
+      "evidence_refs": [],
+      "status": "NOT_STARTED",
+      "validation_status": "NOT_TESTED",
+      "start_authorized": false,
+      "notes": null
+    },
+    {
+      "id": "H-25",
+      "project": "حسابیار (Hesabyar)",
+      "release": "V1.0",
+      "approval_id": "APP-HESABYAR-V1-20261114-001",
+      "owner": "developer",
+      "priority": "P1",
+      "wave": "W5",
+      "waves": [
+        "W5"
+      ],
+      "depends_on": [
+        "H-20",
+        "H-21",
+        "H-15",
+        "H-16"
+      ],
+      "dependency_policy": null,
+      "allowed_paths": [
+        "frontend/src/features/reports/**",
+        "frontend/tests/features/reports/**"
+      ],
+      "acceptance_criteria": "Journal/ledger/trial balance usable on desktop/mobile, filters and exact decimal formatting",
+      "mandatory_amendments": "Actual posted-only ledgers/trial balance UI, Jalali and exact IRR formatting; no V1.0 CSV or PDF generation.",
+      "evidence_required": "Filter/pagination/total E2E",
+      "evidence_refs": [],
+      "status": "NOT_STARTED",
+      "validation_status": "NOT_TESTED",
+      "start_authorized": false,
+      "notes": null
+    },
+    {
+      "id": "H-26",
+      "project": "حسابیار (Hesabyar)",
+      "release": "V1.0",
+      "approval_id": "APP-HESABYAR-V1-20261114-001",
+      "owner": "qa",
+      "priority": "P0",
+      "wave": "W2",
+      "waves": [
+        "W2",
+        "W3",
+        "W4",
+        "W5"
+      ],
+      "depends_on": [
+        "H-05"
+      ],
+      "dependency_policy": "Independent QA starts on first actual module delivery (H-05 onward); ongoing W2-W5 verification, with per-module delivery prerequisites.",
+      "allowed_paths": [
+        "qa/testplans/**",
+        "qa/fixtures/**",
+        "qa/evidence/**",
+        ".chatgpt-team/agents/qa/REPORT.md"
+      ],
+      "acceptance_criteria": "Independent threat/accounting test plan, execute each delivered module against real database; defects with reproducible steps",
+      "mandatory_amendments": "Start independent QA continuously from delivered W1 modules, while spanning W2–W5; real PostgreSQL F1/F2/F3, security, fiscal closed-period, posting race and CSRF tests. Never claim unrun tests.",
+      "evidence_required": "Timestamped CI logs, case IDs, HTTP traces/redactions",
+      "evidence_refs": [],
+      "status": "NOT_STARTED",
+      "validation_status": "NOT_TESTED",
+      "start_authorized": false,
+      "notes": null
+    },
+    {
+      "id": "H-27",
+      "project": "حسابیار (Hesabyar)",
+      "release": "V1.0",
+      "approval_id": "APP-HESABYAR-V1-20261114-001",
+      "owner": "coordinator",
+      "priority": "P0",
+      "wave": "W5",
+      "waves": [
+        "W5"
+      ],
+      "depends_on": [
+        "H-12",
+        "H-14",
+        "H-16",
+        "H-22",
+        "H-23",
+        "H-24",
+        "H-25",
+        "H-26"
+      ],
+      "dependency_policy": null,
+      "allowed_paths": [
+        "docs/integration/**",
+        ".chatgpt-team/agents/coordinator/REPORT.md"
+      ],
+      "acceptance_criteria": "Confirm contract compatibility, merge order, review ownership and CI gates; NO unapproved source edits",
+      "mandatory_amendments": "Required join gates: H-13 reversal, H-14 concurrency, H-24 journal UI, H-26 independent tests, F1/F2/F3, tenant security and accounting totals all reviewed before integration signoff.",
+      "evidence_required": "Reviewed PR references and SHA matrix",
+      "evidence_refs": [],
+      "status": "NOT_STARTED",
+      "validation_status": "NOT_TESTED",
+      "start_authorized": false,
+      "notes": null
+    },
+    {
+      "id": "H-28",
+      "project": "حسابیار (Hesabyar)",
+      "release": "V1.0",
+      "approval_id": "APP-HESABYAR-V1-20261114-001",
+      "owner": "developer",
+      "priority": "P0",
+      "wave": "W5",
+      "waves": [
+        "W5"
+      ],
+      "depends_on": [
+        "H-03",
+        "H-04",
+        "H-21",
+        "H-27"
+      ],
+      "dependency_policy": null,
+      "allowed_paths": [
+        "infra/**",
+        ".github/workflows/**",
+        "docs/runbook/**"
+      ],
+      "acceptance_criteria": "Reproducible env/bootstrap, DB migration, seed **synthetic** fixtures, backup/restore instructions, CI gates",
+      "mandatory_amendments": "Complete CI by W5 using serial workflow edits; reproducible private/staging setup, migration and backup/restore drill; synthetic seed explicitly labelled; actual evidence required.",
+      "evidence_required": "Fresh-install, migration & restore drill",
+      "evidence_refs": [],
+      "status": "NOT_STARTED",
+      "validation_status": "NOT_TESTED",
+      "start_authorized": false,
+      "notes": null
+    },
+    {
+      "id": "H-29",
+      "project": "حسابیار (Hesabyar)",
+      "release": "V1.0",
+      "approval_id": "APP-HESABYAR-V1-20261114-001",
+      "owner": "qa",
+      "priority": "P0",
+      "wave": "W6",
+      "waves": [
+        "W6"
+      ],
+      "depends_on": [
+        "H-16",
+        "H-24",
+        "H-25",
+        "H-27",
+        "H-28"
+      ],
+      "dependency_policy": null,
+      "allowed_paths": [
+        "qa/evidence/release-v1/**",
+        ".chatgpt-team/agents/qa/REPORT.md"
+      ],
+      "acceptance_criteria": "End-to-end financial, isolation, concurrency, Jalali, responsive/accessibility regression; no critical blocker",
+      "mandatory_amendments": "Release blocker checks: F1/F2/F3, reversal, concurrency, tenant isolation, money, closed fiscal, permissions, CSRF, Persian accessibility and restore with real build SHAs; no unresolved critical/high.",
+      "evidence_required": "Evidence per case, failed/pass counts & environment SHA",
+      "evidence_refs": [],
+      "status": "NOT_STARTED",
+      "validation_status": "NOT_TESTED",
+      "start_authorized": false,
+      "notes": null
+    },
+    {
+      "id": "H-30",
+      "project": "حسابیار (Hesabyar)",
+      "release": "V1.0",
+      "approval_id": "APP-HESABYAR-V1-20261114-001",
+      "owner": "manager",
+      "priority": "P0",
+      "wave": "W6",
+      "waves": [
+        "W6"
+      ],
+      "depends_on": [
+        "H-29"
+      ],
+      "dependency_policy": null,
+      "allowed_paths": [
+        ".chatgpt-team/agents/manager/REPORT.md"
+      ],
+      "acceptance_criteria": "Accept/reject V1.0 from evidenced release gate, document remaining known limitations",
+      "mandatory_amendments": "Future manager acceptance gate, not approved as complete; private/staging only. Public release, production privacy/retention/deployment require further approval.",
+      "evidence_required": "Signed decision referring to build/test SHAs",
+      "evidence_refs": [],
+      "status": "NOT_STARTED",
+      "validation_status": "NOT_TESTED",
+      "start_authorized": false,
+      "notes": "Release signoff explicitly pending."
+    }
+  ],
   "approvals": [
     {
       "id": "APP-HESABYAR-V1-20261114-001",
@@ -68,7 +986,7 @@
         "W6"
       ],
       "registration_delegate": "pm-assistant",
-      "registration_status": "PENDING",
+      "registration_status": "REGISTERED",
       "amendments": [
         "H-03: bootstrap early minimal backend CI/PR smoke checks; H-21: add frontend checks; H-28: complete full integration CI, reproducible bootstrap and restore in W5. Changes to shared workflow files occur sequentially.",
         "H-04 owns initial Alembic baseline and migration protocol; module tasks own only uniquely named additive revision files backend/alembic/versions/h-XX_*.py, serialized with Coordinator approval and migration CI. Shared migration config stays H-04-owned.",
@@ -79,7 +997,10 @@
         "H-01 is the manager decision gate evidenced by this approval; H-30 remains a separate unreached acceptance gate; no task may be marked TESTED/DONE without actual evidence."
       ],
       "execution_policy": "No implementation authorized until PM Assistant registers approved tasks/waves with dependencies, named file scopes and entry criteria; Manager authorizes individual wave entry; no automatic agent activation.",
-      "evidence": "Dated manager decision in .chatgpt-team/DECISIONS.md; authoritative tasks/waves counts remain zero until PM Assistant registration"
+      "evidence": "Dated manager decision in .chatgpt-team/DECISIONS.md; authoritative tasks/waves counts remain zero until PM Assistant registration",
+      "registered_task_count": 30,
+      "registered_wave_count": 7,
+      "registration_note": "Administrative registration only, no development, no tests, no activation; W0 entry remains manager-controlled."
     }
   ]
 }
