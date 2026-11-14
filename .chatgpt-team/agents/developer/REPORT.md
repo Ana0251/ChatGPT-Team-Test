@@ -110,3 +110,39 @@ Exactly nine H-04-authorized paths, checked with GitHub compare (9 commits ahead
 **This revision contains new test definitions, NOT observed test passes.** No Windows Python 3.14.7 / SQLite 3.50.4 Pytest/Alembic stdout/stderr, real exit codes, or owner command transcript has been delivered to this Developer conversation or PR at the time of review. Status: **NOT_TESTED / PENDING_OWNER_EVIDENCE**. Earlier owner statement of execution is **OWNER_REPORTED / NOT VERIFIED**; no PASS claim.
 
 Request Coordinator **re-review of new PR HEAD** and verification of real owner manual evidence before QA. Legacy framework 1.3.0 order: Developer → Coordinator integration review → independent QA; Manager final gate. `TASKS.json` and `WAVES.json` untouched. H-04 NOT_COMPLETED, PR remains open/unmerged; H-05 and other tasks not started. PostgreSQL NUMERIC(20,0)/locking/production engine tests DEFERRED, not PASS.
+
+
+## 2026-11-14 — H-05 Identity, session, CSRF and company membership (Framework 1.3.0)
+
+**Authorization / decision:** `APP-HESABYAR-W1-H05-ENTRY-20261114-001`. PR #24 Manager decision merged at `cd7ee63b1e7615d50b046c1470417fe5562712ff`; PR #25 PM Assistant ledger sync merged at `a1a9f537533c56448a7753377e4334f84c0ceb42`. `main` records `H-04=COMPLETED`, `H-05=AUTHORIZED_NOT_STARTED`, `start_authorized=true`, `validation_status=NOT_TESTED` and `review_policy=coordinator_required`. `W1.entry_authorized=true`; H-06/H-07/H-08 stay locked. Framework version `1.3.0`.  
+**Frozen contract:** `docs/contracts/openapi.yaml` version `1.0.0-rc.3`, unchanged Git blob `98d34e7bd7b4551c0f429ea5e388781060ceaf63`. Approved H-18 design `design/specs/identity/AUTH_AND_INVITATIONS.md`, `SESSION_STATES.md` read from `main`.  
+**Branch:** `feature/h-05-identity-security`, base `main@a1a9f537533c56448a7753377e4334f84c0ceb42`.  
+**PR:** https://github.com/Ana0251/ChatGPT-Team-Test/pull/26 — OPEN/UNMERGED (Manager merge gate).  
+**Latest implementation HEAD before this report:** `9351aa9bce305a40a862db9fcf66cb004069340a`.
+
+### Authorized-file implementation
+- `backend/app/modules/identity/router.py`: contract routes under `/api/v1`: GET CSRF, POST login, initial owner activate, new-invitee activate, existing-invitee accept, logout, GET me and GET/POST company memberships; structured error codes and 422 field issues. No H-06/company CRUD.
+- `backend/app/modules/identity/security.py`: Argon2id adaptive password hashing and strength rules; normalized emails; random 256-bit secrets, hash-only storage; per-session **HMAC-bound** CSRF (nonce, session, trusted HTTPS origin and session expiry) plus stored hash; HMAC-based blinded email throttle keys, no raw credential logging.
+- `backend/app/modules/identity/store.py` and `tables.py`: SQLite SQLAlchemy 2 identity tables, short atomic `BEGIN IMMEDIATE` membership/token transactions, hashed cookie-session IDs, sessions/CSRF expiry and revocation, company membership checks, safe audit events.
+- `backend/app/modules/identity/provision.py`: operator-key-gated, audited out-of-band initial company/owner provisioning only on empty installation, 15-minute company/owner-bound single-use setup token, private delivery callback; no default credentials/public setup endpoint.
+- `backend/app/modules/identity/delivery.py`: optional private SMTP_SSL token delivery, no token in API response, database, logs or URLs; absent delivery fails closed.
+- `backend/alembic/versions/h-05_0002_identity.py`: new unique identity migration extending H-04 revision, no changes to previous migration or `backend/alembic/env.py`.
+- `backend/tests/identity/test_auth_flows.py`: disposable SQLite tests for bootstrap token/reuse/expiry, login good/bad and rate limiting, Argon2id, 401/403/409/422, CSRF/Origin/cookie/rotations, logout/revocation and expired sessions, new/existing invitations, company owner-only invites, viewer/admin restrictions, wrong-target email, revoked inviter, cross-tenant 404, absent SMTP fail-closed, and HMAC binding.
+- `backend/tests/identity/test_identity_migration.py`: H04→H05→H04→H05 Alembic migration/schema/FK checks.
+- `backend/app/modules/identity/README.md`: Windows PowerShell versions/commands, first-owner operator + SMTP setup, environment and documented known regression limitation.
+- `backend/app/main.py`: **only two lines** import/register Identity Router, preserves H-03 `/health`.
+- `backend/pyproject.toml`: **only Argon2 dependency** added; no other shared changes.
+
+**Verified repository scope:** GitHub compare against authorized main base shows only the above H-05 allowed paths (12 code/test/docs paths) before this report; frozen OpenAPI blob unchanged. H-05 added no changes to `backend/app/core/config.py`, `backend/app/db/**`, any existing H-04 migration, frontend/design/OpenAPI, PM ledgers or other agents' reports. No DB files, private customer data or real credentials committed.
+
+### Test evidence — strict honesty
+**GitHub source/read-back/scope verification: OBSERVED.**  
+**Python 3.14.7 / SQLite 3.50.4 owner Windows real execution of the new H-05 code: NOT_RUN / NOT_VERIFIED.** No `pytest` stdout/stderr or exit codes were returned in this conversation and no QA-run has occurred. New test definitions are not evidence of PASS. No live TLS SMTP, cross-tenant external attack simulation or penetration QA claimed.
+
+Manual reproducible steps for exact **final** PR HEAD in `backend/app/modules/identity/README.md`: `py -3.14 --version`, `py -3.14 -c "import sqlite3; print(sqlite3.sqlite_version)"`, fresh venv `pip install -e ".[test]"`, `pip freeze`, `python -m pytest -v tests/identity tests/test_health.py`, `python -m pytest -v tests/db`; migration `upgrade head`, `current`, schema/FK snapshot. Capture exact SHA, tool versions, raw outputs/exit codes, runner identity and redacted evidence in PR. Actual results pending.
+
+**Known H-04 regression conflict — explicit blocker until Manager scope decision:** Existing `backend/tests/db/test_migrations.py` expects `alembic upgrade head` to yield `h04_0001`; with correct H-05 revision `h05_0002` appended, `head` yields `h05_0002`. The old assertion is revision-pinned and likely fails under the new head. H-04 test file is outside H-05 allowed paths and remains untouched. Need Manager-authorized H-04 regression-test correction (test H-04 revision explicitly) before full H-03/H-04/H-05 regression acceptance. Do not claim legacy H-04 tests PASS on new branch.
+
+**Deferred / limitations:** SQLite development-only `BEGIN IMMEDIATE` does not prove PostgreSQL row locking/concurrency; production database, backup/restore, external SMTP reliability, HTTPS trusted reverse-proxy integration, penetration testing and full security/tenant QA **DEFERRED/NOT_TESTED**. Identity-only synthetic company anchor tables will require Coordinator integration review with H-06 company module before any future company CRUD; H-06 itself remains unauthorized.
+
+**H-05 disposition:** IMPLEMENTATION SUBMITTED FOR COORDINATOR REVIEW / NOT COMPLETED; independent QA follows Coordinator per `coordinator_required`, and only Manager may authorize PR merge. H-06–H-08 and other locked tasks untouched. No automatic QA PASS or W1 completion.
