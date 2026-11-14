@@ -3,12 +3,14 @@
 from fastapi import FastAPI
 
 from app.core.config import Settings, get_settings
+from app.modules.identity.router import router as identity_router
 
 
 def create_app(settings: Settings | None = None) -> FastAPI:
     """Create an application without database, migration, or auth side effects."""
     config = settings if settings is not None else get_settings()
     application = FastAPI(title=config.app_name, version="0.1.0")
+    application.include_router(identity_router, prefix="/api/v1")
 
     @application.get("/health", tags=["Health"])
     def health() -> dict[str, str]:
