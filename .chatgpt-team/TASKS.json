@@ -1591,6 +1591,44 @@
       "task_status_unchanged": true,
       "reviewed_pr_head_sha": "748fa948d82332387e14a7b24e5af4c255c52f13",
       "blocking_issue": "GH PR #18 merge conflict in .chatgpt-team/agents/qa/REPORT.md: current main contains H-18 QA review whereas PR branch contains H-04 QA review but not H-18; preserve both. DO NOT overwrite any prior QA evidence."
+    },
+    {
+      "id": "APP-HESABYAR-H04-PR18-MERGE-UNBLOCK-20261114-001",
+      "date": "2026-11-14",
+      "approved_by": "manager",
+      "project": "حسابیار (Hesabyar)",
+      "task_id": "H-04",
+      "wave_id": "W1",
+      "status": "H04_SQLITE_LOCAL_PASS_LIMITED_QA_REPORT_CONFLICT_RESOLVED_EXACT_PR18_MERGE_AUTHORIZED",
+      "framework_version": "1.3.0",
+      "contract": "legacy",
+      "review_policy": "coordinator_required",
+      "review_risks": [
+        "database schema and migration consistency",
+        "exact financial IRR storage and foreign keys",
+        "future PostgreSQL concurrency and release-engine security"
+      ],
+      "review_reason": "Technical H-04 scope had Coordinator then independent QA PASS LIMITED; previously blocking QA report conflict was reconciled on the authorized QA report path, preserving H18 and H04 evidence. Source/test blobs remain byte-identical to owner-tested code. This decision clears MERGE BLOCK only for exact SHA.",
+      "supersedes_block_only": "APP-HESABYAR-H04-SQLITE-QA-ACCEPT-20261114-001",
+      "pr_number": 18,
+      "approved_pr_head_sha": "6265578b8b826c57f7e9287503ff1c05235cf2ec",
+      "merge_parent_head": "748fa948d82332387e14a7b24e5af4c255c52f13",
+      "merge_parent_main": "df2c57f02fe42086143ab5ea173c37ac159d2be6",
+      "tested_code_sha": "c6b3c20da04ac5a381869f2ee10eabc2af20744e",
+      "qa_combined_report_blob": "78befa2357e3c2e02dfd6666b795d7b02062d019",
+      "qa_report_integrity": "Full original H18 QA report from main preserved as report prefix plus full H04 QA report; QA_RERUN remains NOT_TESTED.",
+      "qa_conflict_resolution": "https://github.com/Ana0251/ChatGPT-Team-Test/pull/18#issuecomment-6880991022",
+      "coordinator": "https://github.com/Ana0251/ChatGPT-Team-Test/pull/18#issuecomment-6880332388",
+      "qa": "https://github.com/Ana0251/ChatGPT-Team-Test/pull/18#issuecomment-6880620698",
+      "owner_tests": "https://github.com/Ana0251/ChatGPT-Team-Test/pull/18#issuecomment-6880269744",
+      "pr_changed_paths_count": 11,
+      "code_blobs_verified_unchanged": true,
+      "mergeable_clean_verified": true,
+      "scope": "PR #18 only, local SQLite SQLAlchemy/Alembic baseline and 20-digit IRR adapter with Owner-run 24/24 Pytest and CLI upgrade/downgrade/upgrade; coordinator and QA review were limited and not independent command execution",
+      "merge_conditions": "After governance PR for this decision is merged into protected main, re-check PR18 exact HEAD, same 11 path set, clean merge status, identical code/test blob SHAs, both QA reports intact, OpenAPI SHA unchanged. Only then merge PR18 at expected head. Stop and seek new Manager decision if changed.",
+      "after_merge": "PM Assistant must separately update only H04 status COMPLETED strictly for SQLite local infrastructure after verifying merged PR18. Keep W1 open and all H05/H06/H07/H08/W2–W6 unauthorized. Do not start H26.",
+      "not_tested": "PostgreSQL NUMERIC(20,0), row locking/financial concurrency, real multi-tenant authorization/security, actual product accounting F1/F2/F3, HTTP/API, backup/restore/recovery, final DB release suitability and QA independent runtime execution are DEFERRED/NOT_TESTED.",
+      "warning_followup": "3 nonblocking Alembic path_separator deprecation warnings remain."
     }
   ]
 }
