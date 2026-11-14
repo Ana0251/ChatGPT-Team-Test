@@ -1,0 +1,891 @@
+openapi: 3.1.0
+info:
+  title: Hesabyar Financial Accounting API
+  version: 1.0.0-rc.1
+  description: >-
+    H-02 proposed V1.0 contract, not implemented or accepted. Decisions H-D01..H-D09.
+    Monetary amounts are IRR integer rial decimal strings; financial dates Gregorian ISO.
+servers:
+  - url: /api/v1
+tags:
+  - name: Identity
+  - name: Companies
+  - name: Fiscal
+  - name: Accounts
+  - name: Journals
+  - name: Reports
+  - name: Audit
+security:
+  - sessionCookie: []
+paths:
+  /auth/csrf:
+    get:
+      tags: [Identity]
+      summary: Obtain CSRF token for cookie session flow
+      security: []
+      responses:
+        '200':
+          description: CSRF token
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [csrf_token]
+                properties:
+                  csrf_token: {type: string}
+  /auth/login:
+    post:
+      tags: [Identity]
+      summary: Authenticate internal user
+      security: []
+      parameters:
+        - $ref: '#/components/parameters/Csrf'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, password]
+              properties:
+                email: {type: string, format: email}
+                password: {type: string, format: password}
+      responses:
+        '200':
+          description: Authenticated; secure HttpOnly session cookie
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/Principal'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+        '422': {$ref: '#/components/responses/Invalid'}
+  /auth/logout:
+    post:
+      tags: [Identity]
+      summary: Revoke current session
+      parameters:
+        - $ref: '#/components/parameters/Csrf'
+      responses:
+        '204': {description: Session revoked}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+  /auth/me:
+    get:
+      tags: [Identity]
+      responses:
+        '200':
+          description: Principal and authorized memberships
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/Principal'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+  /companies:
+    get:
+      tags: [Companies]
+      summary: List ONLY companies where current user is a member
+      responses:
+        '200':
+          description: Visible companies
+          content:
+            application/json:
+              schema:
+                type: array
+                items: {$ref: '#/components/schemas/Company'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+    post:
+      tags: [Companies]
+      summary: Create company owned by current principal
+      parameters:
+        - $ref: '#/components/parameters/Csrf'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name]
+              properties:
+                name: {type: string, minLength: 1, maxLength: 200}
+      responses:
+        '201':
+          description: Company created with creator as owner
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/Company'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+        '422': {$ref: '#/components/responses/Invalid'}
+  /companies/{companyId}:
+    get:
+      tags: [Companies]
+      parameters:
+        - $ref: '#/components/parameters/CompanyId'
+      responses:
+        '200':
+          description: Company visible to member
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/Company'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '404': {$ref: '#/components/responses/NotFound'}
+  /companies/{companyId}/members:
+    get:
+      tags: [Identity]
+      description: owner/admin only; scoped to current company
+      parameters:
+        - $ref: '#/components/parameters/CompanyId'
+      responses:
+        '200':
+          description: Memberships in this company
+          content:
+            application/json:
+              schema:
+                type: array
+                items: {$ref: '#/components/schemas/Membership'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+        '404': {$ref: '#/components/responses/NotFound'}
+    post:
+      tags: [Identity]
+      summary: Invite or attach existing internal user as member (owner/admin)
+      parameters:
+        - $ref: '#/components/parameters/CompanyId'
+        - $ref: '#/components/parameters/Csrf'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, role]
+              properties:
+                email: {type: string, format: email}
+                role: {$ref: '#/components/schemas/Role'}
+      responses:
+        '201':
+          description: Membership created
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/Membership'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+        '404': {$ref: '#/components/responses/NotFound'}
+        '409': {$ref: '#/components/responses/Conflict'}
+        '422': {$ref: '#/components/responses/Invalid'}
+  /companies/{companyId}/fiscal-years:
+    get:
+      tags: [Fiscal]
+      parameters:
+        - $ref: '#/components/parameters/CompanyId'
+      responses:
+        '200':
+          description: Company fiscal years
+          content:
+            application/json:
+              schema:
+                type: array
+                items: {$ref: '#/components/schemas/FiscalYear'}
+        '404': {$ref: '#/components/responses/NotFound'}
+    post:
+      tags: [Fiscal]
+      description: owner/admin/accountant; no overlapping periods, exclusive end
+      parameters:
+        - $ref: '#/components/parameters/CompanyId'
+        - $ref: '#/components/parameters/Csrf'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/FiscalYearInput'}
+      responses:
+        '201':
+          description: Created year
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/FiscalYear'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+        '409': {$ref: '#/components/responses/Conflict'}
+        '422': {$ref: '#/components/responses/Invalid'}
+  /companies/{companyId}/fiscal-years/{yearId}/periods:
+    get:
+      tags: [Fiscal]
+      parameters:
+        - $ref: '#/components/parameters/CompanyId'
+        - $ref: '#/components/parameters/YearId'
+      responses:
+        '200':
+          description: Fiscal periods
+          content:
+            application/json:
+              schema:
+                type: array
+                items: {$ref: '#/components/schemas/FiscalPeriod'}
+        '404': {$ref: '#/components/responses/NotFound'}
+    post:
+      tags: [Fiscal]
+      description: Create nonoverlapping period within year, owner/admin/accountant
+      parameters:
+        - $ref: '#/components/parameters/CompanyId'
+        - $ref: '#/components/parameters/YearId'
+        - $ref: '#/components/parameters/Csrf'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/FiscalYearInput'}
+      responses:
+        '201':
+          description: Period created open
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/FiscalPeriod'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+        '409': {$ref: '#/components/responses/Conflict'}
+        '422': {$ref: '#/components/responses/Invalid'}
+  /companies/{companyId}/fiscal-years/{yearId}/periods/{periodId}/close:
+    post:
+      tags: [Fiscal]
+      description: Owner/admin only; serializes with posting; no race
+      parameters:
+        - $ref: '#/components/parameters/CompanyId'
+        - $ref: '#/components/parameters/YearId'
+        - $ref: '#/components/parameters/PeriodId'
+        - $ref: '#/components/parameters/Csrf'
+      responses:
+        '200':
+          description: Closed period
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/FiscalPeriod'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+        '404': {$ref: '#/components/responses/NotFound'}
+        '409': {$ref: '#/components/responses/Conflict'}
+  /companies/{companyId}/accounts:
+    get:
+      tags: [Accounts]
+      parameters:
+        - $ref: '#/components/parameters/CompanyId'
+        - $ref: '#/components/parameters/Page'
+        - $ref: '#/components/parameters/PageSize'
+        - name: parent_id
+          in: query
+          schema: {type: string, format: uuid}
+      responses:
+        '200':
+          description: Scoped account catalog
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/AccountPage'}
+        '404': {$ref: '#/components/responses/NotFound'}
+    post:
+      tags: [Accounts]
+      description: owner/admin/accountant; enforce parent level and scoped unique complete code
+      parameters:
+        - $ref: '#/components/parameters/CompanyId'
+        - $ref: '#/components/parameters/Csrf'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/AccountInput'}
+      responses:
+        '201':
+          description: Account created
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/Account'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+        '409': {$ref: '#/components/responses/Conflict'}
+        '422': {$ref: '#/components/responses/Invalid'}
+  /companies/{companyId}/accounts/{accountId}:
+    get:
+      tags: [Accounts]
+      parameters:
+        - $ref: '#/components/parameters/CompanyId'
+        - $ref: '#/components/parameters/AccountId'
+      responses:
+        '200':
+          description: Scoped account
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/Account'}
+        '404': {$ref: '#/components/responses/NotFound'}
+    patch:
+      tags: [Accounts]
+      description: owner/admin/accountant; protect used accounts and immutable hierarchy
+      parameters:
+        - $ref: '#/components/parameters/CompanyId'
+        - $ref: '#/components/parameters/AccountId'
+        - $ref: '#/components/parameters/Csrf'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              minProperties: 1
+              properties:
+                name: {type: string, minLength: 1}
+                active: {type: boolean}
+      responses:
+        '200':
+          description: Modified account
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/Account'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+        '404': {$ref: '#/components/responses/NotFound'}
+        '409': {$ref: '#/components/responses/Conflict'}
+    delete:
+      tags: [Accounts]
+      description: Cannot delete used/posted or parent with children
+      parameters:
+        - $ref: '#/components/parameters/CompanyId'
+        - $ref: '#/components/parameters/AccountId'
+        - $ref: '#/components/parameters/Csrf'
+      responses:
+        '204': {description: Deleted only when unused and without children}
+        '403': {$ref: '#/components/responses/Forbidden'}
+        '404': {$ref: '#/components/responses/NotFound'}
+        '409': {$ref: '#/components/responses/Conflict'}
+  /companies/{companyId}/journals:
+    get:
+      tags: [Journals]
+      parameters:
+        - $ref: '#/components/parameters/CompanyId'
+        - $ref: '#/components/parameters/Page'
+        - $ref: '#/components/parameters/PageSize'
+        - name: status
+          in: query
+          schema: {type: string, enum: [draft, posted]}
+        - name: fiscal_year_id
+          in: query
+          schema: {type: string, format: uuid}
+      responses:
+        '200':
+          description: Company scoped journals ordered date, ID
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/JournalPage'}
+        '404': {$ref: '#/components/responses/NotFound'}
+    post:
+      tags: [Journals]
+      description: Save possibly unbalanced/incomplete draft; company references validated
+      parameters:
+        - $ref: '#/components/parameters/CompanyId'
+        - $ref: '#/components/parameters/Csrf'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/JournalDraftInput'}
+      responses:
+        '201':
+          description: Draft with validation warnings if incomplete
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/Journal'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+        '422': {$ref: '#/components/responses/Invalid'}
+  /companies/{companyId}/journals/{journalId}:
+    get:
+      tags: [Journals]
+      parameters:
+        - $ref: '#/components/parameters/CompanyId'
+        - $ref: '#/components/parameters/JournalId'
+      responses:
+        '200':
+          description: Journal in authorized company
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/Journal'}
+        '404': {$ref: '#/components/responses/NotFound'}
+    put:
+      tags: [Journals]
+      description: Replace draft only; posted immutable
+      parameters:
+        - $ref: '#/components/parameters/CompanyId'
+        - $ref: '#/components/parameters/JournalId'
+        - $ref: '#/components/parameters/Csrf'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/JournalDraftInput'}
+      responses:
+        '200':
+          description: Updated draft
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/Journal'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+        '404': {$ref: '#/components/responses/NotFound'}
+        '409': {$ref: '#/components/responses/Conflict'}
+    delete:
+      tags: [Journals]
+      description: Delete draft only; never posted
+      parameters:
+        - $ref: '#/components/parameters/CompanyId'
+        - $ref: '#/components/parameters/JournalId'
+        - $ref: '#/components/parameters/Csrf'
+      responses:
+        '204': {description: Draft removed}
+        '403': {$ref: '#/components/responses/Forbidden'}
+        '404': {$ref: '#/components/responses/NotFound'}
+        '409': {$ref: '#/components/responses/Conflict'}
+  /companies/{companyId}/journals/{journalId}/post:
+    post:
+      tags: [Journals]
+      description: >-
+        Atomic exactly-once posting. At least two valid lines; positive balanced IRR
+        totals; authorized company, open containing fiscal period, immutable posted lines.
+        Idempotency-Key scoped to company/principal/operation and fingerprint.
+      parameters:
+        - $ref: '#/components/parameters/CompanyId'
+        - $ref: '#/components/parameters/JournalId'
+        - $ref: '#/components/parameters/Csrf'
+        - $ref: '#/components/parameters/IdempotencyKey'
+      responses:
+        '200':
+          description: Posted document or replay of same idempotency key
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/Journal'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+        '404': {$ref: '#/components/responses/NotFound'}
+        '409': {$ref: '#/components/responses/Conflict'}
+        '422': {$ref: '#/components/responses/Invalid'}
+  /companies/{companyId}/journals/{journalId}/reverse:
+    post:
+      tags: [Journals]
+      description: Exactly one balanced linked posted reversal, original unchanged
+      parameters:
+        - $ref: '#/components/parameters/CompanyId'
+        - $ref: '#/components/parameters/JournalId'
+        - $ref: '#/components/parameters/Csrf'
+        - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [posting_date, reason]
+              properties:
+                posting_date: {type: string, format: date}
+                reason: {type: string, minLength: 1}
+      responses:
+        '201':
+          description: Newly created linked posted reversal
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/Journal'}
+        '200':
+          description: Idempotent replay of same reversal request
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/Journal'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+        '404': {$ref: '#/components/responses/NotFound'}
+        '409': {$ref: '#/components/responses/Conflict'}
+        '422': {$ref: '#/components/responses/Invalid'}
+  /companies/{companyId}/reports/daybook:
+    get:
+      tags: [Reports]
+      description: POSTED lines only, include linked reversals
+      parameters:
+        - $ref: '#/components/parameters/CompanyId'
+        - $ref: '#/components/parameters/ReportFrom'
+        - $ref: '#/components/parameters/ReportTo'
+        - $ref: '#/components/parameters/Page'
+        - $ref: '#/components/parameters/PageSize'
+      responses:
+        '200':
+          description: Canonically sorted posted movements
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/MovementPage'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+        '404': {$ref: '#/components/responses/NotFound'}
+        '422': {$ref: '#/components/responses/Invalid'}
+  /companies/{companyId}/reports/ledger:
+    get:
+      tags: [Reports]
+      description: POSTED-only general/subsidiary/detail ledger, opening/period/closing balances
+      parameters:
+        - $ref: '#/components/parameters/CompanyId'
+        - name: account_id
+          in: query
+          required: true
+          schema: {type: string, format: uuid}
+        - $ref: '#/components/parameters/ReportFrom'
+        - $ref: '#/components/parameters/ReportTo'
+        - $ref: '#/components/parameters/Page'
+        - $ref: '#/components/parameters/PageSize'
+      responses:
+        '200':
+          description: Ledger including opening and closing balances, paginated movements
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/Ledger'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+        '404': {$ref: '#/components/responses/NotFound'}
+        '422': {$ref: '#/components/responses/Invalid'}
+  /companies/{companyId}/reports/trial-balance:
+    get:
+      tags: [Reports]
+      description: >-
+        Posted-only trial balance; opening/movements/closing by account level.
+        Never includes drafts. Sum debits equals credits, F1/F2 reconciles.
+      parameters:
+        - $ref: '#/components/parameters/CompanyId'
+        - $ref: '#/components/parameters/ReportFrom'
+        - $ref: '#/components/parameters/ReportTo'
+        - name: level
+          in: query
+          schema: {type: string, enum: [general, subsidiary, detail], default: subsidiary}
+        - $ref: '#/components/parameters/Page'
+        - $ref: '#/components/parameters/PageSize'
+      responses:
+        '200':
+          description: Trial balance with canonical totals, independent of pagination
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/TrialBalance'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+        '404': {$ref: '#/components/responses/NotFound'}
+        '422': {$ref: '#/components/responses/Invalid'}
+  /companies/{companyId}/audit-events:
+    get:
+      tags: [Audit]
+      description: owner/admin audit review; safe redacted events only
+      parameters:
+        - $ref: '#/components/parameters/CompanyId'
+        - $ref: '#/components/parameters/Page'
+        - $ref: '#/components/parameters/PageSize'
+      responses:
+        '200':
+          description: Append-only audit records for authorized company
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [items, page, page_size, total]
+                properties:
+                  items: {type: array, items: {$ref: '#/components/schemas/AuditEvent'}}
+                  page: {type: integer}
+                  page_size: {type: integer}
+                  total: {type: integer}
+        '403': {$ref: '#/components/responses/Forbidden'}
+        '404': {$ref: '#/components/responses/NotFound'}
+components:
+  securitySchemes:
+    sessionCookie:
+      type: apiKey
+      in: cookie
+      name: hesabyar_session
+      description: Secure HttpOnly SameSite session cookie; all mutations also require CSRF token
+  parameters:
+    CompanyId:
+      name: companyId
+      in: path
+      required: true
+      schema: {type: string, format: uuid}
+    YearId:
+      name: yearId
+      in: path
+      required: true
+      schema: {type: string, format: uuid}
+    PeriodId:
+      name: periodId
+      in: path
+      required: true
+      schema: {type: string, format: uuid}
+    AccountId:
+      name: accountId
+      in: path
+      required: true
+      schema: {type: string, format: uuid}
+    JournalId:
+      name: journalId
+      in: path
+      required: true
+      schema: {type: string, format: uuid}
+    Csrf:
+      name: X-CSRF-Token
+      in: header
+      required: true
+      schema: {type: string, minLength: 1}
+    IdempotencyKey:
+      name: Idempotency-Key
+      in: header
+      required: true
+      schema: {type: string, minLength: 8, maxLength: 128}
+    Page:
+      name: page
+      in: query
+      schema: {type: integer, minimum: 1, default: 1}
+    PageSize:
+      name: page_size
+      in: query
+      schema: {type: integer, minimum: 1, maximum: 100, default: 50}
+    ReportFrom:
+      name: from_date
+      in: query
+      required: true
+      description: Inclusive Gregorian accounting date; 00:00 Asia/Tehran boundary
+      schema: {type: string, format: date}
+    ReportTo:
+      name: to_date
+      in: query
+      required: true
+      description: Exclusive Gregorian accounting date
+      schema: {type: string, format: date}
+  responses:
+    Unauthorized:
+      description: Missing/expired session
+      content:
+        application/json:
+          schema: {$ref: '#/components/schemas/ErrorEnvelope'}
+    Forbidden:
+      description: Role or CSRF denied
+      content:
+        application/json:
+          schema: {$ref: '#/components/schemas/ErrorEnvelope'}
+    NotFound:
+      description: Not found OR not visible in selected company
+      content:
+        application/json:
+          schema: {$ref: '#/components/schemas/ErrorEnvelope'}
+    Conflict:
+      description: Business conflict (closed period, duplicate, status, idempotency)
+      content:
+        application/json:
+          schema: {$ref: '#/components/schemas/ErrorEnvelope'}
+    Invalid:
+      description: Schema/domain validation failed
+      content:
+        application/json:
+          schema: {$ref: '#/components/schemas/ErrorEnvelope'}
+  schemas:
+    ErrorEnvelope:
+      type: object
+      required: [error]
+      properties:
+        error:
+          type: object
+          required: [code, message, request_id]
+          properties:
+            code: {type: string, example: PERIOD_CLOSED}
+            message: {type: string}
+            request_id: {type: string}
+            details:
+              type: array
+              items:
+                type: object
+                properties:
+                  field: {type: string}
+                  reason: {type: string}
+    Rial:
+      type: string
+      pattern: '^(0|[1-9][0-9]{0,19})$'
+      description: Nonnegative IRR integer rial; never JSON numeric, float or exponent; DB NUMERIC(20,0)
+      examples: ['1000000']
+    SignedRial:
+      type: string
+      pattern: '^(0|-?[1-9][0-9]{0,19})$'
+      description: Debit-positive signed difference in IRR for reports
+    Role:
+      type: string
+      enum: [owner, admin, accountant, viewer]
+    Membership:
+      type: object
+      required: [user_id, company_id, role]
+      properties:
+        user_id: {type: string, format: uuid}
+        company_id: {type: string, format: uuid}
+        role: {$ref: '#/components/schemas/Role'}
+    Principal:
+      type: object
+      required: [id, email, memberships]
+      properties:
+        id: {type: string, format: uuid}
+        email: {type: string, format: email}
+        memberships:
+          type: array
+          items: {$ref: '#/components/schemas/Membership'}
+    Company:
+      type: object
+      required: [id, name]
+      properties:
+        id: {type: string, format: uuid}
+        name: {type: string}
+    FiscalYearInput:
+      type: object
+      required: [name, start_date, end_date]
+      properties:
+        name: {type: string, minLength: 1}
+        start_date: {type: string, format: date}
+        end_date:
+          type: string
+          format: date
+          description: Exclusive end; greater than start and within parent year for period
+    FiscalYear:
+      allOf:
+        - $ref: '#/components/schemas/FiscalYearInput'
+        - type: object
+          required: [id, company_id]
+          properties:
+            id: {type: string, format: uuid}
+            company_id: {type: string, format: uuid}
+    FiscalPeriod:
+      allOf:
+        - $ref: '#/components/schemas/FiscalYear'
+        - type: object
+          required: [year_id, status]
+          properties:
+            year_id: {type: string, format: uuid}
+            status: {type: string, enum: [open, closed]}
+    AccountInput:
+      type: object
+      required: [code, name, level]
+      properties:
+        parent_id: {type: [string, 'null'], format: uuid}
+        code: {type: string, minLength: 1, maxLength: 64}
+        name: {type: string, minLength: 1, maxLength: 200}
+        level: {type: string, enum: [group, general, subsidiary, detail]}
+        active: {type: boolean, default: true}
+    Account:
+      allOf:
+        - $ref: '#/components/schemas/AccountInput'
+        - type: object
+          required: [id, company_id, full_code, postable]
+          properties:
+            id: {type: string, format: uuid}
+            company_id: {type: string, format: uuid}
+            full_code: {type: string}
+            postable: {type: boolean, description: Computed from hierarchy, active state and any child details}
+    AccountPage:
+      type: object
+      required: [items, page, page_size, total]
+      properties:
+        items: {type: array, items: {$ref: '#/components/schemas/Account'}}
+        page: {type: integer}
+        page_size: {type: integer}
+        total: {type: integer}
+    JournalLineInput:
+      type: object
+      required: [account_id, debit, credit]
+      properties:
+        account_id: {type: string, format: uuid}
+        description: {type: string}
+        debit: {$ref: '#/components/schemas/Rial'}
+        credit: {$ref: '#/components/schemas/Rial'}
+      description: >-
+        For complete posting, exactly one of debit and credit positive; other zero.
+        Draft can have warning-producing incomplete rows, represented separately as optional draft line fields.
+    DraftLine:
+      type: object
+      description: Nullable fields allow incomplete drafts; supplied account IDs must still be tenant scoped
+      properties:
+        account_id: {type: [string, 'null'], format: uuid}
+        description: {type: string}
+        debit: {$ref: '#/components/schemas/Rial'}
+        credit: {$ref: '#/components/schemas/Rial'}
+    JournalDraftInput:
+      type: object
+      required: [fiscal_year_id, posting_date, lines]
+      properties:
+        fiscal_year_id: {type: string, format: uuid}
+        posting_date: {type: string, format: date}
+        description: {type: string}
+        lines:
+          type: array
+          items: {$ref: '#/components/schemas/DraftLine'}
+    Journal:
+      type: object
+      required: [id, company_id, fiscal_year_id, posting_date, status, reversed, lines, warnings]
+      properties:
+        id: {type: string, format: uuid}
+        company_id: {type: string, format: uuid}
+        fiscal_year_id: {type: string, format: uuid}
+        posting_date: {type: string, format: date}
+        description: {type: string}
+        status: {type: string, enum: [draft, posted]}
+        reversed: {type: boolean, description: Derived by linked posted reversal}
+        reversal_of_id: {type: [string, 'null'], format: uuid}
+        voucher_number: {type: [integer, 'null'], minimum: 1}
+        lines: {type: array, items: {$ref: '#/components/schemas/DraftLine'}}
+        total_debit: {$ref: '#/components/schemas/Rial'}
+        total_credit: {$ref: '#/components/schemas/Rial'}
+        warnings: {type: array, items: {type: string}}
+        posted_at: {type: [string, 'null'], format: date-time}
+    JournalPage:
+      type: object
+      required: [items, page, page_size, total]
+      properties:
+        items: {type: array, items: {$ref: '#/components/schemas/Journal'}}
+        page: {type: integer}
+        page_size: {type: integer}
+        total: {type: integer}
+    Movement:
+      type: object
+      required: [journal_id, account_id, posting_date, debit, credit]
+      properties:
+        journal_id: {type: string, format: uuid}
+        voucher_number: {type: integer}
+        account_id: {type: string, format: uuid}
+        posting_date: {type: string, format: date}
+        debit: {$ref: '#/components/schemas/Rial'}
+        credit: {$ref: '#/components/schemas/Rial'}
+        running_balance: {$ref: '#/components/schemas/SignedRial'}
+    MovementPage:
+      type: object
+      required: [items, page, page_size, total, total_debit, total_credit]
+      properties:
+        items: {type: array, items: {$ref: '#/components/schemas/Movement'}}
+        page: {type: integer}
+        page_size: {type: integer}
+        total: {type: integer}
+        total_debit: {$ref: '#/components/schemas/Rial'}
+        total_credit: {$ref: '#/components/schemas/Rial'}
+    Ledger:
+      type: object
+      required: [account_id, opening_balance, period_debit, period_credit, closing_balance, movements]
+      properties:
+        account_id: {type: string, format: uuid}
+        opening_balance: {$ref: '#/components/schemas/SignedRial'}
+        period_debit: {$ref: '#/components/schemas/Rial'}
+        period_credit: {$ref: '#/components/schemas/Rial'}
+        closing_balance: {$ref: '#/components/schemas/SignedRial'}
+        movements: {$ref: '#/components/schemas/MovementPage'}
+    TrialBalanceRow:
+      type: object
+      required: [account_id, account_code, opening_debit, opening_credit, debit, credit, closing_debit, closing_credit]
+      properties:
+        account_id: {type: string, format: uuid}
+        account_code: {type: string}
+        opening_debit: {$ref: '#/components/schemas/Rial'}
+        opening_credit: {$ref: '#/components/schemas/Rial'}
+        debit: {$ref: '#/components/schemas/Rial'}
+        credit: {$ref: '#/components/schemas/Rial'}
+        closing_debit: {$ref: '#/components/schemas/Rial'}
+        closing_credit: {$ref: '#/components/schemas/Rial'}
+    TrialBalance:
+      type: object
+      required: [items, page, page_size, total, totals]
+      properties:
+        items: {type: array, items: {$ref: '#/components/schemas/TrialBalanceRow'}}
+        page: {type: integer}
+        page_size: {type: integer}
+        total: {type: integer}
+        totals: {$ref: '#/components/schemas/TrialBalanceRow'}
+      description: Totals are computed over all matching rows, not just current page
+    AuditEvent:
+      type: object
+      required: [id, company_id, actor_id, action, occurred_at]
+      properties:
+        id: {type: string, format: uuid}
+        company_id: {type: string, format: uuid}
+        actor_id: {type: string, format: uuid}
+        action: {type: string}
+        occurred_at: {type: string, format: date-time}
+        safe_changes: {type: object, additionalProperties: true}
