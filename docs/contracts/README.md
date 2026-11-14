@@ -15,6 +15,10 @@ The machine-readable baseline is [openapi.yaml](./openapi.yaml); architecture ru
 - Posted-only reports include reversals, exclude drafts, and provide money as strings. Running totals sign convention: debit-positive; credit-negative; credit side displayed separately where needed.
 - Proposed reference response paging: `{items:[],page:1,page_size:50,total:0}`. Max page size 100. Error `request_id` correlates sanitized logs without exposing credentials.
 
+## Static validation evidence
+- [VALIDATION.md](./VALIDATION.md) records actual 2026-11-14 execution of `js-yaml 4.1.0` and `Ajv2020 8.17.1` against the OAI OpenAPI 3.1 structural schema. The recorded result is **PASS (with documented dynamic-dialect workaround)** for version `1.0.0-rc.2`, OpenAPI blob `c7d45ebfb715aea6960f130648ebfde148c93e54`, not a runtime or independent QA result.
+- [validation-result.json](./validation-result.json) is the exact generated result; [validate-openapi.cjs](./validate-openapi.cjs) and [package.json](./package.json) provide a reproducible docs-only validator. Full unmodified OAI dialect validation is an explicitly disclosed remaining technical caveat.
+
 ## Review evidence still required
 - [ ] Developer consumer acknowledgment with exact contract SHA
 - [ ] UI/UX consumer acknowledgment with exact contract SHA
