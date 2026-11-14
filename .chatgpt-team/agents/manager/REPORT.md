@@ -69,3 +69,11 @@ Provide a concrete, small-grained, versioned task proposal (without directly edi
 **Mandatory registration corrections:** early CI in H-03/H-21; H-28 for complete CI and recovery; Alembic additive revisions serialized; draft may be incomplete but posting may not; explicitly scoped frontend config/client ownership; cross-tenant, concurrency, reversal and fiscal closure QA gates, code PR reviews and protection of main before code merges. Full wording in `DECISIONS.md`.
 
 **Next conversation:** PM Assistant. Read recorded approval and Planner report, batch-register tasks and waves without independently changing scope or priorities, report exact commit and counts. No agent has been activated by this manager conversation. No coding/tests have started.
+
+## 2026-11-14 — PM Assistant registration reviewed; W0 gated approval
+
+Verified directly on GitHub: 30 registered tasks H-01..H-30, seven W0..W6 waves, zero dangling task dependencies. H-01 = GATE_EVIDENCED; H-02 = NOT_STARTED; remaining 28 tasks NOT_STARTED. Duplicate allowed report paths are within the same owner (QA or Manager), not cross-agent edit conflicts. Existing wave statuses = PENDING_MANAGER_GATE; this approval does not claim updated wave/task execution status.
+
+Decision `APP-HESABYAR-W0-20261114-001` recorded in `.chatgpt-team/TASKS.json` approvals and `.chatgpt-team/DECISIONS.md`: authorize entry to W0 and H-02 Coordinator contract/architecture docs only, **subject to administrative synchronization by PM Assistant** (`W0.entry_authorized=true`, W0 appropriate status; `H-02.start_authorized=true`, H-02 appropriate status). H-01 already evidenced. No other wave/task work authorized. `main` currently unprotected; protect it and require PR/CI before W1 code merges. Require Coordinator reviewed contract baseline and no-overlap evidence before closing W0.
+
+Next conversation: PM Assistant to synchronize W0 and H-02 authorization; after verification, Coordinator H-02. Manager gate for W1 will be separate.
