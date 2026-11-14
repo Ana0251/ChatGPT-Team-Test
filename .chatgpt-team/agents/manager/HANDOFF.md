@@ -1,15 +1,9 @@
 # manager / HANDOFF
 
-## 2026-11-14 — H-02 Coordinator rc.3 consumer re-review
+## 2026-11-14 — Owner GitHub Free branch-protection setup
 
-**Decision:** `APP-HESABYAR-W0-RC3-REVIEW-20261114-001` (DECISIONS.md and TASKS.json approvals)
-**PR:** https://github.com/Ana0251/ChatGPT-Team-Test/pull/1
-**OpenAPI contract:** `1.0.0-rc.3`
-**Exact Git blob:** `98d34e7bd7b4551c0f429ea5e388781060ceaf63`
-**Manager PR comment:** `6875342228`.
+**Decision:** `APP-HESABYAR-H02-RC3-CONSUMERS-20261114-001`. Developer and UI/UX both explicitly acknowledge `1.0.0-rc.3` / OpenAPI Git blob `98d34e7bd7b4551c0f429ea5e388781060ceaf63` in PR #1 comments `6875403671` / `6875407091`. Manager PR comment `6875471786`. PR open/unmerged and GitHub reviews list empty; W0/H-02 not completed, W1 not authorized.
 
-Next user-initiated conversations: **Developer and UI/UX** independent read-only *re*-review. Each must first read own role prompt, central decisions/ledgers and revised PR directly from GitHub, inspect accounting/security or UI consumption, independently report objections or explicitly acknowledge exact same **rc.3/SHA** in PR comment and own role report. No development, UX design implementation, QA, H-03/H-17 or W1 work. No file edits outside agent's own role report. No automatic activation.
+**Next action is with repository owner (not another agent):** Free branch protection can be enabled by making this repository **public**, as user explicitly accepts public exposure and does not have GitHub Pro. Owner should first inspect all current and historical commits, any CI logs, secrets, passwords and confidential customer/company data. Manager's scan of 12 key docs found no obvious token-shaped strings; this is NOT full-history confirmation. GitHub UI: repository Settings → General → Danger Zone → Change visibility → Public; then Settings → Rules → Rulesets or Branches to require PR for main and block force pushes and deletions. Start without mandatory GitHub approval count 1 if only PR author account is available; two independent role comments exist, but are not native GitHub formal PR approvals. Required CI checks only after jobs exist. Once main is protected, every agent including Manager and PM Assistant must use branch/PR for writes.
 
-After both agents review, return to Manager. Manager evaluates feedback, may freeze contract/authorize W0 completion only if reviews and independent PR governance are adequate; a changed OpenAPI SHA requires fresh acknowledgement. PR still OPEN/UNMERGED and W1 not approved.
-
-**Owner GitHub action:** `main` observed unprotected. Private repo Rulesets call returns 403 with Pro upgrade or public-repo message. Do not publicize accounting code just to enable; check/enable GitHub Pro for private branch protection or report lack of support, so Manager can approve a compensating process if necessary. CI checks after workflows exist; no W1 code merges before effective guardrails.
+After owner reports changes, Manager reads live repo visibility, main protection, rulesets, PR #1 and validations to determine formal freeze, docs merge, W0 exit and separate W1 start approval. No autonomous PR merge/publicity performed by Manager tool.
