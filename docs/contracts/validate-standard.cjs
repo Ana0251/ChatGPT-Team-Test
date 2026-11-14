@@ -19,7 +19,9 @@ try {
   validateSchema(api);
   process.stdout.write(JSON.stringify({
     tool: '@apidevtools/swagger-parser',
-    version: '11.0.0',
+    version: require('@apidevtools/swagger-parser/package.json').version,
+    yamlVersion: require('js-yaml/package.json').version,
+    ajvVersion: require('ajv/package.json').version,
     method: 'lib/validators/schema.validateSchema()',
     document: 'docs/contracts/openapi.yaml',
     contractVersion: api.info.version,
