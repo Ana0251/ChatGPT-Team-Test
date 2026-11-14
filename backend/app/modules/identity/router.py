@@ -121,8 +121,14 @@ def session_for(connection, request: Request, authenticated: bool = False):
     return (pre, pre_sid) if pre else (None, None)
 
 
-def check_mutation(connection, request: Request, authenticated: bool = False):
-    session, sid = session_for(connection, request, authenticated)
+def check_mutation(
+    connection, request: Request, authenticated: bool = False, pre_only: bool = False
+):
+    if pre_only:
+        sid = request.cookies.get(PRE_COOKIE)
+        session = get_session(connection, sid, "pre")
+    else:
+        session, sid = session_for(connection, request, authenticated)
     expected_origin(request)
     token = request.headers.get("X-CSRF-Token", "")
     if not session or not token or not equal_digest(digest(token), session["csrf_hash"]):
@@ -181,7 +187,7 @@ def csrf(request: Request):
 def login(body: LoginInput, request: Request):
     engine = engine_for(request)
     with locked(engine) as connection:
-        _, old_sid = check_mutation(connection, request)
+        _, old_sid = check_mutation(connection, request, pre_only=True)
         try:
             email = normalize_email(body.email)
         except ValueError:
@@ -217,7 +223,7 @@ def login(body: LoginInput, request: Request):
     if rejected:
         raise IdentityError(401, "AUTH_INVALID")
     result = JSONResponse(actor, headers={"Cache-Control": "no-store"})
-    result.delete_cookie(PRE_COOKIE, path="/api/v1")
+    result.delete_cookie(PRE_COOKIE, path="/api/v1", secure=True, httponly=True, samesite="lax")
     result.set_cookie(AUTH_COOKIE, sid, max_age=3600, **COOKIE_ARGS)
     return result
 
@@ -230,7 +236,7 @@ def activate_owner(body: ActivateInput, request: Request):
         raise IdentityError(422, "VALIDATION_ERROR") from None
     engine = engine_for(request)
     with locked(engine) as connection:
-        _, old_sid = check_mutation(connection, request)
+        _, old_sid = check_mutation(connection, request, pre_only=True)
         row = connection.execute(select(t.setup_tokens).where(
             t.setup_tokens.c.token_hash == digest(body.token)
         )).mappings().first()
@@ -259,7 +265,7 @@ def activate_invitation(body: ActivateInput, request: Request):
         raise IdentityError(422, "VALIDATION_ERROR") from None
     engine = engine_for(request)
     with locked(engine) as connection:
-        _, old_sid = check_mutation(connection, request)
+        _, old_sid = check_mutation(connection, request, pre_only=True)
         invitation = invite_valid(connection, body.token)
         existing = connection.execute(select(t.users.c.id).where(t.users.c.email == invitation["email"])).first()
         if existing:
@@ -301,7 +307,7 @@ def logout(request: Request):
         revoke_session(connection, sid)
         audit_event(connection, "logout", current["user_id"])
     result = Response(status_code=204, headers={"Cache-Control": "no-store"})
-    result.delete_cookie(AUTH_COOKIE, path="/api/v1")
+    result.delete_cookie(AUTH_COOKIE, path="/api/v1", secure=True, httponly=True, samesite="lax")
     result.delete_cookie(PRE_COOKIE, path="/api/v1")
     return result
 
@@ -328,9 +334,6 @@ def list_members(companyId: UUID, request: Request):
 def invite_member(companyId: UUID, body: InviteInput, request: Request):
     engine = engine_for(request)
     delivery = getattr(request.app.state, "identity_delivery", None)
-    if not callable(delivery):
-        # Must be wired to a trusted, private delivery mechanism before production.
-        return error_response(503, "ACCESS_DENIED")
     try:
         email = normalize_email(body.email)
     except ValueError:
@@ -338,6 +341,9 @@ def invite_member(companyId: UUID, body: InviteInput, request: Request):
     with locked(engine) as connection:
         user_id = actor_id(connection, request, csrf=True)
         role = role_for_company(connection, user_id, str(companyId), ("owner", "admin"))
+        if not callable(delivery):
+            # Fail closed after authorization; never expose transport configuration.
+            return error_response(503, "ACCESS_DENIED")
         if body.role == "owner" and role != "owner":
             raise IdentityError(403, "INVITE_ROLE_FORBIDDEN")
         existing = connection.execute(select(t.users.c.id).where(t.users.c.email == email)).scalar_one_or_none()
