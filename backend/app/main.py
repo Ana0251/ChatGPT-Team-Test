@@ -1,0 +1,21 @@
+"""FastAPI application factory and minimal health endpoint (H-03 only)."""
+
+from fastapi import FastAPI
+
+from app.core.config import Settings, get_settings
+
+
+def create_app(settings: Settings | None = None) -> FastAPI:
+    """Create an application without database, migration, or auth side effects."""
+    config = settings if settings is not None else get_settings()
+    application = FastAPI(title=config.app_name, version="0.1.0")
+
+    @application.get("/health", tags=["Health"])
+    def health() -> dict[str, str]:
+        """Report that the HTTP application is reachable."""
+        return {"status": "ok"}
+
+    return application
+
+
+app = create_app()
