@@ -59,3 +59,13 @@ Provide a concrete, small-grained, versioned task proposal (without directly edi
 4. Only then PM Assistant batch-registers approved tasks/waves. Subsequently assign UI/UX and Developer safe parallel packages; Coordinator reviews integration; QA submits runnable test evidence; PM Assistant prepares status and next-wave proposals.
 
 **No task, wave, code implementation, architecture finalization, or test execution is claimed here.**
+
+## 2026-11-14 — Manager Decision: APP-HESABYAR-V1-20261114-001
+
+**Result:** Planner proposal accepted with explicit amendments and registered as an approval (not tasks) in authoritative `.chatgpt-team/TASKS.json`. Complete decision text stored in `.chatgpt-team/DECISIONS.md`. Planner proposal source blob SHA: `07094c8ef89978c1751d021d36b25a5feece81f4`.
+
+**Approved:** 30 proposed items H-01..H-30, 7 proposed waves W0..W6; FastAPI/React/PostgreSQL modular monolith, IRR integer policy, Jalali presentation with Asia/Tehran accounting calendar, tenant-scoped access, company-owned hierarchical accounts, atomic/auditable posting. Scope V1 operational core then V1.1 treasury, V1.2 financial reporting/dashboard, V1.3 import/export. No public deployment approval.
+
+**Mandatory registration corrections:** early CI in H-03/H-21; H-28 for complete CI and recovery; Alembic additive revisions serialized; draft may be incomplete but posting may not; explicitly scoped frontend config/client ownership; cross-tenant, concurrency, reversal and fiscal closure QA gates, code PR reviews and protection of main before code merges. Full wording in `DECISIONS.md`.
+
+**Next conversation:** PM Assistant. Read recorded approval and Planner report, batch-register tasks and waves without independently changing scope or priorities, report exact commit and counts. No agent has been activated by this manager conversation. No coding/tests have started.
