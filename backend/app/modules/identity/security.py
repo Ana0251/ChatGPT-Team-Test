@@ -4,8 +4,10 @@ from __future__ import annotations
 from datetime import datetime, timedelta, timezone
 import hashlib
 import hmac
+import os
 import re
 import secrets
+from functools import lru_cache
 
 from argon2 import PasswordHasher
 from argon2.exceptions import InvalidHashError, VerificationError, VerifyMismatchError
@@ -67,3 +69,22 @@ def check_password(hashed: str | None, password: str) -> bool:
         return PASSWORD_HASHER.verify(hashed, password)
     except (VerifyMismatchError, VerificationError, InvalidHashError):
         return False
+
+
+@lru_cache(maxsize=1)
+def _dummy_password_hash() -> str:
+    """Random non-account Argon2 hash for equalizing unknown-user verification."""
+    return PASSWORD_HASHER.hash(new_secret())
+
+
+def verify_known_or_dummy(hashed: str | None, password: str) -> bool:
+    """Keep unknown/disabled and real-user login timing in a similar hash-work class."""
+    return check_password(hashed or _dummy_password_hash(), password) if hashed else check_password(_dummy_password_hash(), password)
+
+
+def login_email_key(email: str) -> str:
+    """Avoid low-entropy unsalted email digests in the login throttle table."""
+    pepper = os.environ.get("HESABYAR_LOGIN_PEPPER", "")
+    if len(pepper) < 32:
+        raise RuntimeError("HESABYAR_LOGIN_PEPPER must be a private 32+ character secret")
+    return hmac.new(pepper.encode("utf-8"), email.encode("utf-8"), hashlib.sha256).hexdigest()
