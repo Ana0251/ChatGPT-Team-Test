@@ -10,7 +10,7 @@ from sqlalchemy import Connection, Engine, select
 
 from app.db.engine import create_sqlite_engine
 from app.modules.identity import tables as t
-from app.modules.identity.security import digest, expiry, new_secret, now_string
+from app.modules.identity.security import bound_csrf, digest, expiry, new_secret, now_string
 
 
 @contextmanager
@@ -38,10 +38,12 @@ def audit_event(connection: Connection, action: str, actor: str | None = None, c
 
 
 def new_session(connection: Connection, kind: str, user_id: str | None = None) -> tuple[str, str]:
-    sid, csrf = new_secret(), new_secret()
+    sid = new_secret()
+    expiration = expiry(60 if kind == "auth" else 15)
+    csrf = bound_csrf(sid, expiration)
     connection.execute(t.sessions.insert().values(
         id_hash=digest(sid), user_id=user_id, kind=kind, csrf_hash=digest(csrf),
-        expires_at=expiry(60 if kind == "auth" else 15), revoked_at=None,
+        expires_at=expiration, revoked_at=None,
     ))
     return sid, csrf
 
