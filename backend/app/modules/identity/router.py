@@ -125,6 +125,9 @@ def check_mutation(
     connection, request: Request, authenticated: bool = False, pre_only: bool = False
 ):
     if pre_only:
+        # Anonymous activation/login must never run inside an authenticated session.
+        if get_session(connection, request.cookies.get(AUTH_COOKIE), "auth"):
+            raise IdentityError(403, "CSRF_INVALID")
         sid = request.cookies.get(PRE_COOKIE)
         session = get_session(connection, sid, "pre")
     else:
