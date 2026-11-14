@@ -1,7 +1,7 @@
 openapi: 3.1.0
 info:
   title: Hesabyar Financial Accounting API
-  version: 1.0.0-rc.2
+  version: 1.0.0-rc.3
   description: >-
     H-02 revised proposed V1.0 contract, not implemented or accepted. Decisions H-D01..H-D09.
     Monetary amounts are IRR integer rial decimal strings; financial dates Gregorian ISO.
@@ -107,7 +107,9 @@ paths:
         pre-session bound CSRF, unexpired hashed invitation token delivered only
         to target email, verified token-email binding and strong password.
         Atomically creates internal principal, grants only invited company role,
-        consumes invitation. Never creates owner or cross-company access. Existing
+        consumes invitation. An invited owner receives ownership only for the bound
+        company after server re-verifies the original inviter was authorized to
+        invite owners; never grants global admin/super-admin rights. Existing
         email must use authenticated invitation acceptance; no credential reset.
         No session created; login required. Uniform invalid/expired responses.
       security: []
@@ -132,6 +134,8 @@ paths:
         compares invitation email to authenticated verified email, not client input;
         verifies company, role, expiry and single-use status atomically. Prevents
         duplicate membership and forbids privilege escalation/cross-tenant grants.
+        Company-owner invitations may confer owner of that company only; admin
+        cannot issue owner invitations; re-check issuer permission atomically.
       parameters:
         - $ref: '#/components/parameters/Csrf'
       requestBody:
@@ -250,6 +254,8 @@ paths:
         account accepts via /auth/invitations/accept; non-existing email activates
         via /auth/invitations/activate. Limit invitations and prevent owner-role
         grants except by existing company owner; reject duplicates and stale invites.
+        For a proposed owner invite enforce issuer role owner in company both on
+        issuance and acceptance; new email may become company-scoped owner.
       parameters:
         - $ref: '#/components/parameters/CompanyId'
         - $ref: '#/components/parameters/Csrf'
@@ -637,14 +643,20 @@ paths:
     get:
       tags: [Reports]
       description: >-
-        Posted-only trial balance; opening/movements/closing by account level.
-        Never includes drafts. Sum debits equals credits, F1/F2 reconciles.
+        Posted-only trial balance; opening/movements/closing by hierarchy or
+        complete posting-leaf view. level=detail contains DETAIL leaves and
+        SUBSIDIARY accounts without DETAIL descendants; each posted line once.
+        Never includes drafts. Full-population totals reconcile F1/F2/mixed fixture.
       parameters:
         - $ref: '#/components/parameters/CompanyId'
         - $ref: '#/components/parameters/ReportFrom'
         - $ref: '#/components/parameters/ReportTo'
         - name: level
           in: query
+          description: >-
+            detail selects complete postable leaves (DETAIL plus SUBSIDIARY with no
+            DETAIL child), not exclusively DETAIL hierarchy accounts. UI must
+            show each row's actual account_level and explain the mixed level.
           schema: {type: string, enum: [general, subsidiary, detail], default: subsidiary}
         - $ref: '#/components/parameters/Page'
         - $ref: '#/components/parameters/PageSize'
@@ -746,7 +758,10 @@ components:
       name: to_date
       in: query
       required: true
-      description: Exclusive Gregorian accounting date
+      description: >-
+        Exclusive Gregorian boundary, must be later than from_date. For Persian
+        display, convert the previous Gregorian day into Jalali as the inclusive
+        visible ending day; never label the exclusive boundary as included.
       schema: {type: string, format: date}
   responses:
     Unauthorized:
@@ -775,24 +790,48 @@ components:
         application/json:
           schema: {$ref: '#/components/schemas/ErrorEnvelope'}
   schemas:
+    ErrorCode:
+      type: string
+      description: >-
+        Stable, localization-neutral code; see docs/contracts/ERRORS.md
+        for HTTP/operation applicability and required recovery behavior.
+      enum: [AUTH_INVALID, SESSION_EXPIRED, ACCESS_DENIED, CSRF_INVALID,
+        RESOURCE_NOT_FOUND, INVITE_EXPIRED, INVITE_INVALID, INVITE_ALREADY_USED,
+        INVITE_ROLE_FORBIDDEN, DUPLICATE_MEMBERSHIP, PERIOD_CLOSED,
+        PERIOD_OVERLAP, INVALID_DATE_RANGE, ACCOUNT_NOT_POSTABLE, ACCOUNT_IN_USE,
+        UNBALANCED, JOURNAL_LINE_INVALID, JOURNAL_IMMUTABLE,
+        DUPLICATE_POST, IDEMPOTENCY_CONFLICT, VALIDATION_ERROR]
+    FieldIssue:
+      type: object
+      additionalProperties: false
+      required: [reason]
+      description: >-
+        JSON Pointer field path e.g. /lines/0/account_id, 0-based line_index;
+        reason is stable machine code, message is optional untrusted display
+        text (UI localizes using code/reason). Never include secrets.
+      properties:
+        field: {type: string, description: JSON Pointer to form field such as /lines/0/debit}
+        line_index: {type: integer, minimum: 0, description: Zero-based voucher row index when applicable}
+        reason: {type: string, enum: [REQUIRED, INVALID, NOT_FOUND, NOT_POSTABLE,
+          OUTSIDE_PERIOD, CLOSED, MISMATCH, DUPLICATE, EXPIRED, FORBIDDEN,
+          NOT_BALANCED, INCOMPLETE, NEGATIVE_OR_FRACTIONAL, TOO_LARGE]}
+        message: {type: string, description: Safe optional diagnostic, not localization key}
     ErrorEnvelope:
       type: object
+      additionalProperties: false
       required: [error]
       properties:
         error:
           type: object
+          additionalProperties: false
           required: [code, message, request_id]
           properties:
-            code: {type: string, example: PERIOD_CLOSED}
-            message: {type: string}
+            code: {$ref: '#/components/schemas/ErrorCode'}
+            message: {type: string, description: Optional human-ready message; UI switches on code}
             request_id: {type: string}
             details:
               type: array
-              items:
-                type: object
-                properties:
-                  field: {type: string}
-                  reason: {type: string}
+              items: {$ref: '#/components/schemas/FieldIssue'}
     Rial:
       type: string
       pattern: '^(0|[1-9][0-9]{0,19})$'
@@ -927,9 +966,26 @@ components:
         lines:
           type: array
           items: {$ref: '#/components/schemas/DraftLine'}
+    JournalWarning:
+      type: object
+      additionalProperties: false
+      required: [code, message]
+      description: >-
+        Stable machine-readable draft warning. Form fields use JSON Pointers;
+        indices are zero-based and refer to the current persisted lines order.
+        A warning is not a posted validation success or permission to post.
+      properties:
+        code:
+          type: string
+          enum: [DRAFT_INCOMPLETE, DRAFT_UNBALANCED, LINE_MISSING_ACCOUNT,
+            LINE_MISSING_AMOUNT, LINE_ACCOUNT_NOT_POSTABLE, LINE_AMOUNT_INVALID,
+            DRAFT_DATE_OUTSIDE_PERIOD]
+        field: {type: string, description: JSON Pointer such as /lines/0/account_id}
+        line_index: {type: integer, minimum: 0}
+        message: {type: string, description: Safe human diagnostic, UI maps code to Persian}
     Journal:
       type: object
-      required: [id, company_id, fiscal_year_id, posting_date, status, reversed, lines, warnings]
+      required: [id, company_id, fiscal_year_id, posting_date, status, reversed, lines, total_debit, total_credit, warnings]
       properties:
         id: {type: string, format: uuid}
         company_id: {type: string, format: uuid}
@@ -943,7 +999,7 @@ components:
         lines: {type: array, items: {$ref: '#/components/schemas/DraftLine'}}
         total_debit: {$ref: '#/components/schemas/Rial'}
         total_credit: {$ref: '#/components/schemas/Rial'}
-        warnings: {type: array, items: {type: string}}
+        warnings: {type: array, items: {$ref: '#/components/schemas/JournalWarning'}}
         posted_at: {type: [string, 'null'], format: date-time}
     JournalPage:
       type: object
@@ -955,11 +1011,22 @@ components:
         total: {type: integer}
     Movement:
       type: object
-      required: [journal_id, account_id, posting_date, debit, credit]
+      required: [line_id, line_index, journal_id, account_id, account_code,
+        account_name, account_level, posting_date, debit, credit, description]
+      description: >-
+        Stable journal line ID is unique in the company. Sort by posting_date,
+        voucher_number, line_index, line_id (and company scope); totals over
+        complete filtered population, not page. Line description persists.
       properties:
+        line_id: {type: string, format: uuid}
+        line_index: {type: integer, minimum: 0}
         journal_id: {type: string, format: uuid}
-        voucher_number: {type: integer}
+        voucher_number: {type: integer, minimum: 1}
         account_id: {type: string, format: uuid}
+        account_code: {type: string}
+        account_name: {type: string}
+        account_level: {type: string, enum: [subsidiary, detail]}
+        description: {type: string}
         posting_date: {type: string, format: date}
         debit: {$ref: '#/components/schemas/Rial'}
         credit: {$ref: '#/components/schemas/Rial'}
@@ -986,10 +1053,12 @@ components:
         movements: {$ref: '#/components/schemas/MovementPage'}
     TrialBalanceRow:
       type: object
-      required: [account_id, account_code, opening_debit, opening_credit, debit, credit, closing_debit, closing_credit]
+      required: [account_id, account_code, account_name, account_level, opening_debit, opening_credit, debit, credit, closing_debit, closing_credit]
       properties:
         account_id: {type: string, format: uuid}
         account_code: {type: string}
+        account_name: {type: string}
+        account_level: {type: string, enum: [general, subsidiary, detail]}
         opening_debit: {$ref: '#/components/schemas/Rial'}
         opening_credit: {$ref: '#/components/schemas/Rial'}
         debit: {$ref: '#/components/schemas/Rial'}
@@ -1006,11 +1075,17 @@ components:
         total: {type: integer}
         totals: {$ref: '#/components/schemas/TrialBalanceTotals'}
       description: >-
-        Rows are aggregated at exactly the selected level (general OR subsidiary
-        OR detail), not mixed parent and child rows. Each posted leaf movement
-        contributes once to its single ancestor at the selected level. Summary
-        totals sum the entire filtered level-specific population across all pages
-        BEFORE pagination; do not sum both roll-ups and leaves. Drafts excluded;
+        At general/subsidiary level, each posted line rolls up to exactly one
+        ancestor at that level. At detail level, include ALL postable leaves:
+        DETAIL leaves AND directly postable SUBSIDIARY without DETAIL children.
+        Row.account_level exposes actual effective level; no double-counting and
+        no missing direct-posted subsidiary rows. Summary totals sum all matching
+        authorized accounts BEFORE pagination, independent of page/page_size.
+        Do not mix roll-up parents and their children in the same total.
+        Worked mixed fixture: subsidiary-only A debit 100, DETAIL B credit 100:
+        detail view returns A subsidiary 100/0 and B detail 0/100; aggregate
+        movement debit=credit=100 on every page including page_size=1.
+        Drafts excluded;
         linked reversal posted lines included. Query date range [from_date,to_date).
         Opening balances derive from posted lines before from_date, movements
         from lines within range, and closing balances are opening plus signed
