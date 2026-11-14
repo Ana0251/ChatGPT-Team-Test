@@ -1,0 +1,15 @@
+{
+  "name": "@hesabyar/h02-contract-validator",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Documentation-only OpenAPI validator for H-02. Not application code.",
+  "dependencies": {
+    "ajv": "8.20.0",
+    "js-yaml": "4.3.2",
+    "@apidevtools/swagger-parser": "11.0.0"
+  },
+  "scripts": {
+    "validate:standard": "node validate-standard.cjs",
+    "validate:h02": "node validate-openapi.cjs"
+  }
+}

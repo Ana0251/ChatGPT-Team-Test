@@ -1,0 +1,54 @@
+{
+  "task": "H-02",
+  "decision": "APP-HESABYAR-H02-CONSUMER-FINDINGS-20261114-001",
+  "date": "2026-11-14",
+  "contract": {
+    "path": "docs/contracts/openapi.yaml",
+    "version": "1.0.0-rc.3",
+    "git_blob_sha": "98d34e7bd7b4551c0f429ea5e388781060ceaf63",
+    "unaltered_for_validation": true
+  },
+  "execution": {
+    "environment": "Connected GitHub source fetch + JavaScript code-execution isolate; no Node shell or application implementation",
+    "actual_invocation": "validateSchema(api) — original @apidevtools/swagger-parser/lib/validators/schema.js, loaded as CommonJS function through JavaScript evaluation",
+    "vendor": "@apidevtools/swagger-parser",
+    "vendor_version": "11.0.0",
+    "vendor_source_commit": "3ac7860717bfe41e4a438ae61b1a90ecce6108a3",
+    "yaml_parser": "js-yaml 4.1.0",
+    "json_schema_engine": "Ajv2020 8.17.1 bundled",
+    "supporting_schema": "official OpenAPI 3.1 schema, OAI dated 2026-08-03 at pinned commit ce49002c7bbd323819555464eb479523923f6754",
+    "captured_stdout": "(none: vendor function returns void on success)",
+    "captured_stderr": "(none: no exception)",
+    "result": "PASS",
+    "scope": "Vendor's OpenAPI 3.1 schema-validation function; NOT the full SwaggerParser.validate() dereference pipeline and NOT runtime/QA tests.",
+    "limitations": "The vendor's actual 3.1 implementation uses an internal $dynamicRef workaround documented by its maintainers. It validates unmodified Hesabyar YAML, but does not establish unmodified-OAI schema-base dynamic dialect PASS."
+  },
+  "existing_h02_lint": {
+    "invocation": "validateH02() from docs/contracts/validate-openapi.cjs in JavaScript isolate",
+    "parser": "js-yaml 4.1.0",
+    "engine": "Ajv2020 8.17.1",
+    "result": "PASS",
+    "findings": 0,
+    "paths": 23,
+    "operations": 33,
+    "csrfProtectedMutations": 18,
+    "componentReferences": 239,
+    "jsonSchemaSyntaxChecks": 72,
+    "limitation": "Four #meta substitutions in in-memory copy of official structural schema; previous rc.2 report documents unmodified schema-base failure."
+  },
+  "tests": {
+    "yaml_parsed": "PASS",
+    "vendor_openapi_3_1_schema_check": "PASS",
+    "h02_static_semantic_check": "PASS",
+    "full_external_dereference": "NOT_RUN",
+    "node_cli": "NOT_RUN",
+    "runtime_http_db": "NOT_RUN",
+    "independent_qa": "NOT_RUN"
+  },
+  "pending": [
+    "Fresh Developer acknowledgment exact rc.3 blob SHA",
+    "Fresh UI/UX acknowledgment exact rc.3 blob SHA",
+    "Manager review/freeze and W0 exit",
+    "PR independent review and branch protection before W1 code merge"
+  ]
+}
