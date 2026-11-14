@@ -230,10 +230,6 @@ def login(body: LoginInput, request: Request):
 
 @router.post("/auth/activate", status_code=204)
 def activate_owner(body: ActivateInput, request: Request):
-    try:
-        hashed = password_hash(body.password)
-    except ValueError:
-        raise IdentityError(422, "VALIDATION_ERROR") from None
     engine = engine_for(request)
     with locked(engine) as connection:
         _, old_sid = check_mutation(connection, request, pre_only=True)
@@ -245,6 +241,10 @@ def activate_owner(body: ActivateInput, request: Request):
         user = connection.execute(select(t.users).where(t.users.c.id == row["user_id"])).mappings().one()
         if user["active"] or member_role(connection, row["user_id"], row["company_id"]) != "owner":
             raise IdentityError(409, "INVITE_INVALID")
+        try:
+            hashed = password_hash(body.password)
+        except ValueError:
+            raise IdentityError(422, "VALIDATION_ERROR") from None
         connection.execute(t.users.update().where(t.users.c.id == row["user_id"]).values(
             password_hash=hashed, active=True,
         ))
@@ -259,10 +259,6 @@ def activate_owner(body: ActivateInput, request: Request):
 
 @router.post("/auth/invitations/activate", status_code=204)
 def activate_invitation(body: ActivateInput, request: Request):
-    try:
-        hashed = password_hash(body.password)
-    except ValueError:
-        raise IdentityError(422, "VALIDATION_ERROR") from None
     engine = engine_for(request)
     with locked(engine) as connection:
         _, old_sid = check_mutation(connection, request, pre_only=True)
@@ -270,6 +266,10 @@ def activate_invitation(body: ActivateInput, request: Request):
         existing = connection.execute(select(t.users.c.id).where(t.users.c.email == invitation["email"])).first()
         if existing:
             raise IdentityError(409, "INVITE_INVALID")
+        try:
+            hashed = password_hash(body.password)
+        except ValueError:
+            raise IdentityError(422, "VALIDATION_ERROR") from None
         user_id = new_id()
         connection.execute(t.users.insert().values(id=user_id, email=invitation["email"], password_hash=hashed, active=True))
         connection.execute(t.memberships.insert().values(user_id=user_id, company_id=invitation["company_id"], role=invitation["role"]))
