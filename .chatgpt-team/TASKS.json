@@ -1644,6 +1644,95 @@
       "after_merge": "PM Assistant must separately update only H04 status COMPLETED strictly for SQLite local infrastructure after verifying merged PR18. Keep W1 open and all H05/H06/H07/H08/W2–W6 unauthorized. Do not start H26.",
       "not_tested": "PostgreSQL NUMERIC(20,0), row locking/financial concurrency, real multi-tenant authorization/security, actual product accounting F1/F2/F3, HTTP/API, backup/restore/recovery, final DB release suitability and QA independent runtime execution are DEFERRED/NOT_TESTED.",
       "warning_followup": "3 nonblocking Alembic path_separator deprecation warnings remain."
+    },
+    {
+      "id": "APP-HESABYAR-W1-H05-ENTRY-20261114-001",
+      "date": "2026-11-14",
+      "approved_by": "manager",
+      "project": "حسابیار (Hesabyar)",
+      "wave_id": "W1",
+      "task_id": "H-05",
+      "framework_version": "1.3.0",
+      "status": "H05_APPROVED_PENDING_PM_ASSISTANT_LEDGER_SYNC",
+      "scope": "Developer implementation of internal company-scoped authentication/authorization and identity API only, under approved local SQLite H04 baseline; not production, release, company/fiscal domain implementation or activation of other tasks.",
+      "dependency_evidence": {
+        "H04": "COMPLETED (local SQLite only, PR #23 merged)",
+        "H03": "COMPLETED",
+        "H02": "COMPLETED",
+        "H17": "COMPLETED",
+        "H18": "COMPLETED (design specification only)",
+        "W1": "AUTHORIZED_NOT_STARTED; entry_authorized true"
+      },
+      "review_policy": "coordinator_required",
+      "review_risks": [
+        "Password hashing, credential handling and no account enumeration",
+        "Pre-session and authenticated session rotation, secure cookies, expiration and revocation",
+        "CSRF including Origin enforcement, token expiry and forbidden replay",
+        "Invitations and operator-provisioned first owner with atomic one-use tokens",
+        "Company membership authorization and owner/admin/accountant/viewer privilege boundaries",
+        "Concurrent identity/invitation state integrity and SQLite local-only limitations",
+        "Shared file ownership exceptions for app routing and dependencies"
+      ],
+      "review_reason": "H-05 touches sensitive credential/session/CSRF/company-permission and token flows; independent integration review by Coordinator is mandatory before independent QA and Manager acceptance. Existing H-05 legacy record has no review_policy; Manager explicitly selects coordinator_required for H-05 under v1.3.0.",
+      "contract": {
+        "openapi_version": "1.0.0-rc.3",
+        "openapi_blob": "98d34e7bd7b4551c0f429ea5e388781060ceaf63",
+        "design_refs": [
+          "design/specs/identity/AUTH_AND_INVITATIONS.md",
+          "design/specs/identity/SESSION_STATES.md"
+        ],
+        "no_contract_change": true
+      },
+      "paths": {
+        "existing": [
+          "backend/app/modules/identity/**",
+          "backend/tests/identity/**",
+          "backend/alembic/versions/h-05_*.py"
+        ],
+        "append_after_ledger_sync": [
+          "backend/app/main.py",
+          "backend/pyproject.toml"
+        ],
+        "rules": {
+          "backend/app/main.py": "ONLY import/register H-05 identity APIRouter in FastAPI application factory, preserve H-03 /health behavior and app boot smoke tests; no unrelated app settings or domain changes",
+          "backend/pyproject.toml": "ONLY minimal reproducible established password-hashing/security dependencies (e.g. maintained Argon2id library) and necessary identity-test dependency declarations; no unrelated upgrades",
+          "backend/alembic/versions/h-05_*.py": "ONLY additive uniquely named H-05 identity/session/membership/invitation schema revision(s); do not rewrite H-04 or other Alembic revisions",
+          "backend/app/modules/identity/**": "Implement H-05 identity/auth/session/invitation/membership guards only; no company/fiscal CRUD and no global admin",
+          "backend/tests/identity/**": "Identity negative, security and lifecycle tests; isolate disposable local test DB and use synthetic users/secrets only"
+        },
+        "forbidden": [
+          "backend/app/core/config.py",
+          "backend/app/db/**",
+          "backend/alembic/env.py",
+          "backend/alembic/versions/h-04_0001_baseline.py",
+          "docs/contracts/**",
+          "design/**",
+          "frontend/**",
+          ".chatgpt-team/agents/qa/REPORT.md",
+          ".chatgpt-team/agents/coordinator/REPORT.md",
+          "other agents' files and TASKS/WAVES/DECISIONS from Developer branch"
+        ]
+      },
+      "acceptance_extension": [
+        "Match frozen /auth/csrf, /auth/login, /auth/activate, /auth/invitations/activate, /auth/invitations/accept, /auth/logout and /auth/me contracts; membership guard and pending invitations for /companies/{companyId}/members only within identity remit; do not invent new endpoints or public registration.",
+        "No default users/passwords or global super-admin; initial owner provisioned by a restricted audited out-of-band command/process, hashed single-use token with <=15-minute expiry and company binding; no self-service public owner creation.",
+        "Approved adaptive password hashing, constant-time checks where applicable; passwords/tokens/secrets never stored in plaintext or included in URL/logs; never persist raw invitation/setup/session token.",
+        "Secure HttpOnly SameSite=Lax session and pre-session cookies, same-origin HTTPS and Origin+X-CSRF-Token for unsafe requests, rotate/revoke on auth changes, session expires and invalidates, bounded replay-safe handling.",
+        "Verify company-scoped role owner/admin/accountant/viewer server-side; only company owner may grant owner; no privilege escalation, no cross-tenant IDOR, email-bound invitation lifecycle atomically single use.",
+        "Actual Windows Python 3.14.7/SQLite 3.50.4 local engine tests with exact PR SHA, dependency versions, 401/403/409/422, CSRF failure, expired/revoked session, invalid/stale/reused invitation token, wrong-company roles, anonymized logs, exit codes. Test router integrated through FastAPI app factory; preserve existing H-03 health smoke and H-04 DB tests.",
+        "Proof must distinguish owner-run logs from Coordinator/QA independent code review, and separately report any QA-run tests; no unexecuted tests PASS."
+      ],
+      "dependency_policy": "H-05 depends on H-04 formally completed in local SQLite scope; H-06/H-07/H-08 remain NOT_STARTED and must not be bootstrapped by H-05, except strictly necessary H-05 identity fixtures. Real production engine and PostgreSQL-specific race/security tests remain DEFERRED/NOT_TESTED.",
+      "h05_after_pma_sync": {
+        "start_authorized": true,
+        "status": "AUTHORIZED_NOT_STARTED",
+        "validation_status": "NOT_TESTED",
+        "owner": "developer",
+        "review_policy": "coordinator_required"
+      },
+      "PM_Assistant_authorized_changes": "Only H-05 record: set start_authorized=true and status=AUTHORIZED_NOT_STARTED; append the two narrow shared paths to allowed_paths and add scope/test/security notes, review_policy/review_risks/review_reason and approved evidence/decision refs. Preserve 30 tasks, approvals, H-04/H-18 statuses and all other task records; do NOT change WAVES.json or start work itself. Use independent PR and wait for Manager merge.",
+      "entry_gate": "Developer may start ONLY after PM Assistant's H-05 ledger sync PR is reviewed and merged to protected main; Manager to send explicit Developer handoff after verifying.",
+      "no_other_authorization": "No H-06/H-07/H-08/H-26 or W2–W6 authorization; W1 remains open; no release gate, no production PostgreSQL QA waiver."
     }
   ]
 }
