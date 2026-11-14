@@ -6,7 +6,6 @@ user registration, company creation or system-wide administrator API is exposed.
 from __future__ import annotations
 
 import os
-from datetime import datetime, timezone
 from typing import Literal
 from uuid import UUID
 
@@ -20,8 +19,8 @@ from sqlalchemy import select
 from app.modules.identity import tables as t
 from app.modules.identity.delivery import smtp_delivery_from_env
 from app.modules.identity.security import (
-    check_password, digest, equal_digest, expiry, new_secret,
-    normalize_email, now_string, password_hash, validate_password,
+    digest, equal_digest, expiry, login_email_key, new_secret,
+    normalize_email, now_string, password_hash, verify_known_or_dummy,
 )
 from app.modules.identity.store import (
     audit_event, configured_engine, get_session, locked, member_role,
@@ -71,7 +70,7 @@ router = APIRouter(tags=["Identity"], route_class=IdentityRoute)
 class LoginInput(BaseModel):
     model_config = ConfigDict(extra="forbid")
     email: str = Field(min_length=3, max_length=320)
-    password: str = Field(min_length=1)
+    password: str = Field(min_length=1, max_length=1024)
 
 
 class ActivateInput(BaseModel):
@@ -193,12 +192,12 @@ def login(body: LoginInput, request: Request):
             email = normalize_email(body.email)
         except ValueError:
             raise IdentityError(401, "AUTH_INVALID") from None
-        email_key = digest(email)
+        email_key = login_email_key(email)
         attempts = connection.execute(select(t.login_attempts).where(t.login_attempts.c.email_hash == email_key)).mappings().first()
         if attempts and attempts["locked_until"] and attempts["locked_until"] > now_string():
             raise IdentityError(401, "AUTH_INVALID")
         user = connection.execute(select(t.users).where(t.users.c.email == email)).mappings().first()
-        valid = bool(user and user["active"] and check_password(user["password_hash"], body.password))
+        valid = verify_known_or_dummy(user["password_hash"] if user and user["active"] else None, body.password) and bool(user and user["active"])
         if not valid:
             failures = int(attempts["failures"]) + 1 if attempts else 1
             lock_until = expiry(15) if failures >= 5 else None
@@ -346,7 +345,7 @@ def invite_member(companyId: UUID, body: InviteInput, request: Request):
         role = role_for_company(connection, user_id, str(companyId), ("owner", "admin"))
         if not callable(delivery):
             # Fail closed after authorization; never expose transport configuration.
-            return error_response(503, "ACCESS_DENIED")
+            return error_response(403, "ACCESS_DENIED")
         if body.role == "owner" and role != "owner":
             raise IdentityError(403, "INVITE_ROLE_FORBIDDEN")
         existing = connection.execute(select(t.users.c.id).where(t.users.c.email == email)).scalar_one_or_none()
