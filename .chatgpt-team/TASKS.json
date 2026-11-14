@@ -2,5 +2,84 @@
   "mode": "chatgpt-github",
   "version": "1.2.0",
   "tasks": [],
-  "approvals": []
+  "approvals": [
+    {
+      "id": "APP-HESABYAR-V1-20261114-001",
+      "project": "حسابیار (Hesabyar)",
+      "date": "2026-11-14",
+      "approved_by": "manager",
+      "status": "APPROVED_WITH_AMENDMENTS",
+      "scope": "V1.0 operational accounting core; V1.1 treasury/people; V1.2 financial statements/dashboard; V1.3 import/export/PDF; no CSV export in V1.0",
+      "source": {
+        "planner_report": ".chatgpt-team/agents/planner/REPORT.md",
+        "planner_report_blob_sha": "07094c8ef89978c1751d021d36b25a5feece81f4",
+        "manager_report": ".chatgpt-team/agents/manager/REPORT.md"
+      },
+      "decision_ids": [
+        "H-D01",
+        "H-D02",
+        "H-D03",
+        "H-D04",
+        "H-D05",
+        "H-D06",
+        "H-D07",
+        "H-D08",
+        "H-D09"
+      ],
+      "task_proposal_ids": [
+        "H-01",
+        "H-02",
+        "H-03",
+        "H-04",
+        "H-05",
+        "H-06",
+        "H-07",
+        "H-08",
+        "H-09",
+        "H-10",
+        "H-11",
+        "H-12",
+        "H-13",
+        "H-14",
+        "H-15",
+        "H-16",
+        "H-17",
+        "H-18",
+        "H-19",
+        "H-20",
+        "H-21",
+        "H-22",
+        "H-23",
+        "H-24",
+        "H-25",
+        "H-26",
+        "H-27",
+        "H-28",
+        "H-29",
+        "H-30"
+      ],
+      "wave_proposal_ids": [
+        "W0",
+        "W1",
+        "W2",
+        "W3",
+        "W4",
+        "W5",
+        "W6"
+      ],
+      "registration_delegate": "pm-assistant",
+      "registration_status": "PENDING",
+      "amendments": [
+        "H-03: bootstrap early minimal backend CI/PR smoke checks; H-21: add frontend checks; H-28: complete full integration CI, reproducible bootstrap and restore in W5. Changes to shared workflow files occur sequentially.",
+        "H-04 owns initial Alembic baseline and migration protocol; module tasks own only uniquely named additive revision files backend/alembic/versions/h-XX_*.py, serialized with Coordinator approval and migration CI. Shared migration config stays H-04-owned.",
+        "H-11: drafts may be saved incomplete/unbalanced with explicit validation state; only posting requires full balanced nonzero lines; never expose drafts to ledger aggregates.",
+        "H-21 owns frontend build tool configuration and typed client generation/lockfile. No cross-owner frontend/** edits; UX only design/**.",
+        "H-26 independent QA executes continuously as modules land. H-14 concurrent posting, H-13 reversal, F1-F3 reconciliation and isolation remain mandatory release gates.",
+        "Before code merges, use topic branches and PR review; protect main (currently observed unprotected) and implement required CI checks. No broad source edits directly on main.",
+        "H-01 is the manager decision gate evidenced by this approval; H-30 remains a separate unreached acceptance gate; no task may be marked TESTED/DONE without actual evidence."
+      ],
+      "execution_policy": "No implementation authorized until PM Assistant registers approved tasks/waves with dependencies, named file scopes and entry criteria; Manager authorizes individual wave entry; no automatic agent activation.",
+      "evidence": "Dated manager decision in .chatgpt-team/DECISIONS.md; authoritative tasks/waves counts remain zero until PM Assistant registration"
+    }
+  ]
 }
