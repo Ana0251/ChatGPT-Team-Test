@@ -556,11 +556,24 @@
       "acceptance_criteria": "Login, company and period selector journeys; error/empty/loading/permission states",
       "mandatory_amendments": "Design-only, state maps for internal email/password auth, company membership and fiscal selection, permission and expired session.",
       "evidence_required": "Screen flow and state matrix",
-      "evidence_refs": [],
-      "status": "AUTHORIZED_NOT_STARTED",
-      "validation_status": "NOT_TESTED",
+      "evidence_refs": [
+        ".chatgpt-team/DECISIONS.md#APP-HESABYAR-H18-SPEC-QA-ACCEPT-20261114-001",
+        "https://github.com/Ana0251/ChatGPT-Team-Test/pull/19",
+        "https://github.com/Ana0251/ChatGPT-Team-Test/pull/17",
+        "https://github.com/Ana0251/ChatGPT-Team-Test/commit/d465e5e6412b271e6cbb5881164803aeff1605f7",
+        "https://github.com/Ana0251/ChatGPT-Team-Test/pull/17#issuecomment-6879398410",
+        "https://github.com/Ana0251/ChatGPT-Team-Test/pull/17#issuecomment-6879505077",
+        ".chatgpt-team/agents/qa/REPORT.md",
+        "design/specs/identity/AUTH_AND_INVITATIONS.md",
+        "design/specs/identity/SESSION_STATES.md",
+        "design/specs/company-period/COMPANY_FISCAL_SELECTION.md",
+        "design/specs/company-period/STATE_MATRIX_AND_REVIEW.md"
+      ],
+      "status": "COMPLETED",
+      "validation_status": "COORDINATOR_AND_INDEPENDENT_QA_PASS_LIMITED_DESIGN_SPECS_ONLY_RUNTIME_NOT_TESTED",
       "start_authorized": true,
-      "notes": null
+      "notes": "Manager accepted H-18 COMPLETED strictly as design-documentation deliverables under APP-HESABYAR-H18-SPEC-QA-ACCEPT-20261114-001. PR #17 approved design HEAD a342bafda7da2027f9af14ba276022e2b25cc62a; merged d465e5e6412b271e6cbb5881164803aeff1605f7. Coordinator review comment 6879398410 PASS LIMITED for static contract/integration/design consistency; independent QA comment 6879505077 PASS LIMITED, 19/19 design criteria SPECIFIED, not executed runtime PASS. Browser, rendered UI, real 360px layouts, light/dark rendering, keyboard, screen-reader, 200% zoom, accessibility audits, HTTP/API, CSRF/session/tenant authorization, security and functional integration remain NOT_TESTED. Independent QA here is document-review only, not H-26 or runtime QA. W1 remains open, H-04 unmodified and all later task/wave gates unchanged.",
+      "completed_on": "2026-11-14"
     },
     {
       "id": "H-19",
