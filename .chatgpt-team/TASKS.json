@@ -1334,6 +1334,41 @@
       "merge_conditions": "Allowed to merge PR #8 after this governance decision is merged, if exact head SHA and four-file scope are unchanged. Do not merge PR #7, which requires actual owner manual health/Pytest test evidence.",
       "post_merge": "PM Assistant records H-17 design-only task completion/evidence via separate protected-main PR after manager verifies merge. H-18 remains unauthorized until separate manager decision; no implicit wave completion.",
       "task_status_unchanged": true
+    },
+    {
+      "id": "APP-HESABYAR-H03-HEALTH-ACCEPT-20261114-001",
+      "date": "2026-11-14",
+      "approved_by": "manager",
+      "project": "حسابیار (Hesabyar)",
+      "wave_id": "W1",
+      "task_id": "H-03",
+      "status": "BACKEND_HEALTH_MANUAL_TEST_ACCEPTED_PR_MERGE_AUTHORIZED",
+      "pr_number": 7,
+      "expected_head_sha": "77d84599cadfe9584753d84602c8fc61d7047d09",
+      "source_allowed_paths": [
+        "backend/pyproject.toml",
+        "backend/app/main.py",
+        "backend/app/core/config.py",
+        "backend/tests/test_health.py"
+      ],
+      "developer_report_path": ".chatgpt-team/agents/developer/REPORT.md",
+      "evidence_comment": "https://github.com/Ana0251/ChatGPT-Team-Test/pull/7#issuecomment-6876604892",
+      "manual_test": {
+        "platform": "Windows PowerShell",
+        "python_version": "3.14.7",
+        "pytest_version": "9.2.0",
+        "fastapi_version": "0.162.7",
+        "uvicorn_version": "0.54.0",
+        "test_command": ".venv/Scripts/python.exe -m pytest -v tests/test_health.py",
+        "test_result": "PASS: 3/3 tests; one StarletteDeprecationWarning",
+        "server_command": ".venv/Scripts/python.exe -m uvicorn app.main:app --host 127.0.0.1 --port 8000",
+        "http_health_result": "Observed GET /health HTTP/1.1 200 OK in server log twice and Invoke-RestMethod status=ok",
+        "git_sha_tested": "77d84599cadfe9584753d84602c8fc61d7047d09"
+      },
+      "warning": "StarletteDeprecationWarning: using httpx with starlette.testclient deprecated; install httpx2 instead. Not a currently failing test, track before future dependency upgrades/QA.",
+      "test_scope": "Real FastAPI health/Pytest smoke only; no PostgreSQL, migrations, authorization, tenants, accounting logic, security QA, performance, or production readiness.",
+      "manager_conditions": "Merge existing PR #7 only AFTER this protected-main governance approval is merged, and only if PR head still exact SHA 77d845..., changed paths exactly H-03 permitted source/test files plus Developer own report. No direct main edits. Do not assume GitHub Actions PASS.",
+      "follow_up": "Once PR #7 merged, PM Assistant records H-03 as COMPLETED with manually run actual evidence and H-17 as COMPLETED docs-only with PR #8 merge evidence, in a new protected-main PR. H-04/H-18 remain unauthorized until separate managerial task gate; W1 not complete."
     }
   ]
 }
