@@ -1,7 +1,16 @@
 # manager / HANDOFF
 
-## 2026-11-14 — H-02 Coordinator corrections after manager review
+## 2026-11-14 — W0/H-02 revised contract consumer review
 
-**Next independent chat:** Coordinator (same H-02; no new task). PR https://github.com/Ana0251/ChatGPT-Team-Test/pull/1 (open/unmerged). Manager review comment id `6874642836` records CHANGES_REQUIRED. W0 is *not complete*, H-02 is *not accepted*, W1 remains unauthorized.
+**Manager decision:** `APP-HESABYAR-W0-CONTRACT-REVIEW-20261114-001`.
+**PR:** https://github.com/Ana0251/ChatGPT-Team-Test/pull/1
+**Contract version:** `1.0.0-rc.2`
+**OpenAPI Git blob SHA:** `c7d45ebfb715aea6960f130648ebfde148c93e54`
+**Manager findings PR comment:** `6874976613`
+**Source branch:** `feature/h-02-contract-architecture-v1`, head at review `d0067c98c6c5fc2f883dbf0baf715ad797818119`.
 
-Read role and official TASKS/WAVES/DECISIONS, PR #1 review, and current base/head/file SHAs directly from GitHub. Revise only `docs/contracts/**`, `docs/architecture/**` and your own report on existing feature branch, via the same PR. Correct aggregate `TrialBalance.totals` schema and pagination/rollup; secure onboarding/first-user and invite lifecycle; CSRF bootstrap/session binding and rotation; run real YAML/OpenAPI 3.1 spec validation and document actual command/version/output (no fabricated PASS); address any additional related contract findings. Update PR description and report with changed blobs/commits and list any remaining unresolved review gates. Do not merge without authorization, touch source code, TASKS/WAVES, other agent reports, or perform W1/H-27. Developer/UI-UX acknowledgments are manager-arranged read-only reviews after corrected contract, not automatically assigned to Coordinator. Once corrected, return to Manager for read-only consumer review gating and W0 decision.
+The previous four corrections are documented. The structural/YAML validator evidence is authentic **but qualified**: full unmodified official OAI dialect validation did not pass; Node CLI was not executed. Two accounting/role ambiguities are flagged in manager comment: detail-level trial balance must cover directly postable subsidiary leaves consistently; invited company owner role is contradictory between API descriptions.
+
+**Next user-initiated independent conversations:** Developer and UI/UX (either order). Their permission is limited to GitHub read-only review of docs and comment/reporting of findings or precise version/SHA acknowledgment. Developer must inspect API implementability, accounting/security and validator limitations; UI/UX must inspect RTL/Jalali, error flows, onboarding/invite/CSRF and report presentation. No code, UI implementation, repo source edits, changed ledgers, QA test or W1 work may begin. Do not automatically activate chats. Their role reports may be updated only within their own report directories if permitted by their role instruction.
+
+After both reviews the user returns to Manager. Manager decides what Coordinator must correct in same PR and when to request final acknowledgments. No H-02 completion, PR merge, W0 exit or W1 authorization until unresolved blockers, independent OpenAPI validation and final SHA consumer review gates are satisfied.
