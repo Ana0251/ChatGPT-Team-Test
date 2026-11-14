@@ -1,9 +1,9 @@
 openapi: 3.1.0
 info:
   title: Hesabyar Financial Accounting API
-  version: 1.0.0-rc.1
+  version: 1.0.0-rc.2
   description: >-
-    H-02 proposed V1.0 contract, not implemented or accepted. Decisions H-D01..H-D09.
+    H-02 revised proposed V1.0 contract, not implemented or accepted. Decisions H-D01..H-D09.
     Monetary amounts are IRR integer rial decimal strings; financial dates Gregorian ISO.
 servers:
   - url: /api/v1
@@ -21,11 +21,17 @@ paths:
   /auth/csrf:
     get:
       tags: [Identity]
-      summary: Obtain CSRF token for cookie session flow
+      summary: Bootstrap a browser-bound pre-auth or authenticated CSRF token
+      description: >-
+        Same-origin HTTPS GET creates random opaque HttpOnly Secure SameSite=Lax
+        hesabyar_pre_session cookie for anonymous browser and returns HMAC-bound
+        CSRF token linked to that nonce, origin and expiry. An authenticated call
+        binds CSRF to current authenticated session instead. Cache-Control no-store.
+        Login and activation rotate session identifiers and invalidate prior tokens.
       security: []
       responses:
         '200':
-          description: CSRF token
+          description: Bound CSRF token; Set-Cookie for anonymous pre-session, Cache-Control no-store
           content:
             application/json:
               schema:
@@ -36,7 +42,14 @@ paths:
   /auth/login:
     post:
       tags: [Identity]
-      summary: Authenticate internal user
+      summary: Authenticate an activated internal user
+      description: >-
+        Requires anonymous pre-session cookie from GET /auth/csrf and matching
+        X-CSRF-Token plus same-origin Origin validation. On success destroy pre-session,
+        rotate to new Secure HttpOnly SameSite=Lax authenticated session cookie,
+        invalidate old CSRF. Client must fetch fresh /auth/csrf after login before
+        next mutation. CSRF missing, expired or mismatched returns 403 CSRF_INVALID;
+        client may refresh once via GET, must never blindly replay mutations.
       security: []
       parameters:
         - $ref: '#/components/parameters/Csrf'
@@ -58,6 +71,88 @@ paths:
               schema: {$ref: '#/components/schemas/Principal'}
         '401': {$ref: '#/components/responses/Unauthorized'}
         '403': {$ref: '#/components/responses/Forbidden'}
+        '422': {$ref: '#/components/responses/Invalid'}
+  /auth/activate:
+    post:
+      tags: [Identity]
+      summary: One-time password setup for operator-provisioned initial owner
+      description: >-
+        Operator creates pending initial company/owner out of band via restricted
+        audited provisioning command (no open bootstrap HTTP endpoint or default
+        credentials). Provisioner sends 256-bit single-use setup token using a
+        verified private delivery channel; server stores only token hash, expiry
+        <= 15 minutes and company/subject binding. This endpoint consumes token
+        atomically, sets strong password using approved adaptive hash, activates
+        owner, never creates extra global privileges. Same-origin pre-session CSRF
+        required. Activation does not log user in; subsequent /auth/login required.
+      security: []
+      parameters:
+        - $ref: '#/components/parameters/Csrf'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/ActivationInput'}
+      responses:
+        '204': {description: Initial owner activated; token consumed; login required}
+        '403': {$ref: '#/components/responses/Forbidden'}
+        '409': {$ref: '#/components/responses/Conflict'}
+        '422': {$ref: '#/components/responses/Invalid'}
+  /auth/invitations/activate:
+    post:
+      tags: [Identity]
+      summary: New invitee activates an account using a single-use invite token
+      description: >-
+        Anonymous endpoint for email addresses with no existing user. Requires
+        pre-session bound CSRF, unexpired hashed invitation token delivered only
+        to target email, verified token-email binding and strong password.
+        Atomically creates internal principal, grants only invited company role,
+        consumes invitation. Never creates owner or cross-company access. Existing
+        email must use authenticated invitation acceptance; no credential reset.
+        No session created; login required. Uniform invalid/expired responses.
+      security: []
+      parameters:
+        - $ref: '#/components/parameters/Csrf'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/ActivationInput'}
+      responses:
+        '204': {description: Account activated and invited company membership granted}
+        '403': {$ref: '#/components/responses/Forbidden'}
+        '409': {$ref: '#/components/responses/Conflict'}
+        '422': {$ref: '#/components/responses/Invalid'}
+  /auth/invitations/accept:
+    post:
+      tags: [Identity]
+      summary: Existing signed-in user accepts an invitation for matching verified email
+      description: >-
+        Requires current authenticated session, CSRF and invitation token. Server
+        compares invitation email to authenticated verified email, not client input;
+        verifies company, role, expiry and single-use status atomically. Prevents
+        duplicate membership and forbids privilege escalation/cross-tenant grants.
+      parameters:
+        - $ref: '#/components/parameters/Csrf'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              required: [token]
+              properties:
+                token: {type: string, minLength: 32}
+      responses:
+        '201':
+          description: Membership granted in invited company only
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/Membership'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+        '409': {$ref: '#/components/responses/Conflict'}
         '422': {$ref: '#/components/responses/Invalid'}
   /auth/logout:
     post:
@@ -146,7 +241,15 @@ paths:
         '404': {$ref: '#/components/responses/NotFound'}
     post:
       tags: [Identity]
-      summary: Invite or attach existing internal user as member (owner/admin)
+      summary: Create a pending invitation for an existing or new email (owner/admin)
+      description: >-
+        Never grants membership until recipient accepts. Stores only hash of
+        256-bit random, single-use invitation token, target normalized email,
+        company and proposed role with <=48h expiry; deliver token privately to
+        that email, never include token in API response, logs or URLs. Existing
+        account accepts via /auth/invitations/accept; non-existing email activates
+        via /auth/invitations/activate. Limit invitations and prevent owner-role
+        grants except by existing company owner; reject duplicates and stale invites.
       parameters:
         - $ref: '#/components/parameters/CompanyId'
         - $ref: '#/components/parameters/Csrf'
@@ -161,11 +264,12 @@ paths:
                 email: {type: string, format: email}
                 role: {$ref: '#/components/schemas/Role'}
       responses:
-        '201':
-          description: Membership created
+        '202':
+          description: Pending invitation created; no membership or token returned
           content:
             application/json:
-              schema: {$ref: '#/components/schemas/Membership'}
+              schema: {$ref: '#/components/schemas/Invitation'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
         '403': {$ref: '#/components/responses/Forbidden'}
         '404': {$ref: '#/components/responses/NotFound'}
         '409': {$ref: '#/components/responses/Conflict'}
@@ -610,6 +714,11 @@ components:
       required: true
       schema: {type: string, format: uuid}
     Csrf:
+      description: >-
+        Required for all unsafe HTTP methods, including anonymous login and
+        activation. Cryptographically bound to anonymous pre-session or current
+        authenticated session. Enforce Origin and reject missing/expired/mismatch
+        with 403 CSRF_INVALID; issue new token through GET /auth/csrf.
       name: X-CSRF-Token
       in: header
       required: true
@@ -703,6 +812,24 @@ components:
         user_id: {type: string, format: uuid}
         company_id: {type: string, format: uuid}
         role: {$ref: '#/components/schemas/Role'}
+    Invitation:
+      type: object
+      additionalProperties: false
+      required: [id, company_id, email, role, status, expires_at]
+      properties:
+        id: {type: string, format: uuid}
+        company_id: {type: string, format: uuid}
+        email: {type: string, format: email}
+        role: {$ref: '#/components/schemas/Role'}
+        status: {type: string, enum: [pending]}
+        expires_at: {type: string, format: date-time}
+    ActivationInput:
+      type: object
+      additionalProperties: false
+      required: [token, password]
+      properties:
+        token: {type: string, minLength: 32}
+        password: {type: string, format: password, minLength: 12}
     Principal:
       type: object
       required: [id, email, memberships]
@@ -877,8 +1004,30 @@ components:
         page: {type: integer}
         page_size: {type: integer}
         total: {type: integer}
-        totals: {$ref: '#/components/schemas/TrialBalanceRow'}
-      description: Totals are computed over all matching rows, not just current page
+        totals: {$ref: '#/components/schemas/TrialBalanceTotals'}
+      description: >-
+        Rows are aggregated at exactly the selected level (general OR subsidiary
+        OR detail), not mixed parent and child rows. Each posted leaf movement
+        contributes once to its single ancestor at the selected level. Summary
+        totals sum the entire filtered level-specific population across all pages
+        BEFORE pagination; do not sum both roll-ups and leaves. Drafts excluded;
+        linked reversal posted lines included. Query date range [from_date,to_date).
+        Opening balances derive from posted lines before from_date, movements
+        from lines within range, and closing balances are opening plus signed
+        movements. Debit/credit totals equal on movement basis for F1 (each
+        1200000 IRR) and after F2 (each 1400000 IRR), irrespective of page size.
+    TrialBalanceTotals:
+      type: object
+      description: Aggregate financial totals; deliberately has no account ID or code
+      additionalProperties: false
+      required: [opening_debit, opening_credit, debit, credit, closing_debit, closing_credit]
+      properties:
+        opening_debit: {$ref: '#/components/schemas/Rial'}
+        opening_credit: {$ref: '#/components/schemas/Rial'}
+        debit: {$ref: '#/components/schemas/Rial'}
+        credit: {$ref: '#/components/schemas/Rial'}
+        closing_debit: {$ref: '#/components/schemas/Rial'}
+        closing_credit: {$ref: '#/components/schemas/Rial'}
     AuditEvent:
       type: object
       required: [id, company_id, actor_id, action, occurred_at]
