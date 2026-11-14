@@ -1307,6 +1307,33 @@
       "wave_status_target": "AUTHORIZED_NOT_STARTED",
       "task_status_target": "AUTHORIZED_NOT_STARTED",
       "w1_exit_not_approved": true
+    },
+    {
+      "id": "APP-HESABYAR-H17-DESIGN-ACCEPT-20261114-001",
+      "date": "2026-11-14",
+      "approved_by": "manager",
+      "project": "حسابیار (Hesabyar)",
+      "wave_id": "W1",
+      "task_id": "H-17",
+      "status": "DESIGN_SPEC_ACCEPTED_PR_MERGE_AUTHORIZED",
+      "pr_number": 8,
+      "expected_head_sha": "5e24725db5065316670a46a8c23cd5b4fe3614ce",
+      "permitted_paths": [
+        "design/tokens/**",
+        "design/specs/global/**"
+      ],
+      "reviewed_files": [
+        "design/tokens/foundations.json",
+        "design/specs/global/DESIGN_SYSTEM.md",
+        "design/specs/global/NUMBERS_DATES.md",
+        "design/specs/global/REVIEW_CHECKLIST.md"
+      ],
+      "review": "Manager directly read 4 design spec artifacts, verified paths and frozen OpenAPI contract reference, JSON parsed, RTL/bidi and Persian a11y guidance, light/dark semantic tokens, IRR exact decimal strings and Jalali-exclusive-end handling, 360px reflow, and 21-item future review checklist. Independently computed 26 representative token/surface contrast ratios (13 in each theme), all met specified 4.5:1 or 3:1 thresholds for their chosen pair roles.",
+      "tests_scope": "SPECIFICATION_REVIEW_PASS_ONLY",
+      "not_run": "No rendered browser/mobile UI, actual responsive layout, keyboard, assistive technology, production CSS or full WCAG 2.2 audit has been executed; no implementation QA PASS.",
+      "merge_conditions": "Allowed to merge PR #8 after this governance decision is merged, if exact head SHA and four-file scope are unchanged. Do not merge PR #7, which requires actual owner manual health/Pytest test evidence.",
+      "post_merge": "PM Assistant records H-17 design-only task completion/evidence via separate protected-main PR after manager verifies merge. H-18 remains unauthorized until separate manager decision; no implicit wave completion.",
+      "task_status_unchanged": true
     }
   ]
 }
