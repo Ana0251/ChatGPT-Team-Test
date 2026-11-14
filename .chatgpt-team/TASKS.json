@@ -1123,6 +1123,41 @@
       "branch_protection_blocker": "Private repository rulesets API HTTP 403: Upgrade to GitHub Pro or make this repository public to enable this feature",
       "next": "User directs Developer/UI-UX independent role chats for READ-ONLY rc.3 review; owner checks GitHub Pro/private branch protection; return to Manager.",
       "no_execution_or_completion_claim": true
+    },
+    {
+      "id": "APP-HESABYAR-H02-RC3-CONSUMERS-20261114-001",
+      "date": "2026-11-14",
+      "approved_by": "manager",
+      "project": "حسابیار (Hesabyar)",
+      "status": "CONSUMER_ACKNOWLEDGMENTS_ACCEPTED_CONDITIONALLY",
+      "parent_approval_id": "APP-HESABYAR-W0-RC3-REVIEW-20261114-001",
+      "wave_id": "W0",
+      "task_id": "H-02",
+      "contract_version": "1.0.0-rc.3",
+      "openapi_blob_sha": "98d34e7bd7b4551c0f429ea5e388781060ceaf63",
+      "review_evidence": [
+        {
+          "role": "developer",
+          "pr_comment_id": 6875403671,
+          "disposition": "APPROVED_FOR_CONSUMPTION"
+        },
+        {
+          "role": "ui-ux",
+          "pr_comment_id": 6875407091,
+          "disposition": "APPROVED_FOR_CONSUMPTION"
+        }
+      ],
+      "manager_disposition": "Contract consumer objections resolved on exact blob. This approves consumer compatibility as documented, not full OpenAPI/QA tests, formal GitHub pull-request APPROVE, W0 exit, W1 start or PR merge.",
+      "repo_visibility": "PRIVATE_AT_REVIEW_USER_ACCEPTS_PUBLIC_AS_NO_PRO_ALTERNATIVE",
+      "repo_governance_conditions": [
+        "Owner should audit repo history and any secrets before converting to public; current-path sample scanner inspected 12 significant blobs, no high-confidence secret markers; audit was not exhaustive.",
+        "After owner explicitly changes visibility to PUBLIC via GitHub settings, protect main with PR requirement, block force pushes and deletion and do not bypass for routine merges.",
+        "Do not require one GitHub account to approve its own PR; minimum GitHub approval can only be enabled after an independent collaborator reviewer is available. The two role comments prove consumer agreement, not formal GitHub reviews.",
+        "Require actual automated contract validation and early backend/frontend CI checks before W1 code merges; do not mark nonexistent checks as required now.",
+        "No automatic public visibility change occurred from ChatGPT; only owner can perform settings action in GitHub."
+      ],
+      "next_gate": "Check visibility, protection, formal PR governance, and decision to merge docs-only PR; then manager W0 exit and separate W1 authorization if gates satisfied.",
+      "no_qa_or_completion_claim": true
     }
   ]
 }
