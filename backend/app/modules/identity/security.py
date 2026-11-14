@@ -79,7 +79,7 @@ def _dummy_password_hash() -> str:
 
 def verify_known_or_dummy(hashed: str | None, password: str) -> bool:
     """Keep unknown/disabled and real-user login timing in a similar hash-work class."""
-    return check_password(hashed or _dummy_password_hash(), password) if hashed else check_password(_dummy_password_hash(), password)
+    return check_password(hashed or _dummy_password_hash(), password)
 
 
 def login_email_key(email: str) -> str:
