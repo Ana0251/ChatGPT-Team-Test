@@ -1386,6 +1386,62 @@
       "test_scope": "Real FastAPI health/Pytest smoke only; no PostgreSQL, migrations, authorization, tenants, accounting logic, security QA, performance, or production readiness.",
       "manager_conditions": "Merge existing PR #7 only AFTER this protected-main governance approval is merged, and only if PR head still exact SHA 77d845..., changed paths exactly H-03 permitted source/test files plus Developer own report. No direct main edits. Do not assume GitHub Actions PASS.",
       "follow_up": "Once PR #7 merged, PM Assistant records H-03 as COMPLETED with manually run actual evidence and H-17 as COMPLETED docs-only with PR #8 merge evidence, in a new protected-main PR. H-04/H-18 remain unauthorized until separate managerial task gate; W1 not complete."
+    },
+    {
+      "id": "APP-HESABYAR-W1-H04-H18-ENTRY-20261114-001",
+      "date": "2026-11-14",
+      "approved_by": "manager",
+      "project": "حسابیار (Hesabyar)",
+      "wave_id": "W1",
+      "status": "PHASED_TASK_START_AUTHORIZED_LEDGER_SYNC_PENDING",
+      "prior_approvals": [
+        "APP-HESABYAR-H03-HEALTH-ACCEPT-20261114-001",
+        "APP-HESABYAR-H17-DESIGN-ACCEPT-20261114-001"
+      ],
+      "preceding_ledger_pr_merged": "https://github.com/Ana0251/ChatGPT-Team-Test/pull/11",
+      "preceding_merge_sha": "702d71fac22ac2608b6df04fb71dfdae80498100",
+      "newly_authorized_task_ids": [
+        "H-04",
+        "H-18"
+      ],
+      "task_preconditions": {
+        "H04": [
+          "H-03 COMPLETED exact manual health 3/3 Pytest and /health HTTP 200; no DB QA claimed"
+        ],
+        "H18": [
+          "H-02 COMPLETED frozen rc.3 contract",
+          "H-17 COMPLETED design specifications only, not browser UI QA"
+        ]
+      },
+      "responsibilities": {
+        "H04": {
+          "owner": "developer",
+          "scope": "PostgreSQL connectivity and isolated test DB; SQLAlchemy/Alembic initial migration baseline, reproducible upgrade/downgrade/upgrade and schema diff with exact manual proof; secure env-based DSN, no committed credentials or real customer data. No identity, tenant, fiscal, posting, reports or other dependent tasks.",
+          "allowed_paths": [
+            "backend/app/db/**",
+            "backend/alembic/**",
+            "backend/tests/db/**"
+          ],
+          "dependency_blocker": "H-04 does not own backend/pyproject.toml or backend/app/core/config.py; if setup requires persistent SQLAlchemy/Alembic/psycopg dependency additions or common config edits, seek Coordinator/Manager scope reconciliation BEFORE editing any out-of-scope file. A local documented manual install may be used to run authorized tests, but must not be represented as reproducible production dependency config."
+        },
+        "H18": {
+          "owner": "ui-ux",
+          "scope": "Persian RTL login, new user invitation/activation, account/session error and recovery, company selection/membership, fiscal year and period selection user journeys; all loading/empty/permission/expired-session states, state matrix, 360px/a11y spec consistency with approved H-17 and frozen OpenAPI rc.3. Documentation only.",
+          "allowed_paths": [
+            "design/specs/identity/**",
+            "design/specs/company-period/**"
+          ],
+          "non_scope": "No frontend/backend implementation, no modified OpenAPI, no H-19/H-20 or H-21 development."
+        }
+      },
+      "requirements": [
+        "PM Assistant must first synchronize only H-04 and H-18 in TASKS.json to AUTHORIZED_NOT_STARTED and start_authorized=true via its own protected-main branch and PR. Until merged no role work starts.",
+        "Preserve H-01 GATE_EVIDENCED; H-02/H-03/H-17 COMPLETED; W1 remains AUTHORIZED_NOT_STARTED and entry_authorized=true. Other tasks H-05/H-06/H-07/H-08 and waves W2-W6 remain locked.",
+        "Tasks must run in independent branches and PRs with non-overlapping permitted file paths and own agent report exceptions; no direct main writes.",
+        "Manual tests with real PostgreSQL and up/down migrations for H-04 are required; exact Python/psql/alembic versions, commit, stdout/stderr, and schema diff must be recorded. Do not infer PASS, use SQLite in lieu of actual PostgreSQL, or rely on GitHub Actions for required evidence.",
+        "H-18 is specs-only: design completeness review may pass; rendered browser, screen-reader/keyboard, actual security workflows and real company/period functionality remain NOT_TESTED until implementation and QA.",
+        "Independent QA, tenant financial invariants and real security testing stay mandatory when features are built; W1 exit is not approved."
+      ]
     }
   ]
 }
