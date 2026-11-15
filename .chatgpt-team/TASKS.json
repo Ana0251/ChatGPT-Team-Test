@@ -1800,6 +1800,58 @@
       "developer_gate": "Only after manager-governance PR and PM Assistant ledger-scope PR both merged into protected main may H05 Developer edit the two exact lines in same H05 PR #26. Developer should first preserve/import new_secret existing fix, then rerun full Windows identity+health, H04 DB suite on exact new SHA; capture raw PASS/FAIL, exits, environment, and update PR. Developer must not claim tests pass before run.",
       "next_review": "Coordinator integration review then independent QA and Manager decision; H05 PR26 unmerged, H05 validation_status NOT_TESTED, W1 open, H06/H07/H08/H26 W2–W6 locked.",
       "not_tested": "Current new SHA runtime tests; production DB/PostgreSQL locks/concurrency, external SMTP, TLS proxy, full multi-tenant penetration testing, final release suitability"
+    },
+    {
+      "id": "APP-HESABYAR-H05-INVITE-ERROR-CONTRACT-20261115-001",
+      "date": "2026-11-15",
+      "approved_by": "manager",
+      "project": "حسابیار (Hesabyar)",
+      "task_id": "H-05",
+      "wave_id": "W1",
+      "framework_version": "1.3.0",
+      "review_policy": "coordinator_required",
+      "status": "CONDITIONAL_NARROW_ADDITIVE_CONTRACT_AMENDMENT_AUTHORIZED_NOT_MERGE_OR_TASK_COMPLETION",
+      "trigger": "Independent QA FAIL at PR #26 exact HEAD 5e07456a2c7a31783fcd2df45ad7744b3ca3b89d, QA PR #31 merged bc31e655de00bd17c110458120b46581bdca26e3, issue comment 6890217971.",
+      "reviewed_findings": "INVITE_RATE_LIMITED is returned for a 409 invitation quota denial, but is absent from closed OpenAPI rc.3 ErrorCode.enum and ERRORS.md; 50/50 owner-run local SQLite tests do not establish normative schema compliance.",
+      "decision": "Authorize Coordinator-owned ADDITIVE contracts correction only: define INVITE_RATE_LIMITED as an HTTP 409 error for POST /companies/{companyId}/members, with explicit safe retry/wait guidance; publish new rc.4 version, preserve frozen rc.3 blob as immutable prior baseline.",
+      "allowed_contract_paths": [
+        "docs/contracts/openapi.yaml",
+        "docs/contracts/ERRORS.md"
+      ],
+      "exact_contract_scope": [
+        "Change OpenAPI info.version 1.0.0-rc.3 to 1.0.0-rc.4; append INVITE_RATE_LIMITED to ErrorCode.enum only. Do not change endpoint status, path, request/response schema or other ErrorCode values.",
+        "Change ERRORS.md taxonomy version to rc.4 and add a 409 INVITE_RATE_LIMITED entry for POST /companies/{companyId}/members, explaining company and issuer rolling 24h ceiling, safe localized UI action (wait then manually retry, never auto-replay), and no tenant or recipient leakage."
+      ],
+      "restrictions": [
+        "No unilateral Developer edits to docs/contracts/**. Coordinator must open separate scoped contract PR after governance merge.",
+        "No repurposing INVITE_INVALID, DUPLICATE_MEMBERSHIP or generic VALIDATION_ERROR for exceeded quota; no 429/status redesign or new endpoints.",
+        "No changes to H-02/H-17/H-18 completed status, previous contracts, other task/wave statuses, financial scope, shared migration code, or UI design without a separate decision.",
+        "Coordinator must seek read-only Developer and UI/UX consumer acknowledgement of additive error and version before final contract acceptance. QA must review exact contract PR and error-code semantics/schema."
+      ],
+      "next_steps": [
+        "After this manager-governance PR is merged, Coordinator prepares scoped rc.4 contract PR and report. Independent QA reviews schema and taxonomy; Manager decides contract merge.",
+        "After rc.4 contract is accepted/merged, PM Assistant updates ONLY H-05 task record with approved rc.4 blob and this approval reference in TASKS.json; preserve H-05 AUTHORIZED_NOT_STARTED, NOT_TESTED and start_authorized=true.",
+        "Then Developer adds deterministic quota 409 response-schema conformance regression on existing H-05 PR #26, touching only approved H-05 tests; update H-05 references to approved contract; no unrelated changes.",
+        "Owner reruns actual Windows H-05 Identity+Health and H-04 Database tests against new exact PR26 SHA, reporting exit codes; Coordinator independently re-reviews, independent QA re-reviews; Manager alone decides merge and local-scope completion."
+      ],
+      "review_risks": [
+        "Frozen OpenAPI error enum and generated client compatibility",
+        "Localization-neutral error taxonomy and invite rate-limit recovery behavior",
+        "Cross-agent contract ownership and future UI consumer synchronization",
+        "Maintaining security quota and 409 error envelope without inaccurate PASS claims"
+      ],
+      "review_reason": "P1 response schema mismatch despite successful local runtime tests; precise additive contract amendment is required because no existing 409 ErrorCode is semantically valid for quota exhaustion.",
+      "provenance": {
+        "developer_pr": 26,
+        "qa_pr": 31,
+        "coordinator_report_pr": 30,
+        "manager_qa_referral": "https://github.com/Ana0251/ChatGPT-Team-Test/pull/26#issuecomment-6890179084",
+        "qa_fail": "https://github.com/Ana0251/ChatGPT-Team-Test/pull/26#issuecomment-6890217971",
+        "owner_test_evidence": "https://github.com/Ana0251/ChatGPT-Team-Test/pull/26#issuecomment-6889986845",
+        "frozen_rc3_openapi_blob": "98d34e7bd7b4551c0f429ea5e388781060ceaf63"
+      },
+      "gates": "No merge of Developer PR #26, H-05 completion, W1 exit or H-06/H-07/H-08/H-26/W2-W6 activation until separate independent reviews and final Manager approval.",
+      "not_tested": "Independent QA runtime test, actual HTTPS/SMTP, PostgreSQL and multiworker rate-limit transactions, real browser CSRF, penetration testing, backup/restore, financial correctness remain DEFERRED/NOT_TESTED."
     }
   ]
 }
