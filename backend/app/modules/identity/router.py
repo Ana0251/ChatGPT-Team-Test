@@ -6,6 +6,7 @@ user registration, company creation or system-wide administrator API is exposed.
 from __future__ import annotations
 
 import os
+from datetime import timedelta
 from typing import Literal
 from uuid import UUID
 
@@ -14,7 +15,7 @@ from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse, Response
 from fastapi.routing import APIRoute
 from pydantic import BaseModel, ConfigDict, Field
-from sqlalchemy import select
+from sqlalchemy import func, select
 
 from app.modules.identity import tables as t
 from app.modules.identity.delivery import smtp_delivery_from_env
@@ -30,6 +31,13 @@ from app.modules.identity.store import (
 PRE_COOKIE = "hesabyar_pre_session"
 AUTH_COOKIE = "hesabyar_session"
 COOKIE_ARGS = {"httponly": True, "secure": True, "samesite": "lax", "path": "/api/v1"}
+
+# Rolling 24-hour issuance ceilings. Count committed audit events, including
+# already-accepted/expired invitations so consumption cannot reset the quota.
+INVITE_WINDOW_HOURS = 24
+INVITE_PER_ACTOR_COMPANY_LIMIT = 20
+INVITE_PER_COMPANY_LIMIT = 50
+INVITE_AUDIT_ACTION = "membership_invitation_created"
 
 
 class IdentityError(Exception):
@@ -168,6 +176,33 @@ def invite_valid(connection, token: str):
     if inviter_role not in ("owner", "admin") or (row["role"] == "owner" and inviter_role != "owner"):
         raise IdentityError(403, "INVITE_ROLE_FORBIDDEN")
     return row
+
+
+def check_invitation_quota(connection, user_id: str, company_id: str) -> None:
+    """Count durable successful issuances inside the caller's BEGIN IMMEDIATE.
+
+    Both company and (company, issuer) ceilings apply across all target emails.
+    Since the audit row commits atomically with the invitation, failed delivery
+    does not consume quota, and invite redemption cannot replenish quota.
+    """
+    cutoff = instant(utcnow() - timedelta(hours=INVITE_WINDOW_HOURS))
+    company_events = (
+        t.audit.c.action == INVITE_AUDIT_ACTION,
+        t.audit.c.company_id == company_id,
+        t.audit.c.occurred_at >= cutoff,
+    )
+    company_total = connection.execute(
+        select(func.count()).select_from(t.audit).where(*company_events)
+    ).scalar_one()
+    if company_total >= INVITE_PER_COMPANY_LIMIT:
+        raise IdentityError(409, "INVITE_RATE_LIMITED")
+    issuer_total = connection.execute(
+        select(func.count()).select_from(t.audit).where(
+            *company_events, t.audit.c.actor_id == user_id
+        )
+    ).scalar_one()
+    if issuer_total >= INVITE_PER_ACTOR_COMPANY_LIMIT:
+        raise IdentityError(409, "INVITE_RATE_LIMITED")
 
 
 @router.get("/auth/csrf")
@@ -362,6 +397,9 @@ def invite_member(companyId: UUID, body: InviteInput, request: Request):
         )).first()
         if pending:
             raise IdentityError(409, "INVITE_INVALID")
+        # The locked SQLite transaction serializes count + invitation + audit,
+        # so concurrent requests cannot exceed either durable 24-hour ceiling.
+        check_invitation_quota(connection, user_id, str(companyId))
         raw = new_secret()
         invitation = {
             "id": new_id(), "company_id": str(companyId), "email": email,
