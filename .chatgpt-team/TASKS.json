@@ -2044,6 +2044,94 @@
       "pm_assistant_handoff": "After governance PR merge, update ONLY H06 task record in TASKS.json: start_authorized=true, status=AUTHORIZED_NOT_STARTED, validation_status=NOT_TESTED; add restricted backend/app/main.py path, explicit Coordinator review policy/risks/reason, H04/H05 dependency evidence, contract rc.4 SHA and acceptance/risk constraints; preserve all other 29 tasks, approvals, WAVES.json and branch controls. PR separate; no start before Manager handoff.",
       "development_gate": "Only after PM Assistant H06-only ledger PR merges and Manager explicitly hands off may Developer implement H06 in isolated branch and PR; Coordinator then QA then Manager final gate.",
       "deferred_not_tested": "Production PostgreSQL locking, tenant penetration and concurrency, real browser/HTTPS and SMTP, backup/recovery, accounting correctness; completed H05 local limitations remain."
+    },
+    {
+      "id": "APP-HESABYAR-H06-LOCAL-QA-MERGE-20261115-001",
+      "date": "2026-11-15",
+      "approved_by": "manager",
+      "project": "حسابیار (Hesabyar)",
+      "task_id": "H-06",
+      "wave_id": "W1",
+      "framework_version": "1.3.0",
+      "status": "H06_LOCAL_SQLITE_PASS_LIMITED_EXACT_HEAD_PR42_MERGE_CONDITIONALLY_AUTHORIZED",
+      "review_policy": "coordinator_required",
+      "review_risks": [
+        "Multi-tenant membership/IDOR isolation, non-disclosing 404 for unknown/nonmember company IDs",
+        "CSRF/Origin/session checks and owner assignment only to authenticated actor",
+        "Atomic company+owner membership insertion and rollback on SQLite BEGIN IMMEDIATE",
+        "H03/H04/H05 regressions, exact five authorized PR42 paths and shared main.py router wiring",
+        "Owner worktree HEAD/status attested after test run, not within original test log; no independently QA-run Pytest",
+        "Unicode normalized/invisible company names, create-company abuse/quota, multiworker/PostgreSQL concurrency and production TLS/backup deferred"
+      ],
+      "review_reason": "Coordinator PR43 and QA PR44 independently returned PASS LIMITED source/rc.4 security and test-design reviews at exact PR42 HEAD; owner reported 64/64 local SQLite tests with three zero exits and later attested matching local HEAD and no tracked source modifications. Limited local SQLite implementation may merge without falsely certifying QA-run tests or production readiness.",
+      "review_history": [
+        {
+          "role": "coordinator",
+          "pr": 43,
+          "result": "PASS LIMITED static/integration",
+          "merge_sha": "301d14c19a5e7a84d4549d81c18a8eedeb07be1e"
+        },
+        {
+          "role": "qa",
+          "pr": 44,
+          "result": "PASS LIMITED static/contract/security/test-source; QA_RUNTIME NOT_RUN",
+          "merge_sha": "386a34649a0d14740281d26fda72a1dfab35c8be"
+        }
+      ],
+      "developer_pr": 42,
+      "approved_pr_head_sha": "b8f5e1942d1f5405d86de0bfcc21cc5a46e55606",
+      "approved_contract": {
+        "version": "1.0.0-rc.4",
+        "openapi_blob": "f57de031224e21f09253642c210a778a60683711"
+      },
+      "evidence": {
+        "owner_worktree": "D:\\Codex\\Temp\\H06-retest",
+        "owner_post_test_head": "b8f5e1942d1f5405d86de0bfcc21cc5a46e55606",
+        "owner_post_test_status": "No modified tracked files; untracked only Python __pycache__/ and backend/hesabyar_backend.egg-info/ folders.",
+        "owner_suite_companies": {
+          "passed": 12,
+          "failed": 0,
+          "exit_code": 0,
+          "warnings": 13
+        },
+        "owner_suite_identity_health": {
+          "passed": 28,
+          "failed": 0,
+          "exit_code": 0,
+          "warnings": 29
+        },
+        "owner_suite_h04_db": {
+          "passed": 24,
+          "failed": 0,
+          "exit_code": 0,
+          "warnings": 3
+        },
+        "total_passed": 64,
+        "total_failed": 0,
+        "total_warnings": 45,
+        "qa_runtime": "NOT_RUN",
+        "coordinator_runtime": "NOT_RUN",
+        "source_comment": "https://github.com/Ana0251/ChatGPT-Team-Test/pull/42#issuecomment-6891632734",
+        "review_comments": [
+          "https://github.com/Ana0251/ChatGPT-Team-Test/pull/42#issuecomment-6891765172",
+          "https://github.com/Ana0251/ChatGPT-Team-Test/pull/42#issuecomment-6891901788"
+        ],
+        "caveat": "Local SHA/status was supplied AFTER owner passing console transcript, not contemporaneously. Accept combined owner-worktree evidence for limited SQLite acceptance only; no independent QA/Coordinator runtime execution."
+      },
+      "scope": "GET /companies, POST /companies, GET /companies/{companyId} approved rc.4 company membership/owner creation behavior in local file-backed SQLite only; exactly five Developer PR42 changed paths.",
+      "merge_conditions": [
+        "Governance PR recording this exact Manager decision must merge to main before PR42.",
+        "Re-verify PR42 OPEN/UNMERGED, HEAD exactly b8f5e1942d1f5405d86de0bfcc21cc5a46e55606, mergeable, and five approved paths only; main OpenAPI rc.4 unchanged.",
+        "No H05 module/schema changes, no prior migrations/DB/config, contract, TASKS/WAVES or other-agent files changed in PR42. backend/app/main.py limited to import/include companies router.",
+        "No branch protection bypass or merge on conflicts; if checks fail, HEAD changes, or unexpected files appear, stop for fresh Manager decision."
+      ],
+      "after_merge": "PM Assistant in separate administrative PR may update ONLY H-06 TASKS.json record to COMPLETED with LOCAL_SQLITE_PASS_LIMITED, owner reported 64/64 passing tests, Coordinator/QA source reviews (QA_RUNTIME NOT_RUN), exact SHA, approved merge SHA and retained limitations. No other task record, approvals, WAVES or other files changed. W1 stays open; H07/H08/H26/W2-W6 not activated unless separately decided by Manager.",
+      "nonblocking_findings": [
+        "Normalize/restrict zero-width/confusable company names and define product Unicode policy before release.",
+        "Potential unbounded creation of companies by authenticated principals, no contract-defined quota; needs separate Manager policy and authorization.",
+        "Full dynamic OpenAPI HTTP response schema validation for H06 not in reviewed suite.",
+        "SQLite busy/lock contention, multi-process PostgreSQL, real browser/HTTPS/TLS, tenant pen-test, data backups/recovery, accounting correctness NOT_TESTED."
+      ]
     }
   ]
 }
