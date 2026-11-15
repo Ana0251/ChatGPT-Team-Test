@@ -340,3 +340,17 @@ Workflow موجود `.chatgpt-team/tools/validate.py` در GitHub Actions به �
 
 **ریسک‌های باز (غیرمسدودکننده برای این دامنه):** مدیریت Unicode/نویسه‌های نامرئی و confusable در نام شرکت، سیاست جلوگیری از ساخت بی‌حد شرکت توسط کاربر احرازشده، آزمون Schema کامل HTTP براساس OpenAPI، فشار قفل SQLite و هم‌زمانی PostgreSQL/چندپردازشی، مرورگر/HTTPS، SMTP/TLS، تست نفوذ IDOR، پشتیبان/بازیابی و صحت مالی/آمادگی انتشار **DEFERRED/NOT_TESTED** هستند؛ رفع سیاستی این موارد نیاز به تصمیم جداگانه دارد.
 
+## 2026-11-15 — APP-HESABYAR-W1-H07-ENTRY-20261115-001 — مجوز مشروط ورود اداری H-07 (سال و دوره مالی)
+
+**شرایط شروع:** H-04 و H-06 طبق ledger رسمی فقط در دامنه محلی SQLite `COMPLETED/PASS LIMITED` هستند و PR اداری H-06 (#46) در `eb57a479a429c5c2d7488ebfd5a1633bcef3f4bf` ادغام شده است. W1 هنوز باز است. **این تصمیم فقط اجازه ثبت اداری H-07 را می‌دهد؛ توسعه تا ادغام PR مستقل PM Assistant و ارجاع جداگانه مدیر ممنوع است.**
+
+**قرارداد مبنا:** OpenAPI `1.0.0-rc.4` blob `f57de031224e21f09253642c210a778a60683711`، پنج عملیات: `GET/POST /companies/{companyId}/fiscal-years`، `GET/POST /companies/{companyId}/fiscal-years/{yearId}/periods` و `POST /companies/{companyId}/fiscal-years/{yearId}/periods/{periodId}/close`. از Schemaهای واقعی `FiscalYearInput`/`FiscalYear`/`FiscalPeriod` استفاده شود. طرح H-18 فقط مبنای تجربه انتخاب است، نه الزام ایجاد خودکار سال/دوره.
+
+**کنترل‌های الزام‌آور:** بررسی مجدد عضویت واقعی در شرکت و نسبت year/period با همان شرکت برای هر درخواست؛ پاسخ خنثی 404 برای شناسه‌های ناموجود و بیگانه؛ مشاهده برای اعضا، ایجاد سال/دوره فقط owner/admin/accountant و بستن دوره فقط owner/admin؛ POST با H05 HTTPS، Origin و CSRF. تاریخ‌ها ISO Gregorian و محدوده نیمه‌باز `[start_date,end_date)` هستند؛ شروع باید قبل از پایان باشد؛ عدم هم‌پوشانی سال‌های همان شرکت و دوره‌های همان سال، محدودسازی دوره در محدوده سال و پذیرش مجاورتِ دو بازه. دوره جدید open و بسته شدن آن transactionally و به صورت قابل بازتولید ثبت شود. رویداد audit UTC و زمان حقوقی عملیات Asia/Tehran مطابق قرارداد است.
+
+**مرز وظیفه:** تنها مسیرهای `backend/app/modules/fiscal/**`، `backend/tests/fiscal/**`، و Migration جدید `backend/alembic/versions/h-07_*.py` در صورت نیاز؛ برای mount شدن router تنها استثنای مشروط `backend/app/main.py` با *صرفاً import/include router* پس از ثبت اداری در `allowed_paths`. هیچ تغییر در identity H-05، companies H-06، زیرساخت DB H-04، migrations قبلی، `pyproject.toml`، قرارداد OpenAPI، UI یا سایر عامل‌ها مجاز نیست. API ثبت سند/Posting هنوز وجود ندارد؛ آزمون واقعی رقابت close-vs-posting در H-07 به‌تنهایی **NOT_TESTED/DEFERRED** است و نباید ادعای PASS شود.
+
+**سیاست مرور:** `coordinator_required` به‌دلیل خطر IDOR شرکت و سال، نقش‌ها، همپوشانی و مرز تاریخ، race بستن دوره، مهاجرت و تغییر فایل مشترک؛ Coordinator سپس QA مستقل و تصمیم نهایی Manager. آزمون‌های واقعی owner روی SHA دقیق و regressions H03/H04/H05/H06 ضروری است. PostgreSQL/چندپردازشی، browser HTTPS و نفوذ، backup و صحت نهایی حسابداری DEFERRED/NOT_TESTED.
+
+**دستور PM Assistant:** فقط H-07 در TASKS.json: `start_authorized=true`، `status=AUTHORIZED_NOT_STARTED`، `validation_status=NOT_TESTED`، اضافه‌کردن مجوز دقیق `backend/app/main.py`، سیاست بازبینی/ریسک‌ها/شواهد دقیق، حفظ سایر ۲۹ تسک، approvals، WAVES و تمامی فایل‌های دیگر. PR اداری مستقل و باز بماند؛ Developer قبل از ادغام و ارجاع بعدی Manager شروع نکند. H-08/H-26/W2–W6 فعال نشوند، W1 بسته نشود.
+
