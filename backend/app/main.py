@@ -5,6 +5,7 @@ from fastapi import FastAPI
 from app.core.config import Settings, get_settings
 from app.modules.identity.router import router as identity_router
 from app.modules.companies.router import router as companies_router
+from app.modules.fiscal.router import router as fiscal_router
 
 
 def create_app(settings: Settings | None = None) -> FastAPI:
@@ -13,6 +14,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     application = FastAPI(title=config.app_name, version="0.1.0")
     application.include_router(identity_router, prefix="/api/v1")
     application.include_router(companies_router, prefix="/api/v1")
+    application.include_router(fiscal_router, prefix="/api/v1")
 
     @application.get("/health", tags=["Health"])
     def health() -> dict[str, str]:
