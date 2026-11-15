@@ -310,16 +310,41 @@
       "allowed_paths": [
         "backend/app/modules/fiscal/**",
         "backend/tests/fiscal/**",
-        "backend/alembic/versions/h-07_*.py"
+        "backend/alembic/versions/h-07_*.py",
+        "backend/app/main.py"
       ],
       "acceptance_criteria": "Fiscal year + periods cannot overlap within company; open/close rules and year boundary",
-      "mandatory_amendments": "Company-specific non-overlapping fiscal periods with exclusive end; DATE Gregorian and Asia/Tehran cutoff, UTC events; transactionally guard closed period vs posting race.",
-      "evidence_required": "Overlap/closed-period concurrency tests",
-      "evidence_refs": [],
-      "status": "NOT_STARTED",
+      "mandatory_amendments": "Company-specific non-overlapping fiscal periods with exclusive end; DATE Gregorian and Asia/Tehran cutoff, UTC events; transactionally guard closed period vs posting race. Manager-approved H-07 fiscal entry APP-HESABYAR-W1-H07-ENTRY-20261115-001: CURRENT normative OpenAPI 1.0.0-rc.4 blob f57de031224e21f09253642c210a778a60683711; ONLY GET/POST /companies/{companyId}/fiscal-years, GET/POST /companies/{companyId}/fiscal-years/{yearId}/periods, POST /companies/{companyId}/fiscal-years/{yearId}/periods/{periodId}/close. Use approved FiscalYearInput/FiscalYear/FiscalPeriod DTOs and exact contract status/errors, no additional endpoint or shape. Enforce live company membership and year/period parent tenancy with neutral 404; reads for members, year/period creation owner/admin/accountant, close owner/admin only; all unsafe POSTs require valid H-05 session, same-origin HTTPS, Origin and CSRF. Calendar ranges are Gregorian DATE/ISO half-open [start_date,end_date), STRICT start_date<end_date, same-company years disjoint, periods disjoint within year and fully contained by owning year, adjacent boundary ranges allowed. New periods open; close is durable atomic/idempotence/conflict-aware state transition with UTC audit and Asia/Tehran legal cutoff per approved specifications. Keep original H-07 period vs journal posting race requirement as a FUTURE acceptance gate: because Posting API is NOT IMPLEMENTED it remains DEFERRED/NOT_TESTED and is NOT claimed resolved by H-07 close tests. Reuse H-04/H-05/H-06 existing components without altering their modules, tables, previous Alembic migrations or shared backend/app/db/** and core/config.py. Add H-07-only additive h-07_*.py Alembic revision solely if needed with down_revision on current head, preserve upgrade/downgrade. backend/app/main.py is authorized ONLY for fiscal APIRouter import/include; preserve identity, companies and /health. No pyproject, docs/contracts, design, frontend or other agent files. Any new shared-path dependency requires STOP and separate Manager authorization. Local SQLite exact-SHA manual tests, Coordinator integration review then independent QA review required; no H-08/H-26/new-wave activation.",
+      "evidence_required": "Overlap/closed-period concurrency tests H-07 governed entry APP-HESABYAR-W1-H07-ENTRY-20261115-001 with H-04/H-06 local SQLite-only PASS LIMITED dependency evidence and approved OpenAPI 1.0.0-rc.4 blob f57de031224e21f09253642c210a778a60683711. Developer must provide real reproducible file-backed SQLite tests on exact reviewed PR SHA with environment/tool versions, commands, complete output, exit codes and warning counts covering approved five endpoints/DTO/status, success/error 200/201/401/403/404/409/422 where applicable per actual contract, CSRF/Origin/session expiry, company/year/period IDOR and revoked roles, non-overlap plus half-open adjacency and containment/invalid dates, creation+close state/rollback/reopen/double-close behavior, migration up/down and H03/H04/H05/H06 regressions. Identify owner-run vs independently QA-run executions; do not fabricate PASS. Close-vs-accounting-Posting race NOT_TESTED/DEFERRED until Posting implemented; PostgreSQL/multiworker row locks, browser HTTPS, production penetration/backup/accounting are NOT_TESTED.",
+      "evidence_refs": [
+        ".chatgpt-team/DECISIONS.md#APP-HESABYAR-W1-H07-ENTRY-20261115-001",
+        "https://github.com/Ana0251/ChatGPT-Team-Test/pull/47",
+        "https://github.com/Ana0251/ChatGPT-Team-Test/commit/41644893604ce690358bffd7f9aefddd27774652",
+        "https://github.com/Ana0251/ChatGPT-Team-Test/pull/47#issuecomment-6892115095",
+        "docs/contracts/openapi.yaml@f57de031224e21f09253642c210a778a60683711",
+        "https://github.com/Ana0251/ChatGPT-Team-Test/pull/18",
+        "https://github.com/Ana0251/ChatGPT-Team-Test/commit/2ac81eca7491131ebeb2a6ac061e6d6708f591cd",
+        "https://github.com/Ana0251/ChatGPT-Team-Test/pull/42",
+        "https://github.com/Ana0251/ChatGPT-Team-Test/commit/47142d5ec8b5e1d35e9fe8ba3a528fe5bcdbdc7e",
+        "https://github.com/Ana0251/ChatGPT-Team-Test/pull/46",
+        "https://github.com/Ana0251/ChatGPT-Team-Test/commit/eb57a479a429c5c2d7488ebfd5a1633bcef3f4bf",
+        "design/specs/company-period/COMPANY_FISCAL_SELECTION.md"
+      ],
+      "status": "AUTHORIZED_NOT_STARTED",
       "validation_status": "NOT_TESTED",
-      "start_authorized": false,
-      "notes": null
+      "start_authorized": true,
+      "notes": "Administrative entry only under APP-HESABYAR-W1-H07-ENTRY-20261115-001; H-07 AUTHORIZED_NOT_STARTED with start_authorized=true and validation_status=NOT_TESTED; Developer must NOT begin H-07 implementation until this administrative H-07-only PR merges and Manager issues a separate explicit start handoff. Approved baseline H-04 and H-06 are COMPLETED strictly as LOCAL SQLITE PASS LIMITED, not production security/concurrency proof. Current OpenAPI 1.0.0-rc.4 blob f57de031224e21f09253642c210a778a60683711 governs the five fiscal-year, period and close operations. Enforce Gregorian DATE half-open [start_date,end_date), start<end, no overlapping years within a company, no overlapping periods within a year, period containment in its company-owned parent year, adjacent ranges permitted, live company membership, scoped role/tenant checks, non-disclosing 404 and H-05 CSRF/Origin/session for writes. Owner/admin/accountant may create fiscal years/periods; only owner/admin may close; close is a durable transactional state change. Audit timestamps UTC; legal posting cutoff Asia/Tehran under approved future accounting specification. backend/app/main.py permission is solely import/include of fiscal Router, preserving H-05/H-06/health. NO journal Posting API exists: true close-versus-Posting race is DEFERRED/NOT_TESTED, NEVER PASS; testing the local close transition alone does not satisfy accounting posting concurrency. Production PostgreSQL locking/multiworker, real browser HTTPS/penetration, backup/recovery, accounting correctness and release readiness also DEFERRED/NOT_TESTED. Coordinator review and independent QA testing remain pending; H-08/H-26 and W2–W6 unauthorized, W1 remains open.",
+      "review_policy": "coordinator_required",
+      "review_risks": [
+        "Cross-company and cross-year IDOR and non-disclosing parent resource visibility",
+        "Access roles: read by member; year/period creation owner/admin/accountant; period close owner/admin only; revoked roles checked for each request",
+        "Exclusive-end Gregorian date interval boundaries, strict nonoverlap within company, parent-year containment, start<end and zero-length/invalid dates",
+        "Closed-period state transition, idempotence/conflict, atomic SQLite locking and future journal-posting race guard",
+        "Additive migration schema/reversibility and preserving H04/H05/H06 regression, H05 auth/CSRF/Origin secure guards",
+        "Backend/app/main.py shared router wiring only; no other shared file/path changes",
+        "Production PostgreSQL multiworker row-locking, posting concurrency, timezone and real browser security remain NOT_TESTED"
+      ],
+      "review_reason": "H07 controls period integrity, authorization and eventual accounting close/post invariants; cross-tenant fiscal records and concurrent state transitions require independent Coordinator integration review and QA review."
     },
     {
       "id": "H-08",
