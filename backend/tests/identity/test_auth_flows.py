@@ -625,3 +625,98 @@ def test_invitation_actor_quotas_are_isolated_within_company_and_window(sandbox:
     restored_headers = login(client, "owner@example.test", PASSWORD)
     restored = invite(sandbox, company, "owner-after-window@example.test", "viewer", restored_headers)
     assert restored.status_code == 202
+
+
+@pytest.mark.parametrize("quota_scope", ("issuer", "company"))
+def test_invitation_rate_limit_matches_approved_openapi(sandbox: dict, quota_scope: str):
+    """Validate a real HTTP 409 payload against the checked-in rc.4 OpenAPI.
+
+    Read the normative contract directly: no copied enum or locally fabricated
+    ErrorEnvelope. Cover both limits and assert the rejection has no side effects.
+    """
+    import jsonschema
+    import yaml
+    from sqlalchemy import func
+    from app.modules.identity.router import (
+        INVITE_PER_ACTOR_COMPANY_LIMIT,
+        INVITE_PER_COMPANY_LIMIT,
+    )
+
+    contract_file = Path(__file__).resolve().parents[3] / "docs" / "contracts" / "openapi.yaml"
+    contract = yaml.safe_load(contract_file.read_text(encoding="utf-8"))
+    assert contract["openapi"] == "3.1.0"
+    assert contract["info"]["version"] == "1.0.0-rc.4"
+
+    endpoint = contract["paths"]["/companies/{companyId}/members"]["post"]
+    conflict_ref = endpoint["responses"]["409"]["$ref"]
+    assert conflict_ref == "#/components/responses/Conflict"
+    conflict_response = contract["components"]["responses"]["Conflict"]
+    assert conflict_response["content"]["application/json"]["schema"]["$ref"] == (
+        "#/components/schemas/ErrorEnvelope"
+    )
+
+    headers = provisioned_owner_login(sandbox)
+    company = sandbox["company_id"]
+    if quota_scope == "issuer":
+        _seed_invitation_events(
+            sandbox, company, sandbox["owner_id"], INVITE_PER_ACTOR_COMPANY_LIMIT
+        )
+    else:
+        # Five distinct real synthetic users, ten audited issuances each:
+        # the total reaches 50 without an individual issuer reaching 20.
+        with locked(sandbox["engine"]) as connection:
+            existing_hash = connection.execute(
+                select(t.users.c.password_hash).where(t.users.c.id == sandbox["owner_id"])
+            ).scalar_one()
+            issuers = []
+            for index in range(5):
+                issuer = new_id()
+                connection.execute(t.users.insert().values(
+                    id=issuer, email=f"schema-quota-{index}@example.test",
+                    password_hash=existing_hash, active=True,
+                ))
+                issuers.append(issuer)
+        assert INVITE_PER_COMPANY_LIMIT % len(issuers) == 0
+        for issuer in issuers:
+            _seed_invitation_events(
+                sandbox, company, issuer, INVITE_PER_COMPANY_LIMIT // len(issuers)
+            )
+
+    with sandbox["engine"].connect() as connection:
+        invitations_before = connection.execute(
+            select(func.count()).select_from(t.invitations)
+        ).scalar_one()
+        audit_before = connection.execute(
+            select(func.count()).select_from(t.audit)
+        ).scalar_one()
+    delivered_before = len(sandbox["sent"])
+
+    response = sandbox["client"].post(
+        f"/api/v1/companies/{company}/members",
+        headers=headers,
+        json={"email": f"schema-rejected-{quota_scope}@example.test", "role": "viewer"},
+    )
+    assert response.status_code == 409, response.text
+    assert response.headers["content-type"].startswith("application/json")
+    assert response.headers["cache-control"] == "no-store"
+    payload = response.json()
+    assert payload["error"]["code"] == "INVITE_RATE_LIMITED"
+    assert payload["error"]["code"] in contract["components"]["schemas"]["ErrorCode"]["enum"]
+
+    # Validate the actual ErrorEnvelope and nested ErrorCode via their
+    # original in-document JSON Pointers, not a replicated hand-made schema.
+    schema_root = {
+        "$ref": "#/components/schemas/ErrorEnvelope",
+        "components": contract["components"],
+    }
+    jsonschema.Draft202012Validator.check_schema(schema_root)
+    jsonschema.Draft202012Validator(schema_root).validate(payload)
+
+    assert len(sandbox["sent"]) == delivered_before
+    with sandbox["engine"].connect() as connection:
+        assert connection.execute(
+            select(func.count()).select_from(t.invitations)
+        ).scalar_one() == invitations_before
+        assert connection.execute(
+            select(func.count()).select_from(t.audit)
+        ).scalar_one() == audit_before
