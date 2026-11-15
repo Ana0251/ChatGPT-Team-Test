@@ -110,3 +110,74 @@ Exactly nine H-04-authorized paths, checked with GitHub compare (9 commits ahead
 **This revision contains new test definitions, NOT observed test passes.** No Windows Python 3.14.7 / SQLite 3.50.4 Pytest/Alembic stdout/stderr, real exit codes, or owner command transcript has been delivered to this Developer conversation or PR at the time of review. Status: **NOT_TESTED / PENDING_OWNER_EVIDENCE**. Earlier owner statement of execution is **OWNER_REPORTED / NOT VERIFIED**; no PASS claim.
 
 Request Coordinator **re-review of new PR HEAD** and verification of real owner manual evidence before QA. Legacy framework 1.3.0 order: Developer → Coordinator integration review → independent QA; Manager final gate. `TASKS.json` and `WAVES.json` untouched. H-04 NOT_COMPLETED, PR remains open/unmerged; H-05 and other tasks not started. PostgreSQL NUMERIC(20,0)/locking/production engine tests DEFERRED, not PASS.
+
+
+## 2026-11-14 — H-05 Identity, session, CSRF and company membership (Framework 1.3.0)
+
+**Authorization / decision:** `APP-HESABYAR-W1-H05-ENTRY-20261114-001`. PR #24 Manager decision merged at `cd7ee63b1e7615d50b046c1470417fe5562712ff`; PR #25 PM Assistant ledger sync merged at `a1a9f537533c56448a7753377e4334f84c0ceb42`. `main` records `H-04=COMPLETED`, `H-05=AUTHORIZED_NOT_STARTED`, `start_authorized=true`, `validation_status=NOT_TESTED` and `review_policy=coordinator_required`. `W1.entry_authorized=true`; H-06/H-07/H-08 stay locked. Framework version `1.3.0`.  
+**Frozen contract:** `docs/contracts/openapi.yaml` version `1.0.0-rc.3`, unchanged Git blob `98d34e7bd7b4551c0f429ea5e388781060ceaf63`. Approved H-18 design `design/specs/identity/AUTH_AND_INVITATIONS.md`, `SESSION_STATES.md` read from `main`.  
+**Branch:** `feature/h-05-identity-security`, base `main@a1a9f537533c56448a7753377e4334f84c0ceb42`.  
+**PR:** https://github.com/Ana0251/ChatGPT-Team-Test/pull/26 — OPEN/UNMERGED (Manager merge gate).  
+**Latest implementation HEAD before this report:** `9351aa9bce305a40a862db9fcf66cb004069340a`.
+
+### Authorized-file implementation
+- `backend/app/modules/identity/router.py`: contract routes under `/api/v1`: GET CSRF, POST login, initial owner activate, new-invitee activate, existing-invitee accept, logout, GET me and GET/POST company memberships; structured error codes and 422 field issues. No H-06/company CRUD.
+- `backend/app/modules/identity/security.py`: Argon2id adaptive password hashing and strength rules; normalized emails; random 256-bit secrets, hash-only storage; per-session **HMAC-bound** CSRF (nonce, session, trusted HTTPS origin and session expiry) plus stored hash; HMAC-based blinded email throttle keys, no raw credential logging.
+- `backend/app/modules/identity/store.py` and `tables.py`: SQLite SQLAlchemy 2 identity tables, short atomic `BEGIN IMMEDIATE` membership/token transactions, hashed cookie-session IDs, sessions/CSRF expiry and revocation, company membership checks, safe audit events.
+- `backend/app/modules/identity/provision.py`: operator-key-gated, audited out-of-band initial company/owner provisioning only on empty installation, 15-minute company/owner-bound single-use setup token, private delivery callback; no default credentials/public setup endpoint.
+- `backend/app/modules/identity/delivery.py`: optional private SMTP_SSL token delivery, no token in API response, database, logs or URLs; absent delivery fails closed.
+- `backend/alembic/versions/h-05_0002_identity.py`: new unique identity migration extending H-04 revision, no changes to previous migration or `backend/alembic/env.py`.
+- `backend/tests/identity/test_auth_flows.py`: disposable SQLite tests for bootstrap token/reuse/expiry, login good/bad and rate limiting, Argon2id, 401/403/409/422, CSRF/Origin/cookie/rotations, logout/revocation and expired sessions, new/existing invitations, company owner-only invites, viewer/admin restrictions, wrong-target email, revoked inviter, cross-tenant 404, absent SMTP fail-closed, and HMAC binding.
+- `backend/tests/identity/test_identity_migration.py`: H04→H05→H04→H05 Alembic migration/schema/FK checks.
+- `backend/app/modules/identity/README.md`: Windows PowerShell versions/commands, first-owner operator + SMTP setup, environment and documented known regression limitation.
+- `backend/app/main.py`: **only two lines** import/register Identity Router, preserves H-03 `/health`.
+- `backend/pyproject.toml`: **only Argon2 dependency** added; no other shared changes.
+
+**Verified repository scope:** GitHub compare against authorized main base shows only the above H-05 allowed paths (12 code/test/docs paths) before this report; frozen OpenAPI blob unchanged. H-05 added no changes to `backend/app/core/config.py`, `backend/app/db/**`, any existing H-04 migration, frontend/design/OpenAPI, PM ledgers or other agents' reports. No DB files, private customer data or real credentials committed.
+
+### Test evidence — strict honesty
+**GitHub source/read-back/scope verification: OBSERVED.**  
+**Python 3.14.7 / SQLite 3.50.4 owner Windows real execution of the new H-05 code: NOT_RUN / NOT_VERIFIED.** No `pytest` stdout/stderr or exit codes were returned in this conversation and no QA-run has occurred. New test definitions are not evidence of PASS. No live TLS SMTP, cross-tenant external attack simulation or penetration QA claimed.
+
+Manual reproducible steps for exact **final** PR HEAD in `backend/app/modules/identity/README.md`: `py -3.14 --version`, `py -3.14 -c "import sqlite3; print(sqlite3.sqlite_version)"`, fresh venv `pip install -e ".[test]"`, `pip freeze`, `python -m pytest -v tests/identity tests/test_health.py`, `python -m pytest -v tests/db`; migration `upgrade head`, `current`, schema/FK snapshot. Capture exact SHA, tool versions, raw outputs/exit codes, runner identity and redacted evidence in PR. Actual results pending.
+
+**Known H-04 regression conflict — explicit blocker until Manager scope decision:** Existing `backend/tests/db/test_migrations.py` expects `alembic upgrade head` to yield `h04_0001`; with correct H-05 revision `h05_0002` appended, `head` yields `h05_0002`. The old assertion is revision-pinned and likely fails under the new head. H-04 test file is outside H-05 allowed paths and remains untouched. Need Manager-authorized H-04 regression-test correction (test H-04 revision explicitly) before full H-03/H-04/H-05 regression acceptance. Do not claim legacy H-04 tests PASS on new branch.
+
+**Deferred / limitations:** SQLite development-only `BEGIN IMMEDIATE` does not prove PostgreSQL row locking/concurrency; production database, backup/restore, external SMTP reliability, HTTPS trusted reverse-proxy integration, penetration testing and full security/tenant QA **DEFERRED/NOT_TESTED**. Identity-only synthetic company anchor tables will require Coordinator integration review with H-06 company module before any future company CRUD; H-06 itself remains unauthorized.
+
+**H-05 disposition:** IMPLEMENTATION SUBMITTED FOR COORDINATOR REVIEW / NOT COMPLETED; independent QA follows Coordinator per `coordinator_required`, and only Manager may authorize PR merge. H-06–H-08 and other locked tasks untouched. No automatic QA PASS or W1 completion.
+
+
+## 2026-11-14 — H-05 Windows failure triage; missing invitation token import fixed
+
+**Input: OWNER-REPORTED manual execution (not QA and not personally reproduced by Developer)**, original exact source HEAD `50f2e937b047aa3abba1fa6eb36faa86671d70c9`. Dependency installation reported success / Exit Code 0; identity+health Pytest: **15 passed, 8 failed, Exit Code 1**; legacy H-04 Pytest: **23 passed, 1 failed, Exit Code 1**. No full test traces have been supplied here; failure causes beyond the two identified issues cannot be certified. H-05 formal acceptance remains `NOT_TESTED`.
+
+**Fix 1 (H-05 allowed file only):** In `backend/app/modules/identity/router.py`, add `new_secret` to the existing imports from `app.modules.identity.security`. The invitation creation path calls `raw = new_secret()` (line 365 at original HEAD); previous code lacked this name binding. Commit `bd452c6cac0667d9cf1d10500b2e55718f7c3c3c`. Source read-back confirms the import is now present and `security.py` defines the function. No change to token length/entropy, hash-only persistence, company role checks, invitation expiry, or private delivery. Other invitation-related tests are already present, but **NOT RE-RUN** after this fix. The 8 earlier failures remain FAIL evidence, not converted into PASS. Full new-SHA rerun and raw failure traces are required to identify any additional problem.
+
+**Finding 2 (not fixed; outside H-05 scope):** `backend/tests/db/test_migrations.py` has two `command.upgrade(config, "head")` calls while its expected revision remains `h04_0001`. With the authorized subsequent `h05_0002` revision, `head` now denotes H-05. **Narrow Manager authorization proposal:** change exactly those **two invocations** to `command.upgrade(config, "h04_0001")` in the H-04-owned test; leave the assertion of revision `h04_0001`, fresh Inspector snapshots, column names/types/nullability, PK/FK/unique/check constraints, NOT NULL enforcement, downgrade-to-base, equal post-upgrade snapshots and untouched independent DB unchanged. H-05's own migration test independently covers H04→H05→H04→H05. No H-04 edit executed by Developer pending explicit Manager approval.
+
+**Disposition / review:** Source import correction committed, user-reported tests FAILED, rerun on new final PR HEAD pending, review by Coordinator then independent QA. H-05 not completed or merged; no changes to H-04, prior migrations, OpenAPI, other tasks or ledgers. Legacy H-04 failure is a separate revision-pinned regression gate, not permission to weaken assertions.
+
+
+## 2026-11-15 — H-05 Coordinator P1 invitation issuance rate-limit remediation
+
+**Coordinator:** PR #29 merged `0c4e357971f3c7caf2ca37a65ca96b883fe23e63`; report status **FAIL / CHANGES_REQUIRED** against H-05 `eea82ad12b07e4e7b8b1c0705acee75c1539c0e3`. Frozen rc.3 contract requires "Limit invitations"; prior same-address duplicate rejection did not limit distinct recipients. Manager expressly authorized only this remediation, tests and stale H-04 README correction on existing H-05 PR #26, without changing contracts or historical migrations.
+
+**Implemented under authorized H-05 files only:**
+- `backend/app/modules/identity/router.py`: durable, rolling 24-hour ceiling of 20 successful invitation issuances per (company, inviter) and 50 per company; uses existing committed `h05_audit` membership invitation issue events within SQLite `BEGIN IMMEDIATE` lock before token generation/delivery. Events count even after acceptance or expiry; failed delivery rolls back invitation + audit. Reject excess with frozen error envelope HTTP 409, `INVITE_RATE_LIMITED`, before sending/storing a fresh token. Other tenants/issuers cannot consume an unrelated actor's budget; company cap includes all issuers. No new migration, DB model or OpenAPI changes.
+- `backend/tests/identity/test_auth_flows.py`: negative test on 20 distinct recipient addresses and denial of 21st; persist quota across new database engine; synthetic multiple-issuer company cap and denial across issuers; allow a distinct company; independent per-issuer limits; 24h window aging.
+- `backend/app/modules/identity/README.md`: documented precise quota/409 behavior and corrected stale claim of no permission to edit H-04 test; Manager exception via merged PR #28 already handled two pinned migration invocations with all schema checks retained.
+
+**Verification performed:** GitHub source read-back/compare confirms only these three allowed H-05 files changed from the Coordinator-reviewed SHA before this Developer report. Earlier owner's 47/47 successful Windows tests **apply only to old SHA** and cannot establish new behavior. **No Python/Windows test run of this change has been observed: NOT_TESTED, NOT PASS.** Request Windows Python 3.14.7/SQLite 3.50.4 `python -m pytest -v tests/identity tests/test_health.py` and `python -m pytest -v tests/db`; retain SHA, full stdout/stderr and both exit codes, then Coordinator re-review, independent QA and final Manager decision. PostgreSQL and production TLS/SMTP/concurrency remain DEFERRED/NOT_TESTED. PR #26 open/unmerged, H-06–H-08 untouched.
+
+
+## 2026-11-15 — H-05 rc.4 automated 409/ErrorEnvelope conformance regression
+
+**Manager authorization:** PR #26 comment `6890751751`; main `4db2d59def3563cd015f621a19ba8810cab3e822` approved H-05 OpenAPI 1.0.0-rc.4 blob `f57de031224e21f09253642c210a778a60683711`, decision `APP-HESABYAR-H05-INVITE-ERROR-CONTRACT-20261115-001`. Existing H-05 development branch previously at `5e07456a2c7a31783fcd2df45ad7744b3ca3b89d`. Per Manager's integration allowance, the approved main history was merged into the existing feature branch as **two-parent merge** `6bd347ac722efb5d22dbd0f8b88a3e352aabde90`: all nine changed main-owned paths retained exactly their main blob SHAs, including approved OpenAPI and coordinator/QA/manager reports; no path overlap or user code conflict with H-05. The merged contract blob was read back and verified.
+
+**Developer-owned changes since integration:**
+- `backend/tests/identity/test_auth_flows.py`: add parameterized test `test_invitation_rate_limit_matches_approved_openapi` for **issuer and company** limits. Real authenticated owner invitation POST yields 409 code `INVITE_RATE_LIMITED`; the test loads actual checked-in `docs/contracts/openapi.yaml` offline using PyYAML, verifies normative rc.4 and exact Git blob SHA, resolves endpoint 409→Conflict→ErrorEnvelope, validates full API JSON with JSON Schema Draft2020-12 and asserts code is within the **actual** ErrorCode.enum. Tests rejected request produced no private delivery, invitation DB row, or audit event. Quota audit pre-seeding uses synthetic valid user FK rows and existing H-05 locked fixture.
+- `backend/pyproject.toml`: add only two identity-test dependencies `PyYAML>=6,<7` and `jsonschema>=4.23,<5`. No runtime/security dependency modified.
+- No change to quota enforcement (20 per issuer/company, 50 per company rolling 24 hours), security/session/CSRF, migration/tests/db, H-04 code, API contract, other agents' reports or governance records by Developer. Existing H-05 tests retained unchanged.
+
+**Evidence:** GitHub source diff/read-back; newly authored tests **NOT_RUN / NOT_TESTED**. Previous owner-run 50 PASS refers to old SHA and cannot be assigned to this new head. Exact Windows Python 3.14.7 / SQLite 3.50.4 manual commands and outputs must be attached to PR #26 with SHA, package versions and exit codes for `tests/identity tests/test_health.py` and `tests/db`. Use existing worktree folder and writable `D:\\Codex\\Temp` for `--basetemp`, not new root-drive directories. Coordinator then independent QA, final Manager acceptance; PR #26 remains OPEN, UNMERGED, `validation_status=NOT_TESTED`.

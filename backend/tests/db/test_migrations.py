@@ -72,7 +72,7 @@ def test_upgrade_downgrade_upgrade_uses_isolated_database(
         assert before is None
         assert _schema_snapshot(untouched_engine) is None
 
-        command.upgrade(config, "head")
+        command.upgrade(config, "h04_0001")
         after_first_upgrade = _schema_snapshot(migration_engine)
         _assert_baseline_contract(after_first_upgrade)
         with migration_engine.connect() as connection:
@@ -90,7 +90,7 @@ def test_upgrade_downgrade_upgrade_uses_isolated_database(
         assert after_downgrade is None
         assert _schema_snapshot(untouched_engine) is None
 
-        command.upgrade(config, "head")
+        command.upgrade(config, "h04_0001")
         after_second_upgrade = _schema_snapshot(migration_engine)
         _assert_baseline_contract(after_second_upgrade)
         assert after_second_upgrade == after_first_upgrade
