@@ -555,9 +555,19 @@ def test_company_cap_blocks_multi_issuer_bypass_and_other_tenant_is_independent(
             user_id=sandbox["owner_id"], company_id=company_b, role="owner",
         ))
 
-    # Multiple distinct issuers' audit records count towards the same company cap.
-    for index in range(INVITE_PER_COMPANY_LIMIT // 10):
-        _seed_invitation_events(sandbox, company_a, new_id(), 10)
+    # Multiple real synthetic user IDs (valid audit foreign keys) feed the
+    # company cap without any single issuer reaching its individual ceiling.
+    issuer_ids = [sandbox["owner_id"], other_actor]
+    with locked(sandbox["engine"]) as connection:
+        for n in range(3):
+            issuer = new_id()
+            connection.execute(t.users.insert().values(
+                id=issuer, email=f"quota-fixture-{n}@example.test",
+                active=True, password_hash=password_hash(OTHER_PASSWORD),
+            ))
+            issuer_ids.append(issuer)
+    for issuer in issuer_ids:
+        _seed_invitation_events(sandbox, company_a, issuer, INVITE_PER_COMPANY_LIMIT // len(issuer_ids))
     before = len(sandbox["sent"])
     blocked = invite(sandbox, company_a, "never-invited@example.test", "viewer", headers)
     assert blocked.status_code == 409
