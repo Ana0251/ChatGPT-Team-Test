@@ -2233,6 +2233,83 @@
       "pm_assistant_handoff": "After this governance decision PR merges, ONLY H07 TASKS.json record may be synced: start_authorized true; status AUTHORIZED_NOT_STARTED; validation_status NOT_TESTED; add narrow backend/app/main.py exception and review_policy coordinator_required, risks/reason, contract and dependency refs and precise acceptance/evidence requirements, while preserving its old criteria and other 29 tasks/approvals/WAVES. No Developer work before that independent administrative PR merges and Manager explicitly starts H07.",
       "dev_gate": "Developer H07 branch/PR ONLY after PM Assistant H07-only PR merges and Manager explicit separate handoff. Coordinator then QA before Manager accept. W1 remains open. H08/H26/W2-W6 unauthorized.",
       "deferred_not_tested": "No journal posting API yet, therefore actual close-vs-posting race cannot be proven. PostgreSQL transactions/row locks, multiworker, full security pentest/browser HTTPS, production backup/restore/accounting remain deferred."
+    },
+    {
+      "id": "APP-HESABYAR-H07-H05-MIGRATION-TEST-EXCEPTION-20261115-001",
+      "date": "2026-11-15",
+      "approved_by": "manager",
+      "project": "حسابیار (Hesabyar)",
+      "task_id": "H-07",
+      "related_task_id": "H-05",
+      "wave_id": "W1",
+      "framework_version": "1.3.0",
+      "status": "H07_H05_TEST_ONLY_MIGRATION_REVISION_PIN_APPROVED_PENDING_PM_ASSISTANT_LEDGER_SYNC",
+      "review_policy": "coordinator_required",
+      "review_risks": [
+        "H05 schema migration isolated regression must remain strong and future-proof to additive H07 migrations",
+        "Only two upgrade calls pinned, no assertions/negative FK/PK/schema/downgrade test weakened",
+        "Cross-owner H05 test path access tightly scoped for H07 Developer; no H05 code or historical migration changes",
+        "Real full H07/H06/H05/H04 regression after correction and exact SHA provenance, Coordinator then QA independent review"
+      ],
+      "review_reason": "H07 correctly adds h07_0003 after h05_0002. Prior H05-specific migration regression upgrades to global Alembic head but asserts h05_0002; this is a version pin failure, not proof of faulty H07 migration. Permit only two test-specific replacements with independent review to preserve H05 schema/integrity assertions while allowing H07 current head.",
+      "evidence": {
+        "pr_number": 49,
+        "original_pr_head": "0d8e81591dde886f26cbbef35e9009e722630032",
+        "base_main": "3c4c3524b2e9e75f18b4a44374685cce525ec263",
+        "test_file_blob": "9e904fc0dd99e217292142921b7bcb5c82f0c961",
+        "test_path": "backend/tests/identity/test_identity_migration.py",
+        "test_line_numbers": [
+          33,
+          61
+        ],
+        "migration_additive_h07": "h07_0003",
+        "migration_older_h05": "h05_0002",
+        "owner_run": {
+          "h07_fiscal": {
+            "passed": 7,
+            "failed": 0,
+            "exit_code": 0,
+            "warnings": 11
+          },
+          "h06_companies": {
+            "passed": 12,
+            "failed": 0,
+            "exit_code": 0,
+            "warnings": 13
+          },
+          "identity_health": {
+            "passed": 27,
+            "failed": 1,
+            "exit_code": 1,
+            "warnings": 27
+          },
+          "h04_db": {
+            "passed": 24,
+            "failed": 0,
+            "exit_code": 0,
+            "warnings": 3
+          },
+          "total_passed": 70,
+          "total_failed": 1,
+          "total_warnings": 54
+        },
+        "source_comment": "https://github.com/Ana0251/ChatGPT-Team-Test/pull/49#issuecomment-6892525333",
+        "local_head_in_test_logs": "NOT_PROVIDED",
+        "sqlite_version_in_test_logs": "NOT_PROVIDED"
+      },
+      "exact_change": "ONLY two occurrences (currently lines 33 and 61) of command.upgrade(config, \"head\") -> command.upgrade(config, \"h05_0002\") within test_identity_migration_and_reversal in backend/tests/identity/test_identity_migration.py; no other byte/content/logic changes.",
+      "exception_allowed_path": "backend/tests/identity/test_identity_migration.py",
+      "scope_limits": [
+        "Do not change H05 original migration h05_0002 or H07 h07_0003 down_revision or current Alembic global head",
+        "Do not alter any test assertion, existing identity table/PK/FK/NOT NULL/integrity/downgrade/upgrade cycle checks, or negative tests",
+        "Do not edit H05 application router/security/tables or any other identity tests",
+        "No dependency/config/DB/contract/design/frontend changes, no other agents' report, TASKS/WAVES or other tasks",
+        "Authorized ONLY after this governance approval AND PM Assistant H07-only allowed_paths sync PR both merge to main and Manager separately authorizes precise Developer fix",
+        "No H08/H26 or W2-W6 activation; W1 remains open"
+      ],
+      "pm_assistant_handoff": "After governance PR merge, update ONLY H07 record in TASKS.json: append backend/tests/identity/test_identity_migration.py to H07.allowed_paths, and add exactly two-line exception constraints, evidence refs, historical 70 PASS/1 FAIL and NOT_TESTED status to H07 mandatory_amendments/evidence_required/notes. Keep status AUTHORIZED_NOT_STARTED, start_authorized true, validation_status NOT_TESTED, review_policy coordinator_required and all other 29 tasks, approvals and WAVES unchanged. Independent PR, do NOT self-merge or edit code.",
+      "developer_gate": "Only after Manager merges PM Assistant H07-only ledger PR and issues explicit handoff, H07 Developer may change the two exact lines in existing H07 PR #49, producing new HEAD that must be rerun and independently reviewed by Coordinator then QA.",
+      "testing_gate": "Owner must rerun fiscal/companies/identity+health/db suites and show exact new HEAD and real exit codes; until then 70 PASS 1 FAIL remains current, H07 NOT_TESTED. Close versus journal posting remains DEFERRED/NOT_TESTED."
     }
   ]
 }
