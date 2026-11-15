@@ -171,23 +171,33 @@
         "backend/tests/identity/**",
         "backend/alembic/versions/h-05_*.py",
         "backend/app/main.py",
-        "backend/pyproject.toml"
+        "backend/pyproject.toml",
+        "backend/tests/db/test_migrations.py"
       ],
-      "acceptance_criteria": "Implement only internal company-scoped email/password identity APIs exactly matching frozen OpenAPI 1.0.0-rc.3 (GET /auth/csrf, POST /auth/login, /auth/activate, /auth/invitations/activate, /auth/invitations/accept, /auth/logout, GET /auth/me and identity/membership guards for /companies/{companyId}/members). No public registration or global super-admin. Secure adaptive password hashing; audited restricted operator-provisioned first owner with company-bound hashed 256-bit single-use activation token expiring within 15 minutes. Pre-session and authenticated Secure/HttpOnly/SameSite=Lax cookies over same-origin HTTPS; enforce Origin and X-CSRF-Token for mutations, session/CSRF rotation, expiry, logout revocation, no unsafe automatic replay or plaintext tokens in storage/URLs/logs. Server-side company-scoped owner/admin/accountant/viewer authorization, only company owner may invite an owner, atomically consumed invitations and no cross-company IDOR. Demonstrate real local SQLite tests for successful and rejected auth, 401/403/409/422, CSRF/Origin, expired/revoked sessions, invalid/stale/reused tokens, privilege escalation/cross-tenant denial, plus H-03 health and H-04 DB regression; owner/QA execution must be distinguished. PostgreSQL production/concurrency/security/backup engine gates remain DEFERRED/NOT_TESTED.",
-      "mandatory_amendments": "Internal email/password using standard secure hashes, secure HttpOnly/Secure/SameSite sessions and CSRF for state changes; membership-scoped owner/admin/accountant/viewer; no super-admin or default credentials. Manager H-05 phased entry APP-HESABYAR-W1-H05-ENTRY-20261114-001: preserve frozen OpenAPI rc.3 blob 98d34e7bd7b4551c0f429ea5e388781060ceaf63 and accepted H-18 identity specs. Restrict backend/app/main.py to importing/registering identity APIRouter only, retaining /health behavior; restrict backend/pyproject.toml to minimal reproducible approved security/password hashing (e.g. Argon2id) and identity test dependencies only. Existing identity module/tests and new unique h-05_*.py Alembic revisions only; no edits to previous migration, backend/app/core/config.py, backend/app/db/**, backend/alembic/env.py, frontend, design, contracts or other agents' reports. If shared edits needed outside scope, stop for separate manager approval. No H-06/H-07/H-08 implementation except minimal synthetic identity fixtures; no secrets/customer DB committed. Legacy review_policy=coordinator_required: Coordinator integration review then independent QA, final Manager acceptance; no PASS before actual evidence. QA runtime test execution status must be separately reported.",
-      "evidence_required": "Manager-approved H-05 scope/decision ref and frozen OpenAPI exact SHA; Developer PR and exact tested commit, Windows Python 3.14.7 / SQLite 3.50.4 / installed dependency versions, reproducible manual commands, stdout/stderr, exit codes, redacted traces; security-negative test logs for login, cookies/CSRF/Origin, 401/403/409/422, invitation setup/acceptance one-time token expiry/reuse, logout/session revoke/rotate, company roles and cross-tenant IDOR; regression of H-03 /health and H-04 SQLite tests; independent Coordinator integration report then QA report with actual QA-run vs owner-run distinction and Manager gate. Local SQLite results not proof of PostgreSQL row-lock/concurrency/production security; such tests DEFERRED/NOT_TESTED.",
+      "acceptance_criteria": "Implement only internal company-scoped email/password identity APIs exactly matching approved current OpenAPI 1.0.0-rc.4 (including HTTP 409 INVITE_RATE_LIMITED for invitation quota reached) (GET /auth/csrf, POST /auth/login, /auth/activate, /auth/invitations/activate, /auth/invitations/accept, /auth/logout, GET /auth/me and identity/membership guards for /companies/{companyId}/members). No public registration or global super-admin. Secure adaptive password hashing; audited restricted operator-provisioned first owner with company-bound hashed 256-bit single-use activation token expiring within 15 minutes. Pre-session and authenticated Secure/HttpOnly/SameSite=Lax cookies over same-origin HTTPS; enforce Origin and X-CSRF-Token for mutations, session/CSRF rotation, expiry, logout revocation, no unsafe automatic replay or plaintext tokens in storage/URLs/logs. Server-side company-scoped owner/admin/accountant/viewer authorization, only company owner may invite an owner, atomically consumed invitations and no cross-company IDOR. Demonstrate real local SQLite tests for successful and rejected auth, 401/403/409/422, CSRF/Origin, expired/revoked sessions, invalid/stale/reused tokens, privilege escalation/cross-tenant denial, plus H-03 health and H-04 DB regression; owner/QA execution must be distinguished. PostgreSQL production/concurrency/security/backup engine gates remain DEFERRED/NOT_TESTED.",
+      "mandatory_amendments": "Internal email/password using standard secure hashes, secure HttpOnly/Secure/SameSite sessions and CSRF for state changes; membership-scoped owner/admin/accountant/viewer; no super-admin or default credentials. Manager H-05 phased entry APP-HESABYAR-W1-H05-ENTRY-20261114-001: follow approved CURRENT OpenAPI 1.0.0-rc.4 blob f57de031224e21f09253642c210a778a60683711 (additive INVITE_RATE_LIMITED HTTP 409 for invitation rate limits), with approved H-18 identity specs; former frozen rc.3 blob 98d34e7bd7b4551c0f429ea5e388781060ceaf63 is HISTORICAL ONLY and not the current H-05 normative target. Restrict backend/app/main.py to importing/registering identity APIRouter only, retaining /health behavior; restrict backend/pyproject.toml to minimal reproducible approved security/password hashing (e.g. Argon2id) and identity test dependencies only. Existing identity module/tests and new unique h-05_*.py Alembic revisions only; no edits to previous migration, backend/app/core/config.py, backend/app/db/**, backend/alembic/env.py, frontend, design, contracts or other agents' reports. If shared edits needed outside scope, stop for separate manager approval. No H-06/H-07/H-08 implementation except minimal synthetic identity fixtures; no secrets/customer DB committed. Legacy review_policy=coordinator_required: Coordinator integration review then independent QA, final Manager acceptance; no PASS before actual evidence. QA runtime test execution status must be separately reported. Manager-approved narrow test-ownership exception APP-HESABYAR-H05-H04-MIGRATION-TEST-EXCEPTION-20261114-001: Developer may edit ONLY backend/tests/db/test_migrations.py on the existing H-05 PR #26 branch, and ONLY replace the two calls `command.upgrade(config, \"head\")` with `command.upgrade(config, \"h04_0001\")` inside `test_upgrade_downgrade_upgrade_uses_isolated_database` (original lines 75 and 93). Preserve every other line, version_num assertion, schema/PK/FK/unique/check and NOT NULL constraints, upgrade/downgrade and test DB isolation assertions. Do NOT modify historical H-04 revisions, migrations env, other H-04 code/tests, or H-05's own migration regression test. After administrative PR merge and explicit manager handoff, Developer must execute real Windows tests on the new exact H-05 SHA and report all PASS/FAIL and exit codes; Coordinator then independent QA review, no inferred PASS.",
+      "evidence_required": "Manager-approved H-05 scope/decision ref and approved current OpenAPI rc.4 exact SHA f57de031224e21f09253642c210a778a60683711 (rc.3 historical only); Developer PR and exact tested commit, Windows Python 3.14.7 / SQLite 3.50.4 / installed dependency versions, reproducible manual commands, stdout/stderr, exit codes, redacted traces; security-negative test logs for login, cookies/CSRF/Origin, 401/403/409/422, invitation setup/acceptance one-time token expiry/reuse, logout/session revoke/rotate, company roles and cross-tenant IDOR; regression of H-03 /health and H-04 SQLite tests; independent Coordinator integration report then QA report with actual QA-run vs owner-run distinction and Manager gate. Local SQLite results not proof of PostgreSQL row-lock/concurrency/production security; such tests DEFERRED/NOT_TESTED.",
       "evidence_refs": [
         ".chatgpt-team/DECISIONS.md#APP-HESABYAR-W1-H05-ENTRY-20261114-001",
         "https://github.com/Ana0251/ChatGPT-Team-Test/pull/24",
         "https://github.com/Ana0251/ChatGPT-Team-Test/commit/cd7ee63b1e7615d50b046c1470417fe5562712ff",
         "docs/contracts/openapi.yaml@98d34e7bd7b4551c0f429ea5e388781060ceaf63",
         "design/specs/identity/AUTH_AND_INVITATIONS.md",
-        "design/specs/identity/SESSION_STATES.md"
+        "design/specs/identity/SESSION_STATES.md",
+        ".chatgpt-team/DECISIONS.md#APP-HESABYAR-H05-H04-MIGRATION-TEST-EXCEPTION-20261114-001",
+        "https://github.com/Ana0251/ChatGPT-Team-Test/pull/27",
+        "https://github.com/Ana0251/ChatGPT-Team-Test/commit/36c5acec4916b0beb830e341d74bd549ff047c33",
+        "https://github.com/Ana0251/ChatGPT-Team-Test/pull/26#issuecomment-6882726277",
+        ".chatgpt-team/DECISIONS.md#APP-HESABYAR-H05-INVITE-ERROR-CONTRACT-20261115-001",
+        "https://github.com/Ana0251/ChatGPT-Team-Test/pull/33",
+        "https://github.com/Ana0251/ChatGPT-Team-Test/commit/73a3e6bf4dde42ce25e4a69b78d895a17a0cebb2",
+        "docs/contracts/openapi.yaml@f57de031224e21f09253642c210a778a60683711",
+        "https://github.com/Ana0251/ChatGPT-Team-Test/pull/26#issuecomment-6890593267"
       ],
       "status": "AUTHORIZED_NOT_STARTED",
       "validation_status": "NOT_TESTED",
       "start_authorized": true,
-      "notes": "Administrative manager entry authorization ONLY; H-05 is AUTHORIZED_NOT_STARTED, validation NOT_TESTED. Developer may start solely after this ledger PR is reviewed/merged and Manager issues explicit handoff. Password/CSRF/session/invitation/company membership security, real Windows SQLite tests, independent Coordinator and QA review are required and NOT_RUN for H-05 at this point. backend/app/main.py router connection only and backend/pyproject.toml H-05 security/test dependencies only. H-04 infrastructure acceptance is local SQLite PASS LIMITED, not a real tenant security or PostgreSQL production gate. H-06/H-07/H-08/H-26 and W2–W6 remain unauthorized.",
+      "notes": "Administrative manager entry authorization ONLY; H-05 is AUTHORIZED_NOT_STARTED, validation NOT_TESTED. Developer may start solely after this ledger PR is reviewed/merged and Manager issues explicit handoff. Password/CSRF/session/invitation/company membership security, real Windows SQLite tests, independent Coordinator and QA review are required and NOT_RUN for H-05 at this point. backend/app/main.py router connection only and backend/pyproject.toml H-05 security/test dependencies only. H-04 infrastructure acceptance is local SQLite PASS LIMITED, not a real tenant security or PostgreSQL production gate. H-06/H-07/H-08/H-26 and W2–W6 remain unauthorized. Additional restricted file permission APP-HESABYAR-H05-H04-MIGRATION-TEST-EXCEPTION-20261114-001: only two `command.upgrade(config, \"head\")` to `command.upgrade(config, \"h04_0001\")` replacements at H-04 test migration line positions 75 and 93, no other test or code modifications via this exception. Existing H-05 new_secret import fix at PR #26 HEAD 53e6770a0e5f220fec3022d320e25c3629b71fbf is source-reviewed but NOT_YET_RUNTIME_TESTED. Owner earlier tests at 50f2e937b047aa3abba1fa6eb36faa86671d70c9: identity/health 15 PASS 8 FAIL exit 1; H04 DB 23 PASS 1 FAIL exit 1; no successful new run claimed. Following merge of PM Assistant's PR, owner must rerun exact latest H-05 SHA under Windows Python 3.14.7/SQLite 3.50.4, then Coordinator and QA independent review. H-05 validation remains NOT_TESTED; no new task/wave authorization. Approved CURRENT normative H-05 contract: OpenAPI 1.0.0-rc.4, docs/contracts/openapi.yaml Git blob f57de031224e21f09253642c210a778a60683711; additive error INVITE_RATE_LIMITED for HTTP 409 invitation quota (safe manual retry only, no automatic POST replay or tenant/recipient leakage). Manager decision APP-HESABYAR-H05-INVITE-ERROR-CONTRACT-20261115-001 and PR #33 merge 73a3e6bf4dde42ce25e4a69b78d895a17a0cebb2, PM Assistant handoff PR #26 comment 6890593267. Prior OpenAPI 1.0.0-rc.3 blob 98d34e7bd7b4551c0f429ea5e388781060ceaf63 is preserved exclusively for HISTORICAL PROVENANCE in existing evidence_refs and Git history, NOT current acceptance. H-05 implementation/QA regression against rc.4 remains NOT_TESTED; no runtime, security, or final-task PASS inferred.",
       "review_policy": "coordinator_required",
       "review_risks": [
         "Password hashing, credential handling and no account enumeration",
@@ -1753,6 +1763,100 @@
       "PM_Assistant_authorized_changes": "Only H-05 record: set start_authorized=true and status=AUTHORIZED_NOT_STARTED; append the two narrow shared paths to allowed_paths and add scope/test/security notes, review_policy/review_risks/review_reason and approved evidence/decision refs. Preserve 30 tasks, approvals, H-04/H-18 statuses and all other task records; do NOT change WAVES.json or start work itself. Use independent PR and wait for Manager merge.",
       "entry_gate": "Developer may start ONLY after PM Assistant's H-05 ledger sync PR is reviewed and merged to protected main; Manager to send explicit Developer handoff after verifying.",
       "no_other_authorization": "No H-06/H-07/H-08/H-26 or W2–W6 authorization; W1 remains open; no release gate, no production PostgreSQL QA waiver."
+    },
+    {
+      "id": "APP-HESABYAR-H05-H04-MIGRATION-TEST-EXCEPTION-20261114-001",
+      "date": "2026-11-14",
+      "approved_by": "manager",
+      "project": "حسابیار (Hesabyar)",
+      "task_id": "H-05",
+      "related_task_id": "H-04",
+      "wave_id": "W1",
+      "framework_version": "1.3.0",
+      "status": "H05_H04_TEST_PIN_EXCEPTION_APPROVED_PENDING_PM_ASSISTANT_LEDGER_SYNC",
+      "review_policy": "coordinator_required",
+      "review_risks": [
+        "Version-correct Alembic migration assertion without weakening original H04 schema/integrity checks",
+        "Maintaining future migration coverage and preventing accidental regressions",
+        "Shared file H04 test ownership exception limited to a single file and two-line replacement"
+      ],
+      "review_reason": "H04 migration regression assumes global Alembic head remains h04_0001; H05 legally appends h05_0002, so upgrade head returns h05_0002 without violating H04 baseline. Change is strictly a test-specific version pin; security-sensitive H05 requires Coordinator integration and independent QA after owner actual rerun.",
+      "evidence": {
+        "original_tested_sha": "50f2e937b047aa3abba1fa6eb36faa86671d70c9",
+        "original_owner_tests": "Windows Python 3.14.7, SQLite 3.50.4, dependency installation exit 0; identity/health 15 pass/8 fail exit 1 due to missing new_secret import; H04 db 23 pass/1 fail exit 1 due to global Alembic head h05_0002.",
+        "new_current_pr_head_sha": "53e6770a0e5f220fec3022d320e25c3629b71fbf",
+        "new_router_source_blob": "41c90a74e67dd03baa2990c32ad5881b5f397d37",
+        "router_import_fix": "new_secret imported from app.modules.identity.security; NEW SHA NOT_YET_RUNTIME_TESTED",
+        "old_h04_test_blob": "d857ffc39d681f31f77833025d827fc3675acd86",
+        "existing_h05_migration_test_blob": "9e904fc0dd99e217292142921b7bcb5c82f0c961",
+        "pr_number": 26,
+        "developer_pr_comment": "https://github.com/Ana0251/ChatGPT-Team-Test/pull/26#issuecomment-6882726277"
+      },
+      "exception_allowed_path": "backend/tests/db/test_migrations.py",
+      "exact_change": "Only replace both occurrences of command.upgrade(config, \"head\") with command.upgrade(config, \"h04_0001\") in test_upgrade_downgrade_upgrade_uses_isolated_database (currently lines 75 and 93), thereby pinning H04 baseline; all existing assertions and schema/constraint/foreign-key/integrity/downgrade/independent-DB checks remain unchanged.",
+      "scope_limits": [
+        "No H04 production source/code or DB engine edits",
+        "No H04/Alembic historical migration revisions/env or frozen OpenAPI edits",
+        "No deletion/reduction of test assertions or weakening H04 baseline",
+        "No modification of H05 migration test that validates H04→H05→H04→H05",
+        "Only this one file exception after administrative ledger sync, on existing feature/h-05-identity-security and PR #26"
+      ],
+      "admin_handoff": "PM Assistant only updates H05.allowed_paths to append backend/tests/db/test_migrations.py with explicit two-line exception in H05.mandatory_amendments, evidence refs and notes if appropriate. H05.status remains AUTHORIZED_NOT_STARTED, start_authorized true, validation_status NOT_TESTED, and all other 29 tasks plus approvals/waves untouched. Independent PR; no testing/merge by PM Assistant.",
+      "developer_gate": "Only after manager-governance PR and PM Assistant ledger-scope PR both merged into protected main may H05 Developer edit the two exact lines in same H05 PR #26. Developer should first preserve/import new_secret existing fix, then rerun full Windows identity+health, H04 DB suite on exact new SHA; capture raw PASS/FAIL, exits, environment, and update PR. Developer must not claim tests pass before run.",
+      "next_review": "Coordinator integration review then independent QA and Manager decision; H05 PR26 unmerged, H05 validation_status NOT_TESTED, W1 open, H06/H07/H08/H26 W2–W6 locked.",
+      "not_tested": "Current new SHA runtime tests; production DB/PostgreSQL locks/concurrency, external SMTP, TLS proxy, full multi-tenant penetration testing, final release suitability"
+    },
+    {
+      "id": "APP-HESABYAR-H05-INVITE-ERROR-CONTRACT-20261115-001",
+      "date": "2026-11-15",
+      "approved_by": "manager",
+      "project": "حسابیار (Hesabyar)",
+      "task_id": "H-05",
+      "wave_id": "W1",
+      "framework_version": "1.3.0",
+      "review_policy": "coordinator_required",
+      "status": "CONDITIONAL_NARROW_ADDITIVE_CONTRACT_AMENDMENT_AUTHORIZED_NOT_MERGE_OR_TASK_COMPLETION",
+      "trigger": "Independent QA FAIL at PR #26 exact HEAD 5e07456a2c7a31783fcd2df45ad7744b3ca3b89d, QA PR #31 merged bc31e655de00bd17c110458120b46581bdca26e3, issue comment 6890217971.",
+      "reviewed_findings": "INVITE_RATE_LIMITED is returned for a 409 invitation quota denial, but is absent from closed OpenAPI rc.3 ErrorCode.enum and ERRORS.md; 50/50 owner-run local SQLite tests do not establish normative schema compliance.",
+      "decision": "Authorize Coordinator-owned ADDITIVE contracts correction only: define INVITE_RATE_LIMITED as an HTTP 409 error for POST /companies/{companyId}/members, with explicit safe retry/wait guidance; publish new rc.4 version, preserve frozen rc.3 blob as immutable prior baseline.",
+      "allowed_contract_paths": [
+        "docs/contracts/openapi.yaml",
+        "docs/contracts/ERRORS.md"
+      ],
+      "exact_contract_scope": [
+        "Change OpenAPI info.version 1.0.0-rc.3 to 1.0.0-rc.4; append INVITE_RATE_LIMITED to ErrorCode.enum only. Do not change endpoint status, path, request/response schema or other ErrorCode values.",
+        "Change ERRORS.md taxonomy version to rc.4 and add a 409 INVITE_RATE_LIMITED entry for POST /companies/{companyId}/members, explaining company and issuer rolling 24h ceiling, safe localized UI action (wait then manually retry, never auto-replay), and no tenant or recipient leakage."
+      ],
+      "restrictions": [
+        "No unilateral Developer edits to docs/contracts/**. Coordinator must open separate scoped contract PR after governance merge.",
+        "No repurposing INVITE_INVALID, DUPLICATE_MEMBERSHIP or generic VALIDATION_ERROR for exceeded quota; no 429/status redesign or new endpoints.",
+        "No changes to H-02/H-17/H-18 completed status, previous contracts, other task/wave statuses, financial scope, shared migration code, or UI design without a separate decision.",
+        "Coordinator must seek read-only Developer and UI/UX consumer acknowledgement of additive error and version before final contract acceptance. QA must review exact contract PR and error-code semantics/schema."
+      ],
+      "next_steps": [
+        "After this manager-governance PR is merged, Coordinator prepares scoped rc.4 contract PR and report. Independent QA reviews schema and taxonomy; Manager decides contract merge.",
+        "After rc.4 contract is accepted/merged, PM Assistant updates ONLY H-05 task record with approved rc.4 blob and this approval reference in TASKS.json; preserve H-05 AUTHORIZED_NOT_STARTED, NOT_TESTED and start_authorized=true.",
+        "Then Developer adds deterministic quota 409 response-schema conformance regression on existing H-05 PR #26, touching only approved H-05 tests; update H-05 references to approved contract; no unrelated changes.",
+        "Owner reruns actual Windows H-05 Identity+Health and H-04 Database tests against new exact PR26 SHA, reporting exit codes; Coordinator independently re-reviews, independent QA re-reviews; Manager alone decides merge and local-scope completion."
+      ],
+      "review_risks": [
+        "Frozen OpenAPI error enum and generated client compatibility",
+        "Localization-neutral error taxonomy and invite rate-limit recovery behavior",
+        "Cross-agent contract ownership and future UI consumer synchronization",
+        "Maintaining security quota and 409 error envelope without inaccurate PASS claims"
+      ],
+      "review_reason": "P1 response schema mismatch despite successful local runtime tests; precise additive contract amendment is required because no existing 409 ErrorCode is semantically valid for quota exhaustion.",
+      "provenance": {
+        "developer_pr": 26,
+        "qa_pr": 31,
+        "coordinator_report_pr": 30,
+        "manager_qa_referral": "https://github.com/Ana0251/ChatGPT-Team-Test/pull/26#issuecomment-6890179084",
+        "qa_fail": "https://github.com/Ana0251/ChatGPT-Team-Test/pull/26#issuecomment-6890217971",
+        "owner_test_evidence": "https://github.com/Ana0251/ChatGPT-Team-Test/pull/26#issuecomment-6889986845",
+        "frozen_rc3_openapi_blob": "98d34e7bd7b4551c0f429ea5e388781060ceaf63"
+      },
+      "gates": "No merge of Developer PR #26, H-05 completion, W1 exit or H-06/H-07/H-08/H-26/W2-W6 activation until separate independent reviews and final Manager approval.",
+      "not_tested": "Independent QA runtime test, actual HTTPS/SMTP, PostgreSQL and multiworker rate-limit transactions, real browser CSRF, penetration testing, backup/restore, financial correctness remain DEFERRED/NOT_TESTED."
     }
   ]
 }
