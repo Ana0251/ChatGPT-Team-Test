@@ -643,7 +643,11 @@ def test_invitation_rate_limit_matches_approved_openapi(sandbox: dict, quota_sco
     )
 
     contract_file = Path(__file__).resolve().parents[3] / "docs" / "contracts" / "openapi.yaml"
-    contract = yaml.safe_load(contract_file.read_text(encoding="utf-8"))
+    contract_bytes = contract_file.read_bytes()
+    from hashlib import sha1
+    git_blob = b"blob " + str(len(contract_bytes)).encode("ascii") + b"\0" + contract_bytes
+    assert sha1(git_blob).hexdigest() == "f57de031224e21f09253642c210a778a60683711"
+    contract = yaml.safe_load(contract_bytes)
     assert contract["openapi"] == "3.1.0"
     assert contract["info"]["version"] == "1.0.0-rc.4"
 
