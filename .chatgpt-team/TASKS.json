@@ -1953,6 +1953,74 @@
       "after_merge": "PM Assistant may separately sync ONLY H-05 in TASKS.json as COMPLETED in explicitly bounded local-SQLite scope after checking PR26 actually merged, Coordinator/QA limited evidence, owner 52/52 Windows tests and open production limitations. Do not change WAVES, other tasks or approvals. No H06/H07/H08/H26 or W2-W6 activation without new Manager approval.",
       "warning_followup": "H05 README and router docstring still refer to rc.3; nonblocking documentation drift, correct later only with separate scoped authorization. 32 deprecation warnings nonfatal.",
       "deferred_not_tested": "Independent QA runtime Pytest; production reverse-proxy HTTPS and browser CSRF; actual SMTP/TLS callback failures; multi-process concurrency, PostgreSQL row locks/NUMERIC, tenant penetration, audit retention and backup/restore; accounting correctness and production readiness."
+    },
+    {
+      "id": "APP-HESABYAR-W1-H06-ENTRY-20261115-001",
+      "date": "2026-11-15",
+      "approved_by": "manager",
+      "project": "حسابیار (Hesabyar)",
+      "task_id": "H-06",
+      "wave_id": "W1",
+      "framework_version": "1.3.0",
+      "status": "H06_ENTRY_APPROVED_PENDING_PM_ASSISTANT_LEDGER_SYNC",
+      "scope": "Only company lifecycle foundation (create/list/get authorized companies) within LOCAL SQLITE H04 and H05; no fiscal CRUD H07, journal, accounting, frontend or production database work.",
+      "dependencies": {
+        "H04": "COMPLETED local SQLite only",
+        "H05": "COMPLETED local SQLite identity rc.4 PASS LIMITED; PR26 merged 10d36110b55be991082e65b5f66159bb44bb867b",
+        "W1": "AUTHORIZED_NOT_STARTED entry_authorized true"
+      },
+      "review_policy": "coordinator_required",
+      "review_risks": [
+        "Authenticated company creation and current-principal ownership integrity",
+        "Tenant IDOR: membership-scoped list/read, non-disclosing 404 for inaccessible company",
+        "Atomic company+owner membership creation and transaction rollback",
+        "Reuse of H05 tables and existing secure auth/CSRF/session guards without weakening H05",
+        "Shared backend/app/main.py router integration; no additional shared code edits",
+        "SQLite-only concurrency and absence of real production penetration tests"
+      ],
+      "review_reason": "H06 creates company tenancy root and memberships, impacting identity/authorization and multi-company data isolation; Coordinator integration source review and independent QA required after Developer test evidence.",
+      "contract": {
+        "openapi_version": "1.0.0-rc.4",
+        "openapi_blob": "f57de031224e21f09253642c210a778a60683711",
+        "design_refs": [
+          "design/specs/company-period/COMPANY_FISCAL_SELECTION.md",
+          "design/specs/company-period/STATE_MATRIX_AND_REVIEW.md"
+        ],
+        "operations": [
+          "GET /companies",
+          "POST /companies",
+          "GET /companies/{companyId}"
+        ],
+        "no_contract_change": true
+      },
+      "allowed_paths_after_ledger_sync": [
+        "backend/app/modules/companies/**",
+        "backend/tests/companies/**",
+        "backend/alembic/versions/h-06_*.py",
+        "backend/app/main.py"
+      ],
+      "path_exception": {
+        "backend/app/main.py": "ONLY import and register company APIRouter in existing application factory, preserve identity router and health endpoint; no unrelated changes.",
+        "backend/alembic/versions/h-06_*.py": "Only if strictly necessary for additive H06 schema; reuse H05 existing h05_companies and h05_memberships; never modify previous migrations or invent duplicate company model."
+      },
+      "acceptance_extension": [
+        "GET /companies lists only authenticated principal's current membership companies; no data from other tenants or simulated/inferred membership.",
+        "POST /companies requires authenticated identity and same-origin HTTPS CSRF protection, validates name 1..200 and response 201 Company{id,name}; creates fresh unique company ID and current user owner membership atomically, with rollback on failure and no ownership escalation to another company.",
+        "GET /companies/{companyId} is visible to members only; non-member or nonexistent returns contract 404 RESOURCE_NOT_FOUND (prevent company enumeration).",
+        "No server-side switch-company mutation or implicit membership creation when selecting company. Selection is UI context; subsequent server authorization must be revalidated. No automatic company creation on empty list.",
+        "Contract rc.4 statuses/schema and H18 design state expectations respected; no unauthorized endpoints/changes. Test permitted 200/201, 401,403/CSRF,404,422, cross-tenant role boundaries, session expiry, company create rollback and H03/H04/H05 regression.",
+        "Tests must actually execute on exact SHA, report owner/QA runtime distinction and warnings/exits, and avoid customer secrets/databases."
+      ],
+      "restrictions": [
+        "No direct Developer changes to H05 identity module/router/tables, backend/app/db/**, earlier alembic revisions, backend/app/core/config.py, docs/contracts/**, design/**, frontend/**, other agents' reports or TASKS/WAVES.",
+        "No H07 fiscal periods, H08 money, H26, or W2-W6 authorization; W1 remains open.",
+        "No dependency/package changes without separate manager exception; existing H05 imports/guards may be reused without source edits.",
+        "Developer may edit backend/app/main.py ONLY after PM Assistant adds restricted exception to H06.allowed_paths in separate merged admin PR.",
+        "No new test folders in D:\\ root, keep workspace in D:\\Codex\\Temp or existing approved project area."
+      ],
+      "pm_assistant_handoff": "After governance PR merge, update ONLY H06 task record in TASKS.json: start_authorized=true, status=AUTHORIZED_NOT_STARTED, validation_status=NOT_TESTED; add restricted backend/app/main.py path, explicit Coordinator review policy/risks/reason, H04/H05 dependency evidence, contract rc.4 SHA and acceptance/risk constraints; preserve all other 29 tasks, approvals, WAVES.json and branch controls. PR separate; no start before Manager handoff.",
+      "development_gate": "Only after PM Assistant H06-only ledger PR merges and Manager explicitly hands off may Developer implement H06 in isolated branch and PR; Coordinator then QA then Manager final gate.",
+      "deferred_not_tested": "Production PostgreSQL locking, tenant penetration and concurrency, real browser/HTTPS and SMTP, backup/recovery, accounting correctness; completed H05 local limitations remain."
     }
   ]
 }
