@@ -90,3 +90,30 @@
 - OpenAPI frozen contract consistency is a **blocking defect**, not a deferred runtime-only gate; prior owner 50 PASS cannot override it.
 
 **FINAL QA DECISION: FAIL (CHANGES_REQUIRED P1 contract mismatch), despite PASS on owner-run specified local suites.** Recommend Manager withhold approval/merge of Developer PR #26, authorize precise error taxonomy/contract resolution through the established ownership/change process, demand new SHA + owner tests and Coordinator re-review, then fresh independent QA. Leave all task/wave status unchanged; do not start H-26/H-06/H-07/H-08 or merge anything.
+
+---
+
+## 2026-11-15 — H-05 invitation error contract rc.4 — independent QA, PR #33
+
+**Result: PASS LIMITED — contract-only static review; consumer signoffs pending.** This is **not** H-05 implementation/runtime PASS, merge authorization, or release approval.
+
+**Authority:** Framework 1.3.0 QA instructions/role; main at `c80660a7b09333424469c349977c4623a27cde36`; formal TASKS/WAVES/DECISIONS read. Manager decision `APP-HESABYAR-H05-INVITE-ERROR-CONTRACT-20261115-001` approved by merged governance PR #32; Manager QA handoff [PR #33 comment 6890407148](https://github.com/Ana0251/ChatGPT-Team-Test/pull/33#issuecomment-6890407148). Reviewed **exact contract PR #33 HEAD** `09c2dad8c20ed7e6cd8f1370599c7b356598c43a` (OPEN, UNMERGED during review). Developer PR #26 remains at code SHA `5e07456a2c7a31783fcd2df45ad7744b3ca3b89d` OPEN/UNMERGED. H-05 remains `AUTHORIZED_NOT_STARTED` / `NOT_TESTED`; H-26 and W2 unauthorized. No ledgers altered.
+
+### Evidence / exact delta
+- PR #33 changes **only** `docs/contracts/openapi.yaml` and `docs/contracts/ERRORS.md`.
+- Old OpenAPI rc.3 blob `98d34e7bd7b4551c0f429ea5e388781060ceaf63`; rc.4 candidate blob `f57de031224e21f09253642c210a778a60683711`. Full-content exact-string comparison confirmed **only** `info.version: 1.0.0-rc.3` → `1.0.0-rc.4` and addition of **one** `INVITE_RATE_LIMITED` to `components.schemas.ErrorCode.enum`. All endpoint paths, methods, status responses, error-envelope structures, previous enum members, schemas, security declarations and other text **byte-for-byte otherwise unchanged** in the compared GitHub file content.
+- Old `ERRORS.md` blob `b1951a6c3cc7f94c616baf5804e312c62db163c3`; rc.4 candidate blob `d08c1b88fa70ca29a28aaaf8969c6e3000767c04`. PR patch proves only title version change and addition of **one HTTP 409 row** for `POST /companies/{companyId}/members`. No previous taxonomy row or recovery/security rule changed.
+- Actual H-05 code at PR #26: `backend/app/modules/identity/router.py` blob `3173bd6e807a86fbe1f2f307c4d70ac015f54a31`. `check_invitation_quota` raises `IdentityError(409, "INVITE_RATE_LIMITED")` on 20/(company,actor) or 50/company successful invitation issuances in rolling UTC 24 hours. `error_response` maps it into `{"error":{"code":"INVITE_RATE_LIMITED","message":"INVITE_RATE_LIMITED","request_id":...}}`. Existing `POST /companies/{companyId}/members` contract includes 409 Conflict → `ErrorEnvelope` with closed `ErrorCode`; adding the enum member now makes this **specific value schema-compatible at the static contract level**, closing the prior QA P1 mismatch. It does **not** imply full runtime validation or merging the two PRs.
+
+### Recovery behavior and consumer compatibility
+- New 409 row specifies neutral localized invitation-limit messaging, company/recipient confidentiality, **wait until quota capacity becomes available** (rolling 24-hour ceiling), review request and **manual resubmission only**. Explicit prohibition on automatic retry, replay of POST, or exposure of another tenant's quota history. Matches existing API no-auto-replay guidance and H-05 observed quota semantics. Does not promise that quota always resets at the same hour.
+- Only additive enum change; already documented paths, payloads, existing error codes and security remain intact. This is backward-preserving for tolerant consumers, **but exhaustive enum switches, generated SDKs, client localization and compatibility cannot be certified without read-only consumer acknowledgments**.
+- **MANDATORY PENDING: Developer read-only compatibility acknowledgment — NOT_RECEIVED.**
+- **MANDATORY PENDING: UI/UX read-only compatibility acknowledgment — NOT_RECEIVED.**
+  PR #33 conversation was checked; only Manager referral comment `6890407148` was present at review. Do not infer signoffs. UI translation behavior and client retry handling are specified, **not implemented/tested here**.
+
+### Testing boundaries and decision
+- **QA performed direct GitHub file+diff/manual comparison**, including exact before/after OpenAPI check, error taxonomy row and H-05 router static cross-reference. **No Python/OpenAPI validator, generated SDK compilation, UI/client, Windows Pytest, browser, server, TLS, SMTP, security or runtime tests were executed by QA (NOT_TESTED).**
+- Owner's historical 50/50 Windows SQLite Pytest passing results belong to H-05 implementation SHA `5e07456a2c7a31783fcd2df45ad7744b3ca3b89d`; they do not validate this new rc.4 contract or consumer behavior.
+- No code/security behavior or endpoint change in this contract PR, so no claim of runtime regression or security PASS. Required downstream gates: consumer acknowledgments, Manager approval, PR #33 merge, controlled H-05 ledger sync, Developer regression verifying quota 409 against approved rc.4 and real owner rerun at new code SHA, Coordinator/QA review and final Manager gate.
+- **Recommendation:** **PASS LIMITED for narrowly authorized rc.4 documentation/enum erratum.** Suitable to proceed to **consumer read-only signoff and final Manager decision**, **NOT** immediate merge authorization based only on QA. PR #33 and #26 not merged by QA. Do not complete H-05 or activate H-26/other tasks/waves.
