@@ -2319,6 +2319,119 @@
       "pm_assistant_handoff": "After governance PR merge, update ONLY H07 record in TASKS.json: append backend/tests/identity/test_identity_migration.py to H07.allowed_paths, and add exactly two-line exception constraints, evidence refs, historical 70 PASS/1 FAIL and NOT_TESTED status to H07 mandatory_amendments/evidence_required/notes. Keep status AUTHORIZED_NOT_STARTED, start_authorized true, validation_status NOT_TESTED, review_policy coordinator_required and all other 29 tasks, approvals and WAVES unchanged. Independent PR, do NOT self-merge or edit code.",
       "developer_gate": "Only after Manager merges PM Assistant H07-only ledger PR and issues explicit handoff, H07 Developer may change the two exact lines in existing H07 PR #49, producing new HEAD that must be rerun and independently reviewed by Coordinator then QA.",
       "testing_gate": "Owner must rerun fiscal/companies/identity+health/db suites and show exact new HEAD and real exit codes; until then 70 PASS 1 FAIL remains current, H07 NOT_TESTED. Close versus journal posting remains DEFERRED/NOT_TESTED."
+    },
+    {
+      "id": "APP-HESABYAR-H07-LOCAL-QA-MERGE-20261115-001",
+      "date": "2026-11-15",
+      "approved_by": "manager",
+      "project": "حسابیار (Hesabyar)",
+      "task_id": "H-07",
+      "wave_id": "W1",
+      "framework_version": "1.3.0",
+      "status": "H07_LOCAL_SQLITE_PASS_LIMITED_EXACT_SHA_PR49_CONDITIONAL_MERGE_AUTHORIZATION",
+      "review_policy": "coordinator_required",
+      "review_risks": [
+        "Company/year/period IDOR and member/role per-request permission enforcement, H05 session/Origin/CSRF",
+        "Fiscal half-open Gregorian dates and API transaction-time overlap/containment vs direct SQL bypass",
+        "Closed status plus audit atomicity, double close and future concurrent close-versus-Posting financial safety",
+        "Additive/reversible h07_0003 migration on h05_0002 without H05/H04 changes",
+        "Exactly two approved h05_0002 version pins in one H05-owned migration test and eight total authorized files",
+        "Owner local post-test SHA status attestation vs independent QA runtime NOT_RUN; production PostgreSQL/multiworker/browser/TLS/SMTP/backups/penetration deferred"
+      ],
+      "review_reason": "Coordinator PR52 and independent QA PR53 each PASS LIMITED in source/contract/security/test review of exactly the same H07 PR49 HEAD, supplemented by real owner-run 71/71 local SQLite tests. Accept limited development scope only and keep release/financial concurrency gates open.",
+      "approved_contract": {
+        "version": "1.0.0-rc.4",
+        "openapi_blob": "f57de031224e21f09253642c210a778a60683711"
+      },
+      "development_pr": 49,
+      "approved_pr_head_sha": "4c6e4cac55621c7721e2314d2a4a749e12ba3e3f",
+      "review_history": [
+        {
+          "role": "coordinator",
+          "result": "PASS LIMITED",
+          "scope": "independent source/integration review only",
+          "pr": 52,
+          "merge_sha": "485bdb8457c6b5992f172945898411c0cc95ffcd",
+          "comment_id": "6893016931"
+        },
+        {
+          "role": "qa",
+          "result": "PASS LIMITED",
+          "scope": "independent source/contract/security/test review only; QA_RUNTIME NOT_RUN",
+          "pr": 53,
+          "merge_sha": "515f1fe783bbb439642cf61a6ac900fd39db4166",
+          "comment_id": "6893187188"
+        }
+      ],
+      "evidence": {
+        "owner_test_worktree": "D:\\Codex\\Temp\\H07-retest\\backend",
+        "environment": {
+          "python": "3.14.7",
+          "pytest": "9.2.0",
+          "sqlite": "3.50.4"
+        },
+        "owner_test_suites": [
+          {
+            "suite": "H07 fiscal",
+            "passed": 7,
+            "failed": 0,
+            "exit_code": 0,
+            "warnings": 11
+          },
+          {
+            "suite": "H06 companies",
+            "passed": 12,
+            "failed": 0,
+            "exit_code": 0,
+            "warnings": 13
+          },
+          {
+            "suite": "H05 identity + H03 health",
+            "passed": 28,
+            "failed": 0,
+            "exit_code": 0,
+            "warnings": 29
+          },
+          {
+            "suite": "H04 database",
+            "passed": 24,
+            "failed": 0,
+            "exit_code": 0,
+            "warnings": 3
+          }
+        ],
+        "total_passed": 71,
+        "total_failed": 0,
+        "total_warnings": 56,
+        "local_post_test_git_head": "4c6e4cac55621c7721e2314d2a4a749e12ba3e3f",
+        "local_status": "Only untracked Python __pycache__ and egg-info, no modified tracked files",
+        "provenance_note": "Owner presented local git HEAD/status AFTER the four passing Pytest terminal logs, not in the same log. Combined local owner-run provenance accepted for SQLite-only limited scope; no contemporaneous SHA proof.",
+        "owner_comments": [
+          "https://github.com/Ana0251/ChatGPT-Team-Test/pull/49#issuecomment-6892875647",
+          "https://github.com/Ana0251/ChatGPT-Team-Test/pull/49#issuecomment-6892894314"
+        ],
+        "coordinator_review": "https://github.com/Ana0251/ChatGPT-Team-Test/pull/49#issuecomment-6893016931",
+        "qa_review": "https://github.com/Ana0251/ChatGPT-Team-Test/pull/49#issuecomment-6893187188",
+        "qa_runtime": "NOT_RUN",
+        "coordinator_runtime": "NOT_RUN",
+        "historical_old_SHA_result": "70 PASS / 1 FAIL on previous head 0d8e81591dde886f26cbbef35e9009e722630032 before H05 migration test version-pin fix"
+      },
+      "scope": "Five approved rc4 fiscal year, period and period-close APIs on authenticated company membership, locally migrated file-backed SQLite only; 8 allowed Developer PR49 paths including exact H05 two-line test-only exception.",
+      "merge_conditions": [
+        "Manager governance approval PR must first be merged to main.",
+        "Recheck PR49 OPEN and UNMERGED, HEAD exactly 4c6e4cac55621c7721e2314d2a4a749e12ba3e3f; clean mergeability and exactly 8 authorized paths.",
+        "Recheck approved rc4 OpenAPI blob unchanged, no old Alembic migrations or H05/H06 app source, DB/config/pyproject/frontend/ledgers/report edits.",
+        "backend/app/main.py only fiscal router import+include; backend/tests/identity/test_identity_migration.py only two exact head to h05_0002 replacements and no other changes.",
+        "Merge with expected_head_sha only. HEAD change, conflicts or protection failure -> STOP for new Manager decision."
+      ],
+      "after_merge": "PM Assistant to create separate H07-only TASKS.json status update to COMPLETED for LOCAL_SQLITE_FISCAL_RC4_PASS_LIMITED with exact code HEAD/merge SHA, 71 owner-run PASS, Coordinator/QA static PASS LIMITED and QA_RUNTIME NOT_RUN; preserve all other 29 tasks and approvals, WAVES unchanged. W1 remains open pending separately authorized H08 and future release gates.",
+      "deferred_not_tested": [
+        "Real concurrent fiscal close vs journal Posting because Posting API not yet implemented",
+        "PostgreSQL multiworker transactional locking, exclusion/DB-level period constraints, direct DB writers",
+        "Asia/Tehran business day/legal cutoff operation and complete response JSON schema regression",
+        "Production HTTPS/browser/SMTP/TLS, penetration, backup/restore, financial reconciliation and release"
+      ],
+      "other_tasks": "Do not activate H08, H26 or W2-W6 or mark W1 complete."
     }
   ]
 }
