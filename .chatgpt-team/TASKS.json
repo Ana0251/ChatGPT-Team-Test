@@ -1857,6 +1857,89 @@
       },
       "gates": "No merge of Developer PR #26, H-05 completion, W1 exit or H-06/H-07/H-08/H-26/W2-W6 activation until separate independent reviews and final Manager approval.",
       "not_tested": "Independent QA runtime test, actual HTTPS/SMTP, PostgreSQL and multiworker rate-limit transactions, real browser CSRF, penetration testing, backup/restore, financial correctness remain DEFERRED/NOT_TESTED."
+    },
+    {
+      "id": "APP-HESABYAR-H05-RC4-LOCAL-QA-MERGE-20261115-001",
+      "date": "2026-11-15",
+      "approved_by": "manager",
+      "project": "حسابیار (Hesabyar)",
+      "task_id": "H-05",
+      "wave_id": "W1",
+      "framework_version": "1.3.0",
+      "review_policy": "coordinator_required",
+      "status": "H05_Rc4_LOCAL_SQLITE_QA_PASS_LIMITED_EXACT_HEAD_PR26_MERGE_CONDITIONALLY_AUTHORIZED",
+      "review_risks": [
+        "Credential/session/CSRF/role and tenant security; no production runtime evidence",
+        "Invitation issuer+tenant quota under rolling UTC 24h and contract ErrorEnvelope correctness",
+        "Owner-run runtime results tied to exact Windows worktree HEAD with generated untracked artifacts",
+        "H04 migration test boundary and shared app/package files",
+        "Final production PostgreSQL, SMTP, HTTPS, browser, multiworker, backup and financial tests deferred"
+      ],
+      "review_reason": "The approved contract rc.4 P1 error enum mismatch is resolved, Coordinator and QA reviewed exact source at SHA with PASS LIMITED, and owner supplied matching local worktree SHA plus no tracked modifications; local SQLite scope can be merged without claiming production security.",
+      "review_history": [
+        {
+          "role": "coordinator",
+          "pr": 36,
+          "result": "PASS LIMITED static/integration",
+          "merge_sha": "b2e0d28d73a2e619e800420dcdfef9de8eb89f9a"
+        },
+        {
+          "role": "qa",
+          "pr": 37,
+          "result": "PASS LIMITED static/security/schema/test-design; QA_RUNTIME NOT_RUN",
+          "merge_sha": "5f15504a125985e711f396eecfa595f9097e8b16"
+        }
+      ],
+      "developer_pr": 26,
+      "approved_pr_head_sha": "2f8f0549c818ca20693592c43ddfb2dbb36c734d",
+      "approved_contract": {
+        "version": "1.0.0-rc.4",
+        "openapi_blob": "f57de031224e21f09253642c210a778a60683711",
+        "contract_pr_merge_sha": "73a3e6bf4dde42ce25e4a69b78d895a17a0cebb2"
+      },
+      "evidence": {
+        "windows_worktree": "D:\\Codex\\Temp\\H05-rc4-retest",
+        "owner_latest_powershell_head": "2f8f0549c818ca20693592c43ddfb2dbb36c734d",
+        "owner_status_porcelain": [
+          "?? backend/alembic/__pycache__/",
+          "?? backend/alembic/versions/__pycache__/",
+          "?? backend/app/__pycache__/",
+          "?? backend/app/core/__pycache__/",
+          "?? backend/app/db/__pycache__/",
+          "?? backend/app/modules/identity/__pycache__/",
+          "?? backend/hesabyar_backend.egg-info/",
+          "?? backend/tests/__pycache__/",
+          "?? backend/tests/db/__pycache__/",
+          "?? backend/tests/identity/__pycache__/"
+        ],
+        "tracked_status": "CLEAN; only untracked Python caches and egg-info artifacts",
+        "owner_suite_identity_health": {
+          "passed": 28,
+          "failed": 0,
+          "exit_code": 0,
+          "warnings": 29
+        },
+        "owner_suite_h04_db": {
+          "passed": 24,
+          "failed": 0,
+          "exit_code": 0,
+          "warnings": 3
+        },
+        "qa_runtime": "NOT_RUN",
+        "source_comment": "https://github.com/Ana0251/ChatGPT-Team-Test/pull/26#issuecomment-6890986050",
+        "manager_prior_gate": "https://github.com/Ana0251/ChatGPT-Team-Test/pull/26#issuecomment-6891203221",
+        "caveat": "Local SHA/status output was provided after tests and matches stated test worktree; not contemporaneous git rev-parse in original test console. Accept combined owner evidence for limited local merge only; no assertion QA independently executed tests."
+      },
+      "scope": "Accept H05 company-scoped identity/session/CSRF/invitations and rc.4 409 quota error within LOCAL SQLITE test scope only. 14 existing PR26 paths examined; no material new code permitted without new approval.",
+      "merge_conditions": [
+        "This manager governance decision must merge into main first.",
+        "Immediately before PR26 merge, verify HEAD exactly approved SHA, OPEN/UNMERGED, mergeable, 14 approved changed paths only and rc.4 OpenAPI unchanged.",
+        "Verify H04 two-line migration test exception only, no direct edits to docs/contracts, TASKS/WAVES, other agents or original H04 migration.",
+        "If merge conflicts, file changes, new SHA, or failed protected checks, STOP and seek new Manager decision. Do not weaken branch protections."
+      ],
+      "after_merge": "PM Assistant may separately sync ONLY H-05 in TASKS.json as COMPLETED in explicitly bounded local-SQLite scope after checking PR26 actually merged, Coordinator/QA limited evidence, owner 52/52 Windows tests and open production limitations. Do not change WAVES, other tasks or approvals. No H06/H07/H08/H26 or W2-W6 activation without new Manager approval.",
+      "warning_followup": "H05 README and router docstring still refer to rc.3; nonblocking documentation drift, correct later only with separate scoped authorization. 32 deprecation warnings nonfatal.",
+      "deferred_not_tested": "Independent QA runtime Pytest; production reverse-proxy HTTPS and browser CSRF; actual SMTP/TLS callback failures; multi-process concurrency, PostgreSQL row locks/NUMERIC, tenant penetration, audit retention and backup/restore; accounting correctness and production readiness."
     }
   ]
 }
