@@ -354,3 +354,19 @@ Workflow موجود `.chatgpt-team/tools/validate.py` در GitHub Actions به �
 
 **دستور PM Assistant:** فقط H-07 در TASKS.json: `start_authorized=true`، `status=AUTHORIZED_NOT_STARTED`، `validation_status=NOT_TESTED`، اضافه‌کردن مجوز دقیق `backend/app/main.py`، سیاست بازبینی/ریسک‌ها/شواهد دقیق، حفظ سایر ۲۹ تسک، approvals، WAVES و تمامی فایل‌های دیگر. PR اداری مستقل و باز بماند؛ Developer قبل از ادغام و ارجاع بعدی Manager شروع نکند. H-08/H-26/W2–W6 فعال نشوند، W1 بسته نشود.
 
+## 2026-11-15 — APP-HESABYAR-H07-H05-MIGRATION-TEST-EXCEPTION-20261115-001 — استثنای بسیار محدود آزمون Migration H-05 برای H-07
+
+**وضعیت واقعی:** PR توسعه H-07 شماره #49 در HEAD `0d8e81591dde886f26cbbef35e9009e722630032` باز/ادغام‌نشده است. اجرای واقعی مالک در Windows Python 3.14.7 (کامنت `6892525333` روی PR #49) شامل H-07: ۷ PASS/۰ FAIL، H-06: ۱۲ PASS/۰ FAIL، Identity+Health: ۲۷ PASS/۱ FAIL، H-04: ۲۴ PASS/۰ FAIL؛ **مجموع ۷۰ PASS و ۱ FAIL، ۵۴ هشدار**. اجرای موفق کل رگرسیون هنوز اثبات نشده و SHA محلی آزمون نیز در لاگ گزارش‌شده ثبت نشده است. H07 همچنان `AUTHORIZED_NOT_STARTED/NOT_TESTED`.
+
+**منشأ دقیق خطا:** فایل موجود `backend/tests/identity/test_identity_migration.py` (blob `9e904fc0dd99e217292142921b7bcb5c82f0c961`) مختص آزمون مهاجرت H05 است. در دو خط ۳۳ و ۶۱ از `command.upgrade(config, "head")` استفاده می‌کند ولی کد موجود انتظار `alembic_version == "h05_0002"` را دارد. H-07 به‌درستی Revision `h07_0003` را روی `h05_0002` افزوده و بنابراین global Alembic head دیگر H05 نیست. این خطای آزمونِ وابسته به HEAD است؛ **وجود مشکل در schema H07 یا Regression دیگر به‌طور مستقل رد نشده است.**
+
+**تنها استثنای مصوب:** بعد از ثبت و ادغام مجوز اداری در رکورد H07، Developer فقط در همان فایل آزمون و فقط **دو** عبارت زیر را جایگزین کند:
+
+`command.upgrade(config, "head")` → `command.upgrade(config, "h05_0002")`
+
+هیچ assertion، نام آزمون، FK/PK/NOT NULL، بررسی integrity/Schema، negative constraint، downgrade/upgrade/re-upgrade و بخش دیگر نباید حذف، تضعیف یا عوض شود. `h05_0002`، `h07_0003`، down_revision و global Alembic head بدون تغییر. این مجوز شامل دیگر فایل‌های identity یا کد/contract/config/DB نیست و اجازه ندارد بی‌سروصدا محدودیت‌های H-07 را افزایش دهد.
+
+**مراحل کنترل:** (۱) این تصمیم حاکمیتی مستقل باید در main ادغام شود؛ (۲) PM Assistant در PR مستقل **فقط H-07** در `TASKS.json` مجوز دقیق `backend/tests/identity/test_identity_migration.py` و قیود اصلاح دو خط، شواهد ۷۰ PASS/۱ FAIL را ثبت کند؛ `status=AUTHORIZED_NOT_STARTED`، `validation_status=NOT_TESTED` و ۲۹ task دیگر، approvals، WAVES بدون تغییر؛ (۳) پس از تأیید و ادغام PR اداری، Manager ارجاع اصلاح دقیق را به Developer می‌دهد؛ (۴) Developer کد را در PR #49 اصلاح و تمام مجموعه H07/H06/H05+Health/H04 را با SHA دقیق تازه واقعاً اجرا/گزارش می‌کند؛ (۵) Coordinator سپس QA مستقل و تصمیم Manager. **تا رفع و بازاجرای موفق، PR #49 ادغام نشود.**
+
+**عدم تغییر دامنه:** تست واقعی رقابت بستن دوره و Posting حسابداری به‌دلیل عدم پیاده‌سازی Posting، PostgreSQL/چندپردازشی، مرورگر/TLS/SMTP/نفوذ/backup و آمادگی انتشار همچنان `DEFERRED/NOT_TESTED`؛ W1 باز و H08/H26/W2–W6 غیرفعال هستند.
+
