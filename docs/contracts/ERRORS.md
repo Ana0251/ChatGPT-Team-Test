@@ -1,4 +1,4 @@
-# H-02 API error and warning taxonomy — 1.0.0-rc.3
+# H-02 API error and warning taxonomy — 1.0.0-rc.4
 
 ## Envelope / localization and focus
 All errors use `{ "error": {"code":"...", "message":"...", "request_id":"...", "details":[{"field":"/lines/0/account_id","line_index":0,"reason":"NOT_POSTABLE","message":"..."}]}}`. `code` and `reason` are stable English machine values; UI translates them to Persian via localized resources, **never** parses English or Persian `message`. `field` is a JSON Pointer to the submitted DTO; `line_index` is zero-based and refers to the exact submitted/persisted current line order. Optional `details` is [] or omitted for non-field errors; `request_id` is for support trace, not authorization. Do not emit credentials, raw invitation/setup/CSRF tokens, tenant identity hints or SQL details. HTTP 404 intentionally also covers invisible cross-company resources. Invalid input (422) uses per-field details and focus; unchanged user data is retained.
@@ -13,6 +13,7 @@ All errors use `{ "error": {"code":"...", "message":"...", "request_id":"...", "
 | 409 | INVITE_EXPIRED, INVITE_INVALID, INVITE_ALREADY_USED | /auth/invitations/accept and /auth/invitations/activate | Show neutral message; ask inviter to reissue, never reveal target email |
 | 403 | INVITE_ROLE_FORBIDDEN | POST /companies/{companyId}/members (admin invites owner; revoked inviter authority) | Preserve selection; only current company owner can invite owner |
 | 409 | DUPLICATE_MEMBERSHIP | invitation acceptance; company membership invite | No double-create, redirect to permitted current membership |
+| 409 | INVITE_RATE_LIMITED | POST /companies/{companyId}/members: rolling 24-hour invitation quota reached (20 successful invitations per issuer/company or 50 per company) | Show a neutral, localized invitation-limit message without revealing company or recipient details. Explain that the quota is temporarily exhausted; wait until capacity becomes available in the rolling 24-hour window, then review the request and submit it **manually**. Do not automatically retry, replay the POST or expose quota history from another tenant. |
 | 409 | PERIOD_CLOSED | POST /journals/{journalId}/post, reverse; period closure race | Show chosen period closed; no blind repost |
 | 409 | PERIOD_OVERLAP | fiscal-year/period create | Highlight /start_date and /end_date |
 | 422 | INVALID_DATE_RANGE | fiscal-year/period create and reports with to_date <= from_date | Focus date inputs, show exclusive end |

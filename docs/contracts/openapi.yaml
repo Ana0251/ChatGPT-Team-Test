@@ -1,7 +1,7 @@
 openapi: 3.1.0
 info:
   title: Hesabyar Financial Accounting API
-  version: 1.0.0-rc.3
+  version: 1.0.0-rc.4
   description: >-
     H-02 revised proposed V1.0 contract, not implemented or accepted. Decisions H-D01..H-D09.
     Monetary amounts are IRR integer rial decimal strings; financial dates Gregorian ISO.
@@ -797,7 +797,7 @@ components:
         for HTTP/operation applicability and required recovery behavior.
       enum: [AUTH_INVALID, SESSION_EXPIRED, ACCESS_DENIED, CSRF_INVALID,
         RESOURCE_NOT_FOUND, INVITE_EXPIRED, INVITE_INVALID, INVITE_ALREADY_USED,
-        INVITE_ROLE_FORBIDDEN, DUPLICATE_MEMBERSHIP, PERIOD_CLOSED,
+        INVITE_ROLE_FORBIDDEN, DUPLICATE_MEMBERSHIP, INVITE_RATE_LIMITED, PERIOD_CLOSED,
         PERIOD_OVERLAP, INVALID_DATE_RANGE, ACCOUNT_NOT_POSTABLE, ACCOUNT_IN_USE,
         UNBALANCED, JOURNAL_LINE_INVALID, JOURNAL_IMMUTABLE,
         DUPLICATE_POST, IDEMPOTENCY_CONFLICT, VALIDATION_ERROR]
