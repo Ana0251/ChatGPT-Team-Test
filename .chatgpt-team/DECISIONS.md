@@ -370,3 +370,19 @@ Workflow موجود `.chatgpt-team/tools/validate.py` در GitHub Actions به �
 
 **عدم تغییر دامنه:** تست واقعی رقابت بستن دوره و Posting حسابداری به‌دلیل عدم پیاده‌سازی Posting، PostgreSQL/چندپردازشی، مرورگر/TLS/SMTP/نفوذ/backup و آمادگی انتشار همچنان `DEFERRED/NOT_TESTED`؛ W1 باز و H08/H26/W2–W6 غیرفعال هستند.
 
+## 2026-11-15 — APP-HESABYAR-H07-LOCAL-QA-MERGE-20261115-001 — پذیرش محدود H-07 در SQLite محلی و مجوز مشروط ادغام PR #49
+
+**تصمیم Manager:** پیاده‌سازی پنج عملیات H-07 در PR #49، HEAD دقیق `4c6e4cac55621c7721e2314d2a4a749e12ba3e3f`، پس از دو بررسی مستقل Coordinator و QA با نتیجه `PASS LIMITED` و شواهد مالک از **۷۱ PASS، صفر FAIL، چهار Exit Code صفر** برای **محدوده SQLite محلی** پذیرفته می‌شود؛ این **مجوز انتشار یا اثبات سلامت امنیت محیط تولید نیست**.
+
+**گیت‌های بازبینی:** Coordinator PR #52 با `PASS LIMITED` source/integration در `485bdb8457c6b5992f172945898411c0cc95ffcd` ادغام شد (کامنت `6893016931` روی PR #49). QA مستقل PR #53 با `PASS LIMITED` source/contract/security/test-design در `515f1fe783bbb439642cf61a6ac900fd39db4166` ادغام شد (کامنت `6893187188`). **QA_RUNTIME=NOT_RUN** و **Coordinator_RUNTIME=NOT_RUN**؛ هیچ‌کدام مجموعه Pytest مالک را اجرا نکرده‌اند.
+
+**دامنه و مجوزها:** قرارداد OpenAPI `1.0.0-rc.4`، blob `f57de031224e21f09253642c210a778a60683711`، شامل GET/POST سال‌های مالی، GET/POST دوره‌های همان سال و POST بستن دوره است. کنترل نقش‌ها، عضویت جاری شرکت، IDOR خنثی 404، CSRF/Origin/نشست H05، تاریخ Gregorian نیمه‌باز `[start_date,end_date)`، اعتبارسنجی عدم‌همپوشانی و محدوده سال، تراکنش SQLite `BEGIN IMMEDIATE` برای وضعیت `open→closed` و Audit با rollback، و migration افزایشی/بازگشت‌پذیر `h07_0003` روی `h05_0002` در بازبینی کد تأیید محدود شده‌اند. PR #49 دقیقاً **۸ مسیر مجاز** دارد؛ `backend/app/main.py` فقط دو خط اتصال fiscal router، `backend/tests/identity/test_identity_migration.py` فقط دو جایگزینی مصوب از `upgrade(config, "head")` به `upgrade(config, "h05_0002")`، هیچ Assertion حذف یا ضعیف نشده است. مجوز استثنا: `APP-HESABYAR-H07-H05-MIGRATION-TEST-EXCEPTION-20261115-001` (PRهای #50/#51 ادغام‌شده).
+
+**شواهد آزمون مالک:** در Windows `D:\Codex\Temp\H07-retest\backend`، Python 3.14.7، Pytest 9.2.0، SQLite 3.50.4: Fiscal ۷ PASS/exit0/۱۱ هشدار، Companies ۱۲ PASS/exit0/۱۳ هشدار، Identity+Health ۲۸ PASS/exit0/۲۹ هشدار، Database ۲۴ PASS/exit0/۳ هشدار؛ جمع **۷۱ PASS، صفر FAIL، چهار Exit Code صفر، ۵۶ هشدار غیرمسدودکننده** (کامنت‌های `6892875647` و `6892894314`). مالک بعد از لاگ Pytest، HEAD محلی را برابر `4c6e4cac55621c7721e2314d2a4a749e12ba3e3f` و وضعیت tracked را بدون تغییر ارائه کرده است؛ **زمان ثبت SHA پس از آزمون** بوده و نباید از آن اثبات هم‌زمان یا اجرای مستقل QA ادعا شود. اجرای قدیمی ۷۰ PASS/۱ FAIL مربوط به SHA پیشین در سوابق تاریخی محفوظ است.
+
+**شرایط ادغام توسعه:** پس از ادغام همین تصمیم مدیریتی در main، Manager فقط با بازبینی مجدد PR #49: باز/ادغام‌نشده، HEAD دقیق `4c6e4cac55621c7721e2314d2a4a749e12ba3e3f`، mergeable تمیز، دقیقاً ۸ فایل مجاز، دوخطی بودن استثنا و ثابت بودن قرارداد rc.4، مجاز به ادغام با `expected_head_sha` است. تعارض، تغییر HEAD یا محدوده باعث توقف و تصمیم تازه می‌شود.
+
+**پس از ادغام:** PM Assistant فقط رکورد H-07 در `TASKS.json` را طی PR اداری مستقل به `COMPLETED` **برای محدوده SQLite محلی با PASS LIMITED** تغییر می‌دهد، شواهد و Merge SHA را ثبت می‌کند؛ approvals و ۲۹ وظیفه دیگر و `WAVES.json` نباید تغییر کنند. W1 بسته نمی‌شود، H-08/H-26 و W2–W6 مجوز جدید نمی‌گیرند.
+
+**ریسک‌های قطعی باز / DEFERRED/NOT_TESTED:** آزمون واقعی رقابت بستن دوره و Posting سند حسابداری به‌دلیل نبود Posting، PostgreSQL/چندپردازشی و قفل/عدم‌همپوشانی سطح دیتابیس، عبور نویسنده مستقیم SQL از کنترل‌های API، تاریخ حقوقی Asia/Tehran، پوشش کامل JSON Schema/فهرست کدهای خطا در قرارداد، مرورگر واقعی و HTTPS/SMTP/TLS، تست نفوذ چندشرکتی، پشتیبان/بازیابی، صحت مالی و انتشار. هیچ‌کدام تحت پذیرش محلی PASS اعلام نشده‌اند.
+
