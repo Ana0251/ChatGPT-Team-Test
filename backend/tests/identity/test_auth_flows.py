@@ -482,3 +482,136 @@ def test_origin_missing_with_valid_header_is_denied(sandbox: dict):
     )
     assert response.status_code == 403
     assert response.json()["error"]["code"] == "CSRF_INVALID"
+
+
+def _seed_invitation_events(sandbox: dict, company: str, actor: str, count: int, *, old: bool = False) -> None:
+    """Synthetic committed audit records for checking durable time-window quotas."""
+    from datetime import timedelta
+    from app.modules.identity.security import instant, utcnow
+    occurred = instant(utcnow() - timedelta(hours=25)) if old else now_string()
+    with locked(sandbox["engine"]) as connection:
+        for _ in range(count):
+            connection.execute(t.audit.insert().values(
+                id=new_id(), actor_id=actor, company_id=company,
+                action="membership_invitation_created", occurred_at=occurred,
+            ))
+
+
+def test_invite_distinct_emails_rate_limited_and_persisted_across_engines(sandbox: dict):
+    """20 distinct successful invites, then a 409 even for a never-seen address."""
+    from app.db.engine import create_sqlite_engine
+    from app.modules.identity.router import INVITE_PER_ACTOR_COMPANY_LIMIT
+
+    client = sandbox["client"]
+    headers = provisioned_owner_login(sandbox)
+    company = sandbox["company_id"]
+    for n in range(INVITE_PER_ACTOR_COMPANY_LIMIT):
+        result = invite(sandbox, company, f"unique-{n}@example.test", "viewer", headers)
+        assert result.status_code == 202, result.text
+
+    before = len(sandbox["sent"])
+    blocked = invite(sandbox, company, "new-after-limit@example.test", "viewer", headers)
+    assert blocked.status_code == 409
+    assert blocked.json()["error"]["code"] == "INVITE_RATE_LIMITED"
+    assert len(sandbox["sent"]) == before
+    with sandbox["engine"].connect() as connection:
+        issued = connection.execute(select(t.invitations.c.id)).all()
+        assert len(issued) == INVITE_PER_ACTOR_COMPANY_LIMIT
+
+    # New SQLAlchemy Engine using the same SQLite file cannot reset the quota.
+    reopened = create_sqlite_engine()
+    old_engine = client.app.state.identity_engine
+    client.app.state.identity_engine = reopened
+    try:
+        again = invite(sandbox, company, "different-after-reopen@example.test", "viewer", headers)
+        assert again.status_code == 409
+        assert again.json()["error"]["code"] == "INVITE_RATE_LIMITED"
+        assert len(sandbox["sent"]) == before
+    finally:
+        client.app.state.identity_engine = old_engine
+        reopened.dispose()
+
+
+def test_company_cap_blocks_multi_issuer_bypass_and_other_tenant_is_independent(sandbox: dict):
+    """Even many issuers cannot bypass the company ceiling; tenant B is unaffected."""
+    from app.modules.identity.router import INVITE_PER_COMPANY_LIMIT
+
+    client = sandbox["client"]
+    headers = provisioned_owner_login(sandbox)
+    company_a = sandbox["company_id"]
+    company_b = new_id()
+    other_actor = new_id()
+    from app.modules.identity.security import password_hash
+    with locked(sandbox["engine"]) as connection:
+        connection.execute(t.companies.insert().values(id=company_b, name="Second synthetic company"))
+        connection.execute(t.users.insert().values(
+            id=other_actor, email="admin-limits@example.test",
+            active=True, password_hash=password_hash(OTHER_PASSWORD),
+        ))
+        connection.execute(t.memberships.insert().values(
+            user_id=other_actor, company_id=company_a, role="admin",
+        ))
+        connection.execute(t.memberships.insert().values(
+            user_id=sandbox["owner_id"], company_id=company_b, role="owner",
+        ))
+
+    # Multiple distinct issuers' audit records count towards the same company cap.
+    for index in range(INVITE_PER_COMPANY_LIMIT // 10):
+        _seed_invitation_events(sandbox, company_a, new_id(), 10)
+    before = len(sandbox["sent"])
+    blocked = invite(sandbox, company_a, "never-invited@example.test", "viewer", headers)
+    assert blocked.status_code == 409
+    assert blocked.json()["error"]["code"] == "INVITE_RATE_LIMITED"
+    assert len(sandbox["sent"]) == before
+
+    # Different actor also denied by company budget.
+    client.post("/api/v1/auth/logout", headers=headers)
+    other_headers = login(client, "admin-limits@example.test", OTHER_PASSWORD)
+    blocked_admin = invite(sandbox, company_a, "another-never-invited@example.test", "viewer", other_headers)
+    assert blocked_admin.status_code == 409
+    assert len(sandbox["sent"]) == before
+
+    client.post("/api/v1/auth/logout", headers=other_headers)
+    owner_headers = login(client, "owner@example.test", PASSWORD)
+    tenant_b = invite(sandbox, company_b, "allowed-in-other-company@example.test", "viewer", owner_headers)
+    assert tenant_b.status_code == 202
+
+
+def test_invitation_actor_quotas_are_isolated_within_company_and_window(sandbox: dict):
+    """A throttled issuer doesn't block another issuer; old events age out."""
+    from app.modules.identity.router import INVITE_PER_ACTOR_COMPANY_LIMIT
+    from app.modules.identity.security import password_hash
+
+    client = sandbox["client"]
+    headers = provisioned_owner_login(sandbox)
+    company = sandbox["company_id"]
+    admin = new_id()
+    with locked(sandbox["engine"]) as connection:
+        connection.execute(t.users.insert().values(
+            id=admin, email="admin-unthrottled@example.test",
+            active=True, password_hash=password_hash(OTHER_PASSWORD),
+        ))
+        connection.execute(t.memberships.insert().values(
+            user_id=admin, company_id=company, role="admin",
+        ))
+    _seed_invitation_events(sandbox, company, sandbox["owner_id"], INVITE_PER_ACTOR_COMPANY_LIMIT)
+    blocked = invite(sandbox, company, "owner-blocked@example.test", "viewer", headers)
+    assert blocked.status_code == 409
+    assert blocked.json()["error"]["code"] == "INVITE_RATE_LIMITED"
+
+    client.post("/api/v1/auth/logout", headers=headers)
+    admin_headers = login(client, "admin-unthrottled@example.test", OTHER_PASSWORD)
+    allowed = invite(sandbox, company, "admin-allowed@example.test", "viewer", admin_headers)
+    assert allowed.status_code == 202
+
+    # Shift the owner's stored 20 events outside the rolling window, not the
+    # new admin event: the same owner is now allowed again.
+    with locked(sandbox["engine"]) as connection:
+        connection.execute(t.audit.update().where(
+            t.audit.c.actor_id == sandbox["owner_id"],
+            t.audit.c.action == "membership_invitation_created",
+        ).values(occurred_at="2000-01-01T00:00:00.000000+00:00"))
+    client.post("/api/v1/auth/logout", headers=admin_headers)
+    restored_headers = login(client, "owner@example.test", PASSWORD)
+    restored = invite(sandbox, company, "owner-after-window@example.test", "viewer", restored_headers)
+    assert restored.status_code == 202
