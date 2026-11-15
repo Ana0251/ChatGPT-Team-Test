@@ -30,7 +30,7 @@ def test_identity_migration_and_reversal(tmp_path: Path, monkeypatch) -> None:
         assert "h04_schema_baseline" in before
         assert not identity_tables.intersection(before)
 
-        command.upgrade(config, "head")
+        command.upgrade(config, "h05_0002")
         after = set(inspect(engine).get_table_names())
         assert identity_tables <= after
         assert "h04_schema_baseline" in after
@@ -58,7 +58,7 @@ def test_identity_migration_and_reversal(tmp_path: Path, monkeypatch) -> None:
         down = set(inspect(engine).get_table_names())
         assert not identity_tables.intersection(down)
         assert "h04_schema_baseline" in down
-        command.upgrade(config, "head")
+        command.upgrade(config, "h05_0002")
         again = set(inspect(engine).get_table_names())
         assert again == after
     finally:
