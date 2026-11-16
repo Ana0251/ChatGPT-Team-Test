@@ -2550,6 +2550,39 @@
         ".chatgpt-team/roles/ui-ux.md@22fb831c73c8a3e84c235a47b16e9dc24fc68320",
         ".chatgpt-team/prompts/ui-ux.md@9e708c6488167f6b490ff37cb0ebddf540681da0"
       ]
+    },
+    {
+      "id": "APP-HESABYAR-QA-EVIDENCE-RELEASE-GATE-UPGRADE-20261116-001",
+      "date": "2026-11-16",
+      "approved_by": "manager",
+      "project": "حسابیار (Hesabyar)",
+      "framework_version": "1.3.0",
+      "status": "QA_EVIDENCE_AND_RELEASE_GATE_QUALITY_STANDARD_APPROVED_NO_TASK_OR_WAVE_ACTIVATION",
+      "scope": "Targeted QA role-quality/evidence provenance/release-gate process upgrade only for future separately authorized QA reviews; no new task, wave, runtime execution or deployment authorization.",
+      "governance_pr": 61,
+      "governance_merge_sha": "fa6f2a18b0354b5ba9512ee22554238fbdec880f",
+      "role_file": ".chatgpt-team/roles/qa.md",
+      "prompt_file": ".chatgpt-team/prompts/qa.md",
+      "decision_ref": ".chatgpt-team/DECISIONS.md#APP-HESABYAR-QA-EVIDENCE-RELEASE-GATE-UPGRADE-20261116-001",
+      "quality_controls": [
+        "Evidence provenance: record actual actor, environment/tools, command, PR/commit SHA, raw output and Exit Code; distinguish source review, owner-executed tests, QA-executed runtime tests and NOT_RUN/NOT_TESTED.",
+        "Risk-based finance, IRR/Decimal, multi-tenant/IDOR/CSRF, fiscal close-vs-posting, concurrency, migration, backup/restore, Jalali/Tehran and release evidence matrix; no release PASS without demonstrated required evidence.",
+        "Coordinator then independent QA where review_policy=coordinator_required, then Manager gate; distinguish prior SQLite-local PASS LIMITED decisions from production/release readiness.",
+        "No automatic QA or other-agent activation, no authorization to alter contracts, source, task gate/status, ownership, review_policy or allowed_paths."
+      ],
+      "restrictions": [
+        "Exactly zero new task or wave start permissions; all 30 task objects (including status, owner, dependencies, review_policy, allowed_paths and start_authorized) remain unchanged.",
+        "H-26 and H-29 remain NOT_STARTED, start_authorized=false; W1 remains open, W2-W6 remain pending manager entry gates.",
+        "H-08 developer and PR #58 remain untouched; this role-process approval does not start QA on that PR or alter Developer implementation.",
+        "Only an administrative approval record; no QA execution, tests, source, UI/UX, design, Developer, contract, other role reports or WAVES edits."
+      ],
+      "evidence_refs": [
+        "https://github.com/Ana0251/ChatGPT-Team-Test/pull/61",
+        "https://github.com/Ana0251/ChatGPT-Team-Test/commit/fa6f2a18b0354b5ba9512ee22554238fbdec880f",
+        ".chatgpt-team/DECISIONS.md#APP-HESABYAR-QA-EVIDENCE-RELEASE-GATE-UPGRADE-20261116-001",
+        ".chatgpt-team/roles/qa.md@39045d3f393be8f939faa353572e3a4d3494164a",
+        ".chatgpt-team/prompts/qa.md@5460f1b4a3cab78e946c6aef8d2f984cca8dba28"
+      ]
     }
   ]
 }
