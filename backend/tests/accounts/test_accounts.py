@@ -378,3 +378,47 @@ def test_migration_up_down_up_is_reversible_with_fk(tmp_path, monkeypatch):
         assert "h09_accounts" in set(inspect(engine).get_table_names())
     finally:
         engine.dispose()
+
+
+@pytest.mark.parametrize("role", ["owner", "admin", "accountant"])
+def test_allowed_roles_can_create_patch_and_delete(env, role):
+    client = env["client"]
+    owner_headers = login_owner(env)
+    if role == "owner":
+        headers = owner_headers
+    else:
+        create_member(env, role, f"{role}-h09@example.test")
+        assert client.post(f"{BASE}/auth/logout", headers=owner_headers).status_code == 204
+        headers = login_member(env, f"{role}-h09@example.test")
+    response = create(env, headers, "0001", "group", name="Permitted group")
+    assert response.status_code == 201, response.text
+    account_id = response.json()["id"]
+    patched = client.patch(account_url(env, account_id), headers=headers, json={"name": "New title"})
+    assert patched.status_code == 200
+    assert patched.json()["name"] == "New title"
+    assert client.delete(account_url(env, account_id), headers=headers).status_code == 204
+
+
+def test_account_name_code_boundary_and_hierarchy_deep_escape(env):
+    headers = login_owner(env)
+    group = create(env, headers, "." * 64, "group", name="N" * 200)
+    assert group.status_code == 201, group.text
+    assert len(group.json()["name"]) == 200
+    general = create(env, headers, "\\\\" * 64, "general", group.json()["id"])
+    assert general.status_code == 201, general.text
+    subsidiary = create(env, headers, "." * 64, "subsidiary", general.json()["id"])
+    assert subsidiary.status_code == 201, subsidiary.text
+    detail = create(env, headers, "\\\\" * 64, "detail", subsidiary.json()["id"])
+    assert detail.status_code == 201, detail.text
+    assert len(detail.json()["full_code"]) == 515
+    assert len(detail.json()["code"]) == 64
+    assert create(env, headers, "valid", "group", name="N" * 201).status_code == 422
+
+
+def test_no_partial_save_on_invalid_parent_or_duplicate(env):
+    headers = login_owner(env)
+    initial = create(env, headers, "01", "group").json()
+    assert create(env, headers, "child", "detail", initial["id"]).status_code == 422
+    assert create(env, headers, "01", "group").status_code == 409
+    with env["engine"].connect() as conn:
+        assert conn.execute(select(func.count()).select_from(a.accounts)).scalar_one() == 1
