@@ -109,12 +109,20 @@
       ],
       "entry_criteria": "W1 prerequisites; independent QA begins when actual module exists",
       "exit_criteria": "Account hierarchy, audit, draft warnings and frontend shell/test checks validated",
-      "status": "PENDING_MANAGER_GATE",
-      "entry_authorized": false,
+      "status": "AUTHORIZED_NOT_STARTED",
+      "entry_authorized": true,
       "started_at": null,
       "completed_at": null,
-      "evidence_refs": [],
-      "policy": "No automatic agent activation; per-task dependencies and exclusive allowed paths; independent branch/PR code and real QA evidence. Do not mark complete on registration alone."
+      "evidence_refs": [
+        ".chatgpt-team/DECISIONS.md#APP-HESABYAR-W2-PHASE1-ENTRY-20261116-001",
+        "https://github.com/Ana0251/ChatGPT-Team-Test/pull/69",
+        "https://github.com/Ana0251/ChatGPT-Team-Test/commit/4f951bb08b4a3aa913fc92360be6c522c922aad2",
+        "https://github.com/Ana0251/ChatGPT-Team-Test/pull/68",
+        "https://github.com/Ana0251/ChatGPT-Team-Test/commit/528ff5dae128725e55102ad946a01e2d19a430d2",
+        "docs/contracts/openapi.yaml@f57de031224e21f09253642c210a778a60683711"
+      ],
+      "policy": "No automatic agent activation; per-task dependencies and exclusive allowed paths; independent branch/PR code and real QA evidence. Do not mark complete on registration alone.",
+      "entry_notes": "PHASE1_ENTRY_APPROVED_ADMINISTRATIVE_ONLY under APP-HESABYAR-W2-PHASE1-ENTRY-20261116-001: W2 entry authorized but NOT_STARTED; only H-09 (Developer), H-19 (UI/UX design only) and H-26 (independent multi-wave QA) have status AUTHORIZED_NOT_STARTED and start_authorized=true. None may start until this ledger PR merges and separate Manager handoff per owner/task. H-09 owns only accounts module/tests/new h09 migration plus exact accounts router import/include with /api/v1 in backend/app/main.py; H-19 original two design-spec paths only; H-26 original QA paths only. H-10/H-11/H-21 remain NOT_STARTED and not authorized; W3–W6 pending separate Manager gates. W1 completed local foundation PASS LIMITED only, not production/PostgreSQL/Posting/accounting/browser/release readiness; QA runtime requires real independent evidence and remains NOT_TESTED until run. No new task activation beyond explicitly authorized phase 1."
     },
     {
       "id": "W3",
