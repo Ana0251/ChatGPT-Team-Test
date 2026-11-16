@@ -522,16 +522,39 @@
       "allowed_paths": [
         "backend/app/modules/audit/**",
         "backend/tests/audit/**",
-        "backend/alembic/versions/h-10_*.py"
+        "backend/alembic/versions/h-10_*.py",
+        "backend/app/main.py"
       ],
       "acceptance_criteria": "Append-only actor/time/company/action audit trail; no secret leakage",
-      "mandatory_amendments": "Persist sensitive event actor/company/time and safe changes, immutable through UI; redact credentials and prevent cross-company audit leakage.",
-      "evidence_required": "Mutation audit/role denial tests",
-      "evidence_refs": [],
-      "status": "NOT_STARTED",
+      "mandatory_amendments": "Persist sensitive event actor/company/time and safe changes, immutable through UI; redact credentials and prevent cross-company audit leakage. Manager-approved H10 stage-2 W2 administrative gating decision APP-HESABYAR-W2-PHASE2-H10-AUDIT-GATED-ENTRY-20261116-001 (Manager governance PR #82): NOT a Developer coding start. Developer must wait until this independent PM Assistant ledger PR is merged AND Manager issues a separate explicit H10 owner handoff. Use only H10-owned backend/app/modules/audit/**, backend/tests/audit/**, backend/alembic/versions/h-10_*.py. The ONLY added allowed file backend/app/main.py is an exception for EXACTLY two router wiring edits: ONE import of Audit router and ONE include_router(Audit, prefix=\"/api/v1\"); do not change existing identity, companies, fiscal, accounts routers, /health or any other main.py code. No access to Identity/Companies/Fiscal/Accounts source, previous Alembic migrations, shared package/config/dependencies, OpenAPI, tests outside H10 or any agent-owned reports. Mandatory STOP gate BEFORE any cross-module edit: Developer must first provide source-to-event impact map for ALL sensitive mutations and enumerate required files/minimal proposed diffs with commit/blob evidence; seek a NEW explicit Manager scope exception before touching pre-existing module hooks. The existing h05_audit has nullable actor_id/company_id and lacks safe_changes while rc.4 AuditEvent requires actor_id/company_id real required UUID; never fabricate IDs, assign invalid actor/company to anonymous/login-failure events or expose secrets. Specify valid company-and-actor filtering/recording and additive migration strategy on Alembic h09_0004 -> h10_0005. Audit GET endpoint ONLY GET /api/v1/companies/{companyId}/audit-events owner/admin; rc.4 response {items,page,page_size,total}, AuditEvent {id,company_id,actor_id,action,occurred_at,safe_changes?}. Validate H05 auth per request; viewer/accountant 403, outside/foreign-company errors non-disclosing. True append-only event history with UTC server timestamps, actual actor, minimal redacted safe_changes, stable pagination and company-bound authorization; no client edit/delete. Auditing must be atomically coupled with target mutation and consistent on rollback. If hooks cannot fit approved allowed paths STOP and report INCOMPLETE/NOT_TESTED, not assert full sensitive-event audit. Existing H05/H06 completed only local SQLite PASS LIMITED. No PostgreSQL/multiworker/production security/release readiness implied.",
+      "evidence_required": "Mutation audit/role denial tests Manager H10 stage-2 APP-HESABYAR-W2-PHASE2-H10-AUDIT-GATED-ENTRY-20261116-001 requires (FUTURE after owner handoff) precise source-to-event integration impact map with commit/blob IDs, mapping existing h05_audit nullable actor/company and absent safe_changes to current required rc.4 AuditEvent without fake UUID/secret exposure, source code/SQL migration and compatibility review. Test actual immutable append-only/no client mutation, atomic event creation/rollback for each covered sensitive mutation, actor/company/action/UTC/safe_changes redaction, no password/token/session/CSRF/invitation content, stable paging and sorting, proper API schema and 401/403/404, viewer/accountant denial, owner/admin allowed, outsider and foreign-company IDOR/CSRF/Origin, identity provenance, FK and unique constraints, additive reversible Alembic h09_0004 -> h10_0005 upgrade/downgrade/upgrade, and H03-H09 regression. Developer must provide actual versioned Windows/Python/SQLite/Pytest commands, exact HEAD/blob SHA, PASS/FAIL/warnings and Exit Code; Coordinator then independent QA then Manager review. Separate OWNER_RUNTIME_PASS from QA_RUNTIME_PASS and QA_RUNTIME_NOT_RUN; never invent runtime PASS. Production PostgreSQL/row-locks/multiworker, true concurrency, end-to-end financial posting, HTTPS/TLS/penetration/recovery and release DEFERRED/NOT_TESTED. If a required hook/file is outside allowed_paths STOP and obtain Manager authorization before coding.",
+      "evidence_refs": [
+        ".chatgpt-team/DECISIONS.md#APP-HESABYAR-W2-PHASE2-H10-AUDIT-GATED-ENTRY-20261116-001",
+        "https://github.com/Ana0251/ChatGPT-Team-Test/pull/82",
+        "https://github.com/Ana0251/ChatGPT-Team-Test/commit/90e8f4cf8562f4544a06dca96c2466f7db003c54",
+        "https://github.com/Ana0251/ChatGPT-Team-Test/pull/82#issuecomment-6914685351",
+        "docs/contracts/openapi.yaml@f57de031224e21f09253642c210a778a60683711",
+        "https://github.com/Ana0251/ChatGPT-Team-Test/pull/81",
+        "https://github.com/Ana0251/ChatGPT-Team-Test/commit/ed36f3fc5d872184cee1a9ece0b15436c4f19e3d",
+        "https://github.com/Ana0251/ChatGPT-Team-Test/pull/71",
+        "https://github.com/Ana0251/ChatGPT-Team-Test/commit/9870b5e5ceeb0f391aae6ada4946dda40107277b"
+      ],
+      "status": "AUTHORIZED_NOT_STARTED",
       "validation_status": "NOT_TESTED",
-      "start_authorized": false,
-      "notes": null
+      "start_authorized": true,
+      "notes": "ADMINISTRATIVE W2 PHASE-2 H10 ENTRY ONLY (2026-11-16), APP-HESABYAR-W2-PHASE2-H10-AUDIT-GATED-ENTRY-20261116-001. H10 is AUTHORIZED_NOT_STARTED, start_authorized=true, validation_status NOT_TESTED and review_policy coordinator_required. This PM Assistant ledger sync does NOT start Developer. Mandatory sequence: governance PR #82 merged -> THIS separate admin PR approved/merged -> separate explicit Manager Developer H10 handoff. H05/H06 dependencies COMPLETED only local PASS LIMITED, H09/H19 COMPLETED in limited scopes, H26 remains AUTHORIZED_NOT_STARTED/NOT_TESTED, H11/H21 NOT_STARTED/start_authorized=false. W2 remains AUTHORIZED_NOT_STARTED, W3-W6 locked. Exclusive H10 original three paths plus main.py strictly for ONE Audit router import and ONE include_router(prefix=\"/api/v1\"); preserve all existing identity/companies/fiscal/accounts routers and health endpoint with no other shared-file modifications. Developer STOP gate BEFORE any edit outside these paths: enumerate complete source-to-sensitive-event integration map, required H05/H06/H07/H09 hooks, exact commit/blob references/minimal diffs, seek NEW Manager permission. Existing h05_audit nullable actor_id and company_id, absent safe_changes is NOT directly equivalent to rc.4 AuditEvent required real UUID actor_id/company_id; never forge IDs or leak anonymous/login failures/credentials. Audit GET owner/admin company-scoped only; immutable/append-only, actual actor/UTC and redacted changes; atomic mutation-event linkage required for future completion. If full audited mutations cannot be integrated legally, declare gaps NOT_TESTED instead of PASS. All H10 code/tests, independent runtime QA, PostgreSQL/multiworker, real concurrency, production security and release readiness remain NOT_TESTED/DEFERRED; no test execution is claimed here.",
+      "review_policy": "coordinator_required",
+      "review_risks": [
+        "P0 completeness: sensitive mutations must be atomically linked to immutable, append-only audit events, with rollback correctness; existing module hooks cannot be presumed available or silently omitted",
+        "Tenant isolation and IDOR: audit GET restricted to real H05 owner/admin company members; viewer/accountant hard 403, outsiders/foreign companies safe 401/403/404 without cross-company leakage",
+        "AuditEvent schema mismatch: legacy h05_audit actor_id/company_id nullable and lacks safe_changes, but rc.4 AuditEvent requires actual actor_id/company_id UUIDs; prohibit fabricated UUIDs, anonymous/login-failure company fabrication and unsafe serialization",
+        "Security confidentiality: only minimal safe_changes, real server actor not client-supplied, UTC occurred_at, never expose password, credentials, session, CSRF, invitation secrets or sensitive personal content",
+        "Audit integrity: append-only non-client-writable events, actor/company/action/time accuracy, stable page/sort, no tamper/delete/edit through API, real DB integrity and transactional properties",
+        "Alembic integrity: additive/reversible h-10 migration h10_0005 after h09_0004, no edits to H05/H06/H07/H09 old migration history, rollback/FK/unique integrity and cross-worker/PostgreSQL deferred risk",
+        "Strict ownership: only three original H10 paths plus backend/app/main.py for ONE audit-router import and ONE include_router prefix /api/v1; preserve all existing routers and /health; any additional shared files/cross-module hooks require Developer STOP and new Manager permission",
+        "Evidence provenance and high-risk release gates: owner-run SHA/version/command/exit and real regression evidence distinguished from independent Coordinator/QA source review; QA_RUNTIME_NOT_RUN until independently executed; PostgreSQL/security/production/posting release DEFERRED_NOT_TESTED"
+      ],
+      "review_reason": "H-10 is a P0 audit-security and financial traceability prerequisite. True, immutable, transaction-coupled sensitive mutation audit, company/actor provenance, legacy h05_audit incompatibilities, confidential redaction, multi-tenancy, additive Alembic migration and narrowly shared router integration require Coordinator independent contract/schema/ownership review, independent QA where applicable, then Manager final acceptance. QA owner-run results and source reviews must not be confused with QA runtime PASS."
     },
     {
       "id": "H-11",
@@ -2993,6 +3016,51 @@
         "design/specs/journals/JOURNAL_API_VALIDATION_MATRIX.md",
         "design/specs/journals/MULTILINE_JOURNAL_UX.md",
         "design/specs/journals/REVIEW_CHECKLIST.md"
+      ]
+    },
+    {
+      "id": "APP-HESABYAR-W2-PHASE2-H10-AUDIT-GATED-ENTRY-20261116-001",
+      "date": "2026-11-16",
+      "approved_by": "manager",
+      "project": "حسابیار (Hesabyar)",
+      "framework_version": "1.3.0",
+      "task_id": "H-10",
+      "wave_id": "W2",
+      "status": "H10_PHASE2_AUDIT_GATED_ADMIN_ENTRY_APPROVED_DEVELOPER_START_PENDING",
+      "governance_pr": 82,
+      "governance_merge_sha": "90e8f4cf8562f4544a06dca96c2466f7db003c54",
+      "manager_handoff_comment": "6914685351",
+      "review_policy": "coordinator_required",
+      "scope": "Administrative W2 second-stage authorization for H10 only, not Developer implementation start, not W2 exit and not release/QA runtime acceptance.",
+      "contract": {
+        "version": "1.0.0-rc.4",
+        "openapi_blob": "f57de031224e21f09253642c210a778a60683711"
+      },
+      "allowed_paths": [
+        "backend/app/modules/audit/**",
+        "backend/tests/audit/**",
+        "backend/alembic/versions/h-10_*.py",
+        "backend/app/main.py"
+      ],
+      "main_py_two_line_exception": "ONE Audit router import plus ONE include_router(..., prefix=\"/api/v1\"); all other existing routers /health remain identical",
+      "stop_gate": "Before modifying any H05/H06/H07/H09 or other shared module to capture sensitive mutation events, Developer must map exact source-to-audit hooks, required files/minimal diffs and obtain separate Manager permission. Legacy h05_audit nullable actor/company, no safe_changes vs rc.4 required UUIDs cannot be faked.",
+      "limitations": [
+        "H10 stays AUTHORIZED_NOT_STARTED/NOT_TESTED until separate Manager handoff and real work; no runtime tests performed by PM Assistant.",
+        "All other 29 tasks and 34 pre-existing approvals unchanged; H09/H19 remain completed limited, H26 authorized/NOT_TESTED, H11/H21 unauthorized.",
+        "No WAVES modification; W2 remains AUTHORIZED_NOT_STARTED; W3-W6 PENDING_MANAGER_GATE.",
+        "Actual complete atomic audit integration with existing mutation endpoints NOT_TESTED until separately authorized hooks; no fake actor/company/unsafe redaction.",
+        "PostgreSQL, production tenant security, concurrency, posting, browser and release DEFERRED/NOT_TESTED."
+      ],
+      "evidence_refs": [
+        ".chatgpt-team/DECISIONS.md#APP-HESABYAR-W2-PHASE2-H10-AUDIT-GATED-ENTRY-20261116-001",
+        "https://github.com/Ana0251/ChatGPT-Team-Test/pull/82",
+        "https://github.com/Ana0251/ChatGPT-Team-Test/commit/90e8f4cf8562f4544a06dca96c2466f7db003c54",
+        "https://github.com/Ana0251/ChatGPT-Team-Test/pull/82#issuecomment-6914685351",
+        "docs/contracts/openapi.yaml@f57de031224e21f09253642c210a778a60683711",
+        "https://github.com/Ana0251/ChatGPT-Team-Test/pull/81",
+        "https://github.com/Ana0251/ChatGPT-Team-Test/commit/ed36f3fc5d872184cee1a9ece0b15436c4f19e3d",
+        "https://github.com/Ana0251/ChatGPT-Team-Test/pull/71",
+        "https://github.com/Ana0251/ChatGPT-Team-Test/commit/9870b5e5ceeb0f391aae6ada4946dda40107277b"
       ]
     }
   ]
