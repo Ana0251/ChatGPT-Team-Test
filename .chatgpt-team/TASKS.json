@@ -2672,6 +2672,67 @@
         "PostgreSQL NUMERIC(20,0), monetary DB/API integration, posting/reversal/balancing, tenant security, close-posting race, backup/restore and production release readiness DEFERRED/NOT_TESTED.",
         "Independent QA_RUNTIME=NOT_RUN; cannot state QA runtime PASS or add 158 to 229."
       ]
+    },
+    {
+      "id": "APP-HESABYAR-W1-EXIT-LOCAL-LIMITED-20261116-001",
+      "date": "2026-11-16",
+      "approved_by": "manager",
+      "project": "حسابیار (Hesabyar)",
+      "framework_version": "1.3.0",
+      "wave_id": "W1",
+      "status": "LOCAL_FOUNDATION_PASS_LIMITED_W1_EXIT_APPROVED_NO_W2_ENTRY_AUTHORIZATION",
+      "scope": "Administrative completion of W1 Foundation only, eight previously COMPLETED W1 tasks in approved local/backend/pure-Python/design documentation scope; NOT release readiness, independent QA runtime, PostgreSQL, full accounting or production security.",
+      "decision_ref": ".chatgpt-team/DECISIONS.md#APP-HESABYAR-W1-EXIT-LOCAL-LIMITED-20261116-001",
+      "governance_pr": 67,
+      "governance_merge_sha": "f30c6a1f9b666fa85da11b1087acce223c2ace7a",
+      "w1_tasks": [
+        "H-03",
+        "H-04",
+        "H-05",
+        "H-06",
+        "H-07",
+        "H-08",
+        "H-17",
+        "H-18"
+      ],
+      "completion_date": "2026-11-16",
+      "qa_runtime": "NOT_RUN",
+      "release_readiness": "DEFERRED_NOT_TESTED",
+      "restrictions": [
+        "W1 COMPLETED with LOCAL_FOUNDATION_PASS_LIMITED only; no claim QA_RUNTIME_PASS or production acceptance.",
+        "No task edits or new task start permissions; H26/H29 remain NOT_STARTED/start_authorized=false.",
+        "W2-W6 entry_authorized=false and PENDING_MANAGER_GATE; separate Manager decision required for each later entry.",
+        "PostgreSQL, money persistence, journal posting/reversal, accounting end-to-end correctness, operational security, actual frontend, backup/restore and release are DEFERRED/NOT_TESTED."
+      ],
+      "evidence_refs": [
+        ".chatgpt-team/DECISIONS.md#APP-HESABYAR-W1-EXIT-LOCAL-LIMITED-20261116-001",
+        "https://github.com/Ana0251/ChatGPT-Team-Test/pull/67",
+        "https://github.com/Ana0251/ChatGPT-Team-Test/commit/f30c6a1f9b666fa85da11b1087acce223c2ace7a",
+        "https://github.com/Ana0251/ChatGPT-Team-Test/pull/7",
+        "https://github.com/Ana0251/ChatGPT-Team-Test/commit/9c1120e699468a509b88290bf18d57783757c060",
+        "https://github.com/Ana0251/ChatGPT-Team-Test/pull/18",
+        "https://github.com/Ana0251/ChatGPT-Team-Test/commit/2ac81eca7491131ebeb2a6ac061e6d6708f591cd",
+        "https://github.com/Ana0251/ChatGPT-Team-Test/pull/26",
+        "https://github.com/Ana0251/ChatGPT-Team-Test/commit/10d36110b55be991082e65b5f66159bb44bb867b",
+        "https://github.com/Ana0251/ChatGPT-Team-Test/pull/42",
+        "https://github.com/Ana0251/ChatGPT-Team-Test/commit/47142d5ec8b5e1d35e9fe8ba3a528fe5bcdbdc7e",
+        "https://github.com/Ana0251/ChatGPT-Team-Test/pull/49",
+        "https://github.com/Ana0251/ChatGPT-Team-Test/commit/4c6e4cac55621c7721e2314d2a4a749e12ba3e3f",
+        "https://github.com/Ana0251/ChatGPT-Team-Test/commit/dafd95fe3e484900975506d29b9f4ceaa4b5cce6",
+        "https://github.com/Ana0251/ChatGPT-Team-Test/pull/58",
+        "https://github.com/Ana0251/ChatGPT-Team-Test/commit/fa87866ab87e570aea832f6144f0ea77ef8d2a04",
+        "https://github.com/Ana0251/ChatGPT-Team-Test/commit/8533e57e64b3356d8e8e8a3d3dfac5a5a78fd90e",
+        "https://github.com/Ana0251/ChatGPT-Team-Test/pull/63",
+        "https://github.com/Ana0251/ChatGPT-Team-Test/pull/64",
+        "https://github.com/Ana0251/ChatGPT-Team-Test/pull/65",
+        "https://github.com/Ana0251/ChatGPT-Team-Test/pull/66",
+        "https://github.com/Ana0251/ChatGPT-Team-Test/commit/1642b7d220d385bd15ffeb681d5aeb67c5ec3ffe",
+        "https://github.com/Ana0251/ChatGPT-Team-Test/pull/8",
+        "https://github.com/Ana0251/ChatGPT-Team-Test/commit/0beb9ecc5121adf68fa245eed07f4df426d3f712",
+        "https://github.com/Ana0251/ChatGPT-Team-Test/pull/17",
+        "https://github.com/Ana0251/ChatGPT-Team-Test/commit/d465e5e6412b271e6cbb5881164803aeff1605f7",
+        "docs/contracts/openapi.yaml@f57de031224e21f09253642c210a778a60683711"
+      ]
     }
   ]
 }
