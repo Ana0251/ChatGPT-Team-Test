@@ -459,16 +459,35 @@
       "allowed_paths": [
         "backend/app/modules/accounts/**",
         "backend/tests/accounts/**",
-        "backend/alembic/versions/h-09_*.py"
+        "backend/alembic/versions/h-09_*.py",
+        "backend/app/main.py"
       ],
       "acceptance_criteria": "Group/کل/معین/تفصیلی hierarchy; scoped codes unique; no posting to non-leaves; used accounts not deletable",
-      "mandatory_amendments": "Hierarchical detail subordinate to subsidiary, not floating detail; unique fully qualified company codes, only postable detail leaves or subsidiary without detail; protect used accounts.",
-      "evidence_required": "Duplicate/parent/type/company integrity tests",
-      "evidence_refs": [],
-      "status": "NOT_STARTED",
+      "mandatory_amendments": "Hierarchical detail subordinate to subsidiary, not floating detail; unique fully qualified company codes, only postable detail leaves or subsidiary without detail; protect used accounts. Manager-approved staged W2 phase-1 administrative entry APP-HESABYAR-W2-PHASE1-ENTRY-20261116-001: only authorized after this ledger PR merges and Manager sends a SEPARATE explicit owner handoff; no execution on administrative approval alone. Only GET/POST /companies/{companyId}/accounts and GET/PATCH/DELETE /companies/{companyId}/accounts/{accountId} per OpenAPI 1.0.0-rc.4 exact DTO AccountInput/Account/AccountPage/status/errors. Enforce GROUP→GENERAL→SUBSIDIARY→DETAIL with detail belonging to exactly one subsidiary, leading-zero-preserving scoped full codes, active/postable leaf or detail and permissions/tenant/CSRF/Origin. H09 migration only h-09_*.py additive from H07 Alembic HEAD. The ONLY new allowed shared path backend/app/main.py is strictly limited to TWO router wiring changes: one import accounts router, one include_router accounts with prefix `/api/v1`, preserve all previously installed routers, /health and all other bytes. STOP and request Manager if other shared source, package init, config, migration history, OpenAPI or dependencies needed. Used account deletion with actually posted journal needs future H11/H12 Posting; NOT_TESTED now.",
+      "evidence_required": "Duplicate/parent/type/company integrity tests Manager W2 Phase-1 APP-HESABYAR-W2-PHASE1-ENTRY-20261116-001 evidence: owner-run Python/SQLite and Pytest versions, exact HEAD, complete command/PASS-FAIL counts/warnings/exit codes, real GET/POST/GET/PATCH/DELETE rc.4 contract tests; hierarchy and parent/type, scoped duplicate code, role/member/IDOR/CSRF, active/postable, leaf and parent/delete rules, rollback and additive reversible h09 migration, H03-H08 regressions, Coordinator then QA independent review. Posted-used-account deletion and PostgreSQL concurrency remain NOT_TESTED until implementation.",
+      "evidence_refs": [
+        ".chatgpt-team/DECISIONS.md#APP-HESABYAR-W2-PHASE1-ENTRY-20261116-001",
+        "https://github.com/Ana0251/ChatGPT-Team-Test/pull/69",
+        "https://github.com/Ana0251/ChatGPT-Team-Test/commit/4f951bb08b4a3aa913fc92360be6c522c922aad2",
+        "https://github.com/Ana0251/ChatGPT-Team-Test/pull/68",
+        "https://github.com/Ana0251/ChatGPT-Team-Test/commit/528ff5dae128725e55102ad946a01e2d19a430d2",
+        "docs/contracts/openapi.yaml@f57de031224e21f09253642c210a778a60683711"
+      ],
+      "status": "AUTHORIZED_NOT_STARTED",
       "validation_status": "NOT_TESTED",
-      "start_authorized": false,
-      "notes": null
+      "start_authorized": true,
+      "notes": "W2 PHASE-1 ADMINISTRATIVE ENTRY ONLY under APP-HESABYAR-W2-PHASE1-ENTRY-20261116-001. status AUTHORIZED_NOT_STARTED; start_authorized=true; validation_status NOT_TESTED; review_policy coordinator_required. Do not begin implementation/QA/design before this administrative PR is merged AND separate Manager handoff for H-09. Developer alone starts H09 in phase 1; H10/H11/H21 remain unauthorized. Only NEW H09 allowed_path backend/app/main.py strictly for one accounts router import plus one include_router with prefix `/api/v1`. No editing existing router wiring or /health; any additional shared file requires STOP/new Manager decision. H09 source and H09 Alembic new migration only; NOT_TESTED used-in-posted-account deletion until Posting exists. PostgreSQL, actual Posting, production security and full release remain DEFERRED/NOT_TESTED. W3–W6 remain unauthorized.",
+      "review_policy": "coordinator_required",
+      "review_risks": [
+        "Cross-company IDOR, membership/roles and H05 CSRF/Origin protections across account read/write",
+        "GROUP to GENERAL to SUBSIDIARY to DETAIL parent integrity, uniqueness of full company-scoped account code preserving leading zeros, invalid parent/type",
+        "Only postable active detail leaves or subsidiaries without detail; prohibit posting to inactive/parent nodes and invalid hierarchy mutations",
+        "Account delete/patch safety with children or future used-in-posted-journal references; posted-account deletion remains DEFERRED/NOT_TESTED until Posting implemented",
+        "Additive H09 Alembic migration on current H07 head; reversible upgrade/downgrade, FK/rollback and collision/conflict prevention, no shared legacy migration edits",
+        "backend/app/main.py only accounts router import and include_router prefix /api/v1; preserve identity/companies/fiscal and /health; no extra shared paths",
+        "Owner runtime evidence on exact SHA vs Coordinator/QA source review; local SQLite not production PostgreSQL/concurrency evidence"
+      ],
+      "review_reason": "P0 financial chart-of-accounts hierarchy, multi-tenant permissions and additive Alembic migration plus narrowly shared router wiring require Coordinator integration/source review, independent QA then Manager."
     },
     {
       "id": "H-10",
@@ -781,13 +800,30 @@
         "design/specs/journals/**"
       ],
       "acceptance_criteria": "Chart editor + multi-line voucher UX; balancing feedback, confirmations and posted read-only states",
-      "mandatory_amendments": "Design-only journal flows must allow incomplete/unbalanced drafts with explicit warning, but block post until valid; immutable posted and reversal states.",
-      "evidence_required": "Prototype spec + keyboard/focus checklist",
-      "evidence_refs": [],
-      "status": "NOT_STARTED",
+      "mandatory_amendments": "Design-only journal flows must allow incomplete/unbalanced drafts with explicit warning, but block post until valid; immutable posted and reversal states. Manager-approved staged W2 phase-1 administrative entry APP-HESABYAR-W2-PHASE1-ENTRY-20261116-001: only authorized after this ledger PR merges and Manager sends a SEPARATE explicit owner handoff; no execution on administrative approval alone. DESIGN ONLY in design/specs/accounts/** and design/specs/journals/**. Spec RTL, bidirectional text, screen-state/role/error matrices, H17 tokens, rc.4 SHA and numerical IRR/Jalali/period states, 360–1280px responsive/a11y/focus. Incomplete/unbalanced drafts can be saved with warning, posting blocked pending server validation; posted immutable; reversal separate. NO frontend/backend, API, design outside original paths or unapproved Figma publication, and do not claim browser/accessibility runtime PASS.",
+      "evidence_required": "Prototype spec + keyboard/focus checklist Manager W2 Phase-1 APP-HESABYAR-W2-PHASE1-ENTRY-20261116-001 evidence: design flow and detailed screen/state matrix, annotated field-to-rc.4 blob and H17-token mappings, RTL/keyboard/contrast/responsive checkpoints, incomplete vs unbalanced drafts and posting/reversal states, Coordinator design compatibility then QA static review; browser/accessibility runtime NOT_TESTED.",
+      "evidence_refs": [
+        ".chatgpt-team/DECISIONS.md#APP-HESABYAR-W2-PHASE1-ENTRY-20261116-001",
+        "https://github.com/Ana0251/ChatGPT-Team-Test/pull/69",
+        "https://github.com/Ana0251/ChatGPT-Team-Test/commit/4f951bb08b4a3aa913fc92360be6c522c922aad2",
+        "https://github.com/Ana0251/ChatGPT-Team-Test/pull/68",
+        "https://github.com/Ana0251/ChatGPT-Team-Test/commit/528ff5dae128725e55102ad946a01e2d19a430d2",
+        "docs/contracts/openapi.yaml@f57de031224e21f09253642c210a778a60683711"
+      ],
+      "status": "AUTHORIZED_NOT_STARTED",
       "validation_status": "NOT_TESTED",
-      "start_authorized": false,
-      "notes": null
+      "start_authorized": true,
+      "notes": "W2 PHASE-1 ADMINISTRATIVE ENTRY ONLY under APP-HESABYAR-W2-PHASE1-ENTRY-20261116-001. status AUTHORIZED_NOT_STARTED; start_authorized=true; validation_status NOT_TESTED; review_policy coordinator_required. Do not begin implementation/QA/design before this administrative PR is merged AND separate Manager handoff for H-19. UI/UX design-spec only; H17 and rc4 align, financial draft/post/reversal usability, RTL and a11y specifications but no runtime/browser PASS or frontend code. PostgreSQL, actual Posting, production security and full release remain DEFERRED/NOT_TESTED. W3–W6 remain unauthorized.",
+      "review_policy": "coordinator_required",
+      "review_risks": [
+        "Design-only financial/account and multi-line voucher screens must match OpenAPI rc.4 and H17 tokens exactly",
+        "Persian RTL/bidi/Jalali/IRR canonical string and 360–1280px responsive plus keyboard/WCAG specifications",
+        "Incomplete/unbalanced DRAFT saved with warning, POST blocked by server validation, POSTED immutable and reversal separate",
+        "Permission/empty/loading/error states avoid disclosing tenant resources and do not relocate H05 CSRF checks to client-only logic",
+        "Distinguish approved design SPECIFIED/source-reviewed from actual running browser/UI/independent accessibility tests NOT_RUN",
+        "No frontend/backend/contract edits or unapproved redesign/Figma publication; only original two design spec directories"
+      ],
+      "review_reason": "Financial design must match frozen API/tokens, correctly separate incomplete DRAFT from immutable POSTED and be testable/accessibility-aware; Coordinator design-contract review, QA documentation review then Manager."
     },
     {
       "id": "H-20",
@@ -1011,13 +1047,30 @@
         ".chatgpt-team/agents/qa/REPORT.md"
       ],
       "acceptance_criteria": "Independent threat/accounting test plan, execute each delivered module against real database; defects with reproducible steps",
-      "mandatory_amendments": "Start independent QA continuously from delivered W1 modules, while spanning W2–W5; real PostgreSQL F1/F2/F3, security, fiscal closed-period, posting race and CSRF tests. Never claim unrun tests.",
-      "evidence_required": "Timestamped reproducible manual QA execution logs with commands, environment/tool versions, build/commit SHAs, case IDs and redacted HTTP traces; actual pass/fail and independent QA report. APP-HESABYAR-MANUAL-VALIDATION-20261114-001: Reproducible manual tests on the user's system replace mandatory GitHub Actions checks. For each gate record exact command, tool/environment versions, commit/blob SHA, observed PASS/FAIL output and PR evidence. Real runtime/API/PostgreSQL/accounting/security tests and independent QA remain mandatory where applicable; never claim unrun tests PASS. GitHub Actions are optional and a failing legacy workflow remains FAIL.",
-      "evidence_refs": [],
-      "status": "NOT_STARTED",
+      "mandatory_amendments": "Start independent QA continuously from delivered W1 modules, while spanning W2–W5; real PostgreSQL F1/F2/F3, security, fiscal closed-period, posting race and CSRF tests. Never claim unrun tests. Manager-approved staged W2 phase-1 administrative entry APP-HESABYAR-W2-PHASE1-ENTRY-20261116-001: only authorized after this ledger PR merges and Manager sends a SEPARATE explicit owner handoff; no execution on administrative approval alone. Independent QA across delivered W1 and future authorized W2–W5 modules ONLY in pre-existing qa/testplans/**, qa/fixtures/**, qa/evidence/** and .chatgpt-team/agents/qa/REPORT.md. Log executed QA command/environment/actor/SHA/case/output/exit; use QA_RUNTIME_NOT_RUN where execution unavailable; never misattribute owner tests or future PostgreSQL/posting/restore/production scenarios as PASS. QA is owner: Coordinator independently reviews evidence, Manager accepts; QA does not self-approve. No automatic W3-W5 start.",
+      "evidence_required": "Timestamped reproducible manual QA execution logs with commands, environment/tool versions, build/commit SHAs, case IDs and redacted HTTP traces; actual pass/fail and independent QA report. APP-HESABYAR-MANUAL-VALIDATION-20261114-001: Reproducible manual tests on the user's system replace mandatory GitHub Actions checks. For each gate record exact command, tool/environment versions, commit/blob SHA, observed PASS/FAIL output and PR evidence. Real runtime/API/PostgreSQL/accounting/security tests and independent QA remain mandatory where applicable; never claim unrun tests PASS. GitHub Actions are optional and a failing legacy workflow remains FAIL. Manager W2 Phase-1 APP-HESABYAR-W2-PHASE1-ENTRY-20261116-001 evidence: independently executed QA scenario/risk matrix for delivered modules with real actor, environment/tool versions, timestamps, commands, exact commit SHAs, input/expected/actual redacted output and Exit Codes, negative tests and reproducible defects; distinguish owner-run PASS from QA_RUNTIME_PASS/QA_RUNTIME_NOT_RUN. Coordinator evidence review, Manager acceptance without QA self-approval; defer missing PostgreSQL/Posting/F1-F3/browser/TLS/restore.",
+      "evidence_refs": [
+        ".chatgpt-team/DECISIONS.md#APP-HESABYAR-W2-PHASE1-ENTRY-20261116-001",
+        "https://github.com/Ana0251/ChatGPT-Team-Test/pull/69",
+        "https://github.com/Ana0251/ChatGPT-Team-Test/commit/4f951bb08b4a3aa913fc92360be6c522c922aad2",
+        "https://github.com/Ana0251/ChatGPT-Team-Test/pull/68",
+        "https://github.com/Ana0251/ChatGPT-Team-Test/commit/528ff5dae128725e55102ad946a01e2d19a430d2",
+        "docs/contracts/openapi.yaml@f57de031224e21f09253642c210a778a60683711"
+      ],
+      "status": "AUTHORIZED_NOT_STARTED",
       "validation_status": "NOT_TESTED",
-      "start_authorized": false,
-      "notes": null
+      "start_authorized": true,
+      "notes": "W2 PHASE-1 ADMINISTRATIVE ENTRY ONLY under APP-HESABYAR-W2-PHASE1-ENTRY-20261116-001. status AUTHORIZED_NOT_STARTED; start_authorized=true; validation_status NOT_TESTED; review_policy coordinator_required. Do not begin implementation/QA/design before this administrative PR is merged AND separate Manager handoff for H-26. QA independently assesses delivered W1 modules and future authorized modules only; H26 remains NOT_COMPLETED, spans W2–W5; QA_RUNTIME_NOT_RUN until actual independent execution; no QA self-approval, Coordinator checks work and Manager decides. PostgreSQL, actual Posting, production security and full release remain DEFERRED/NOT_TESTED. W3–W6 remain unauthorized.",
+      "review_policy": "coordinator_required",
+      "review_risks": [
+        "Independent QA evidence provenance: actor, command, versions, environment, reviewed commit SHA, timestamp, output, exit codes and negative cases",
+        "Financial integrity and IRR Decimal, tenancy/IDOR/CSRF, fiscal period close, SQLite migration and restoration risk matrix from delivered W1 modules",
+        "Separate SOURCE_REVIEW_PASS_LIMITED, OWNER_RUNTIME_PASS, QA_RUNTIME_PASS and QA_RUNTIME_NOT_RUN with no invented execution",
+        "PostgreSQL F1/F2/F3, Posting/Reversal, close-vs-Posting race, browser/TLS, production security and restore are blocked/deferred until real systems exist",
+        "QA ownership self-review conflict: Coordinator checks H26 evidence structure/integration independently; Manager accepts, QA does not approve itself",
+        "H26 is ongoing across W2-W5; early QA plans or partial runs cannot close H26, W2 or release gates"
+      ],
+      "review_reason": "H26 is QA-owned independent multi-wave risk and execution evidence; to avoid self-approval, Coordinator independently reviews evidence structure and contract/integration while Manager alone decides acceptance; QA runtime claims must be independently executed."
     },
     {
       "id": "H-27",
@@ -2731,6 +2784,46 @@
         "https://github.com/Ana0251/ChatGPT-Team-Test/commit/0beb9ecc5121adf68fa245eed07f4df426d3f712",
         "https://github.com/Ana0251/ChatGPT-Team-Test/pull/17",
         "https://github.com/Ana0251/ChatGPT-Team-Test/commit/d465e5e6412b271e6cbb5881164803aeff1605f7",
+        "docs/contracts/openapi.yaml@f57de031224e21f09253642c210a778a60683711"
+      ]
+    },
+    {
+      "id": "APP-HESABYAR-W2-PHASE1-ENTRY-20261116-001",
+      "date": "2026-11-16",
+      "approved_by": "manager",
+      "project": "حسابیار (Hesabyar)",
+      "framework_version": "1.3.0",
+      "wave_id": "W2",
+      "status": "W2_PHASE1_ADMIN_ENTRY_APPROVED_NO_AGENT_AUTO_START",
+      "decision_ref": ".chatgpt-team/DECISIONS.md#APP-HESABYAR-W2-PHASE1-ENTRY-20261116-001",
+      "governance_pr": 69,
+      "governance_merge_sha": "4f951bb08b4a3aa913fc92360be6c522c922aad2",
+      "scope": "W2 staged administrative entry only; authorize H09 Developer, H19 UI/UX and H26 independent QA for future separate handoffs, no task implementation or auto-activation.",
+      "authorized_tasks": [
+        "H-09",
+        "H-19",
+        "H-26"
+      ],
+      "held_tasks": [
+        "H-10",
+        "H-11",
+        "H-21"
+      ],
+      "review_policy": "coordinator_required",
+      "h09_shared_path_exception": "backend/app/main.py: ONLY accounts router import and include_router with prefix /api/v1, leaving all other code untouched",
+      "restrictions": [
+        "All three authorized task statuses AUTHORIZED_NOT_STARTED and validation_status NOT_TESTED; separate Manager start handoff mandatory after admin PR merges.",
+        "No other task permission/status, source files, contracts, legacy migrations, UI/UX/QA code or reports edited by PM Assistant.",
+        "H-10/H-11/H-21 remain NOT_STARTED/start_authorized=false; W3–W6 PENDING_MANAGER_GATE.",
+        "QA_RUNTIME_PASS requires independent QA runtime logs; no PASS inferred from source review or owner runs.",
+        "Posting-used-account deletion, PostgreSQL/multiworker, accounting, operational security, UI runtime and release DEFERRED/NOT_TESTED."
+      ],
+      "evidence_refs": [
+        ".chatgpt-team/DECISIONS.md#APP-HESABYAR-W2-PHASE1-ENTRY-20261116-001",
+        "https://github.com/Ana0251/ChatGPT-Team-Test/pull/69",
+        "https://github.com/Ana0251/ChatGPT-Team-Test/commit/4f951bb08b4a3aa913fc92360be6c522c922aad2",
+        "https://github.com/Ana0251/ChatGPT-Team-Test/pull/68",
+        "https://github.com/Ana0251/ChatGPT-Team-Test/commit/528ff5dae128725e55102ad946a01e2d19a430d2",
         "docs/contracts/openapi.yaml@f57de031224e21f09253642c210a778a60683711"
       ]
     }
