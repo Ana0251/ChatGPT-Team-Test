@@ -11,6 +11,7 @@ from fastapi import APIRouter, Request
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 from sqlalchemy import select
 
+from app.modules.audit.store import record_event
 from app.modules.identity import tables as t
 from app.modules.identity.router import IdentityError, IdentityRoute, actor_id, engine_for
 from app.modules.identity.store import locked, new_id
@@ -57,6 +58,8 @@ def create_company(body: CompanyInput, request: Request) -> dict[str, str]:
         connection.execute(t.memberships.insert().values(
             user_id=user_id, company_id=company_id, role="owner"
         ))
+        record_event(connection, actor_id=user_id, company_id=company_id,
+                     action="company_created", safe_changes={"resource_id": company_id})
     return {"id": company_id, "name": body.name}
 
 
