@@ -22,7 +22,7 @@ def upgrade() -> None:
         sa.Column("name", sa.String(200), nullable=False),
         sa.Column("level", sa.String(16), nullable=False),
         sa.Column("active", sa.Boolean(), nullable=False),
-        sa.Column("full_code", sa.String(300), nullable=False),
+        sa.Column("full_code", sa.String(600), nullable=False),
         sa.CheckConstraint("level IN ('group','general','subsidiary','detail')", name="h09_account_level"),
         sa.CheckConstraint("length(code) BETWEEN 1 AND 64", name="h09_code_length"),
         sa.CheckConstraint("length(name) BETWEEN 1 AND 200", name="h09_name_length"),
