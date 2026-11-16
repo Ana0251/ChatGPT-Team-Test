@@ -115,7 +115,7 @@ def seed(env, action="account_created", safe=None):
         )
 
 
-def test_unauthenticated_and_owner_empty_audit_page(env):
+def test_unauthenticated_and_owner_bootstrap_events_read_only(env):
     c = env["client"]
     assert c.get(url(env)).status_code == 401
     login_owner(env)
@@ -772,3 +772,36 @@ def test_real_owner_activation_rolls_back_on_audit_write_failure(env):
     })
     assert again.status_code == 204, again.text
     assert [r["action"] for r in audit_rows(env)].count("initial_owner_activated") == 1
+
+
+def test_h10_read_contract_is_exact_openapi_rc4_schema(env):
+    """Validate against the committed normative contract, not an invented DTO."""
+    import yaml
+
+    contract_path = Path(__file__).resolve().parents[3] / "docs" / "contracts" / "openapi.yaml"
+    schema = yaml.safe_load(contract_path.read_text(encoding="utf-8"))
+    assert schema["info"]["version"] == "1.0.0-rc.4"
+    endpoint = schema["paths"]["/companies/{companyId}/audit-events"]
+    assert set(endpoint) == {"get"}
+    assert endpoint["get"]["tags"] == ["Audit"]
+    assert endpoint["get"]["responses"]["200"]["content"]["application/json"]["schema"]["required"] == [
+        "items", "page", "page_size", "total",
+    ]
+    event = schema["components"]["schemas"]["AuditEvent"]
+    assert set(event["required"]) == {
+        "id", "company_id", "actor_id", "action", "occurred_at",
+    }
+    assert event["properties"]["safe_changes"]["type"] == "object"
+
+    c = env["client"]
+    login_owner(env)
+    response = c.get(url(env))
+    assert response.status_code == 200
+    body = response.json()
+    assert set(body) == {"items", "page", "page_size", "total"}
+    for item in body["items"]:
+        assert set(event["required"]) <= set(item)
+        assert str(UUID(item["id"])) == item["id"]
+        assert str(UUID(item["company_id"])) == item["company_id"]
+        assert str(UUID(item["actor_id"])) == item["actor_id"]
+        assert datetime.fromisoformat(item["occurred_at"]).utcoffset() == timedelta(0)
