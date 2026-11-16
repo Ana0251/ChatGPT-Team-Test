@@ -122,7 +122,10 @@ def test_unauthenticated_and_owner_empty_audit_page(env):
     response = c.get(url(env))
     assert response.status_code == 200
     assert response.headers["cache-control"] == "no-store"
-    assert response.json() == {"items": [], "page": 1, "page_size": 50, "total": 0}
+    assert response.json()["total"] == 2
+    assert {item["action"] for item in response.json()["items"]} == {
+        "operator_initial_owner_provisioned", "initial_owner_activated",
+    }
     # No public mutation API: GET-only.
     assert c.post(url(env), json={"action": "account_created"}).status_code == 405
     assert c.delete(url(env)).status_code == 405
@@ -139,13 +142,15 @@ def test_real_actor_company_utc_and_stable_pagination(env):
     first = env["client"].get(url(env), params={"page_size": 2})
     assert first.status_code == 200
     data = first.json()
-    assert data["total"] == 3 and data["page"] == 1 and data["page_size"] == 2
+    assert data["total"] == 5 and data["page"] == 1 and data["page_size"] == 2
     assert len(data["items"]) == 2
     second = env["client"].get(url(env), params={"page_size": 2, "page": 2})
     assert second.status_code == 200
-    assert len(second.json()["items"]) == 1
-    all_items = data["items"] + second.json()["items"]
-    assert {item["id"] for item in all_items} == set(ids)
+    assert len(second.json()["items"]) == 2
+    third = env["client"].get(url(env), params={"page_size": 2, "page": 3})
+    assert third.status_code == 200 and len(third.json()["items"]) == 1
+    all_items = data["items"] + second.json()["items"] + third.json()["items"]
+    assert set(ids) <= {item["id"] for item in all_items}
     assert all_items == sorted(all_items, key=lambda row: (
         row["occurred_at"], row["id"],
     ), reverse=True)
@@ -159,10 +164,11 @@ def test_real_actor_company_utc_and_stable_pagination(env):
         date = datetime.fromisoformat(item["occurred_at"])
         assert date.utcoffset() == timedelta(0)
         assert abs(datetime.now(timezone.utc) - date) < timedelta(minutes=2)
-        assert set(item["safe_changes"]) == {"resource_id", "active", "level"}
-    beyond = env["client"].get(url(env), params={"page_size": 2, "page": 3})
+        if item["id"] in ids:
+            assert set(item["safe_changes"]) == {"resource_id", "active", "level"}
+    beyond = env["client"].get(url(env), params={"page_size": 2, "page": 4})
     assert beyond.status_code == 200 and beyond.json()["items"] == []
-    assert beyond.json()["total"] == 3
+    assert beyond.json()["total"] == 5
 
 
 @pytest.mark.parametrize("query", [
@@ -202,7 +208,7 @@ def test_company_roles_are_rechecked_per_request(env, role, expected):
     result = c.get(url(env))
     assert result.status_code == expected, result.text
     if role in ("owner", "admin"):
-        assert result.json()["total"] == 1
+        assert result.json()["total"] == 3
     else:
         assert result.json()["error"]["code"] == "ACCESS_DENIED"
 
@@ -238,7 +244,7 @@ def test_sensitive_or_malformed_safe_changes_fail_closed(env, bad):
     with pytest.raises(ValueError):
         seed(env, safe=bad)
     with env["engine"].connect() as conn:
-        assert conn.execute(select(func.count()).select_from(a.events)).scalar_one() == 0
+        assert conn.execute(select(func.count()).select_from(a.events)).scalar_one() == 1
 
 
 def test_record_event_requires_real_scoped_actor_and_no_client_time(env):
@@ -256,7 +262,7 @@ def test_record_event_requires_real_scoped_actor_and_no_client_time(env):
             record_event(conn, actor_id=env["owner"], company_id=env["company"],
                          action="account_created", occurred_at="2000-01-01T00:00:00+00:00")
     with env["engine"].connect() as conn:
-        assert conn.execute(select(func.count()).select_from(a.events)).scalar_one() == 0
+        assert conn.execute(select(func.count()).select_from(a.events)).scalar_one() == 1
 
 
 def test_update_delete_are_rejected_by_database_and_api(env):
@@ -275,7 +281,7 @@ def test_update_delete_are_rejected_by_database_and_api(env):
             conn.exec_driver_sql("DELETE FROM h10_audit_events WHERE id = ?", (event_id,))
         conn.rollback()
     result = c.get(url(env))
-    assert result.status_code == 200 and result.json()["total"] == 1
+    assert result.status_code == 200 and result.json()["total"] == 3
     assert result.json()["items"][0]["action"] == "account_created"
 
 
@@ -387,7 +393,7 @@ def test_h10_schema_foreign_keys_and_utc_constraints(env):
                 conn.execute(a.events.insert().values(**{**valid, **overrides}))
             conn.rollback()
     with env["engine"].connect() as conn:
-        assert conn.execute(select(func.count()).select_from(a.events)).scalar_one() == 0
+        assert conn.execute(select(func.count()).select_from(a.events)).scalar_one() == 1
 
 
 def test_unapproved_legacy_and_post_migration_h05_events_not_faked(env):
@@ -398,7 +404,371 @@ def test_unapproved_legacy_and_post_migration_h05_events_not_faked(env):
         audit_event(conn, "login_rejected")
     result = env["client"].get(url(env))
     assert result.status_code == 200
-    # Existing H05 writes AFTER H10 migration do not magically write H10.
-    # Cross-module atomic hooks need explicit Manager authorization.
-    assert result.json()["items"] == []
-    assert result.json()["total"] == 0
+    # Direct H05-only writes do not create H10 events without record_event.
+    assert result.json()["total"] == 2
+    assert {item["action"] for item in result.json()["items"]} == {
+        "operator_initial_owner_provisioned", "initial_owner_activated",
+    }
+
+
+def audit_rows(env):
+    with env["engine"].connect() as conn:
+        return [dict(row) for row in conn.execute(
+            select(a.events).order_by(a.events.c.occurred_at, a.events.c.id)
+        ).mappings()]
+
+
+def login_known(env, email, password):
+    c = env["client"]
+    logged = c.post(f"{BASE}/auth/login", headers=csrf(c), json={
+        "email": email, "password": password,
+    })
+    assert logged.status_code == 200, logged.text
+    return csrf(c)
+
+
+def logout_known(env, headers):
+    result = env["client"].post(f"{BASE}/auth/logout", headers=headers)
+    assert result.status_code == 204, result.text
+
+
+def new_action(env, action, request):
+    """Assert one matching H-10 event for one successful real endpoint."""
+    old = {row["id"] for row in audit_rows(env)}
+    response = request()
+    assert 200 <= response.status_code < 300, response.text
+    added = [row for row in audit_rows(env) if row["id"] not in old]
+    assert len(added) == 1, [r["action"] for r in added]
+    assert added[0]["action"] == action
+    assert str(UUID(added[0]["actor_id"])) == added[0]["actor_id"]
+    assert str(UUID(added[0]["company_id"])) == added[0]["company_id"]
+    assert datetime.fromisoformat(added[0]["occurred_at"]).utcoffset() == timedelta(0)
+    return response, added[0]
+
+
+def test_all_twelve_real_atomic_hooks_and_redacted_safe_metadata(env):
+    """Exercise every approved mutation entrypoint (two invites, one per other)."""
+    from collections import Counter
+    from app.modules.identity.security import password_hash
+
+    c = env["client"]
+    assert Counter(r["action"] for r in audit_rows(env)) == {
+        "operator_initial_owner_provisioned": 1,
+    }
+    headers = login_owner(env)
+    assert Counter(r["action"] for r in audit_rows(env)) == {
+        "operator_initial_owner_provisioned": 1,
+        "initial_owner_activated": 1,
+    }
+
+    invite_url = f"{BASE}/companies/{env['company']}/members"
+    secret_email = "secret-personal-invite-h10@example.test"
+    invitation, invitation_event = new_action(
+        env, "membership_invitation_created",
+        lambda: c.post(invite_url, headers=headers, json={
+            "email": secret_email, "role": "viewer",
+        }),
+    )
+    assert invitation_event["actor_id"] == env["owner"]
+    assert invitation_event["company_id"] == env["company"]
+    assert invitation_event["safe_changes"] is not None
+    first_token = env["tokens"][-1]
+    logout_known(env, headers)
+
+    activated, activated_event = new_action(
+        env, "invitation_new_user_activated",
+        lambda: c.post(f"{BASE}/auth/invitations/activate", headers=csrf(c), json={
+            "token": first_token, "password": MEMBER_PASSWORD,
+        }),
+    )
+    assert activated.status_code == 204
+    with env["engine"].connect() as conn:
+        activated_id = conn.execute(select(t.users.c.id).where(
+            t.users.c.email == secret_email,
+        )).scalar_one()
+    assert activated_event["actor_id"] == activated_id
+
+    headers = login_known(env, "h10owner@example.test", PASSWORD)
+    existing_email = "existing-personal-h10@example.test"
+    with locked(env["engine"]) as conn:
+        existing_id = new_id()
+        conn.execute(t.users.insert().values(
+            id=existing_id, email=existing_email,
+            password_hash=password_hash(MEMBER_PASSWORD), active=True,
+        ))
+    _, event_invitation = new_action(
+        env, "membership_invitation_created",
+        lambda: c.post(invite_url, headers=headers, json={
+            "email": existing_email, "role": "accountant",
+        }),
+    )
+    assert event_invitation["actor_id"] == env["owner"]
+    second_token = env["tokens"][-1]
+    logout_known(env, headers)
+    existing_headers = login_known(env, existing_email, MEMBER_PASSWORD)
+    accepted, accepted_event = new_action(
+        env, "invitation_existing_user_accepted",
+        lambda: c.post(f"{BASE}/auth/invitations/accept",
+                       headers=existing_headers, json={"token": second_token}),
+    )
+    assert accepted.status_code == 201
+    assert accepted_event["actor_id"] == existing_id
+    logout_known(env, existing_headers)
+    headers = login_known(env, "h10owner@example.test", PASSWORD)
+
+    company_name = "SENSITIVE_COMPANY_NAME_DO_NOT_LOG"
+    new_company, company_event = new_action(
+        env, "company_created",
+        lambda: c.post(f"{BASE}/companies", headers=headers,
+                       json={"name": company_name}),
+    )
+    assert company_event["company_id"] == new_company.json()["id"]
+    assert company_event["actor_id"] == env["owner"]
+
+    years = f"{BASE}/companies/{env['company']}/fiscal-years"
+    year, year_event = new_action(
+        env, "fiscal_year_created",
+        lambda: c.post(years, headers=headers, json={
+            "name": "SENSITIVE_FISCAL_YEAR_NAME",
+            "start_date": "2026-01-01", "end_date": "2027-01-01",
+        }),
+    )
+    periods = f"{years}/{year.json()['id']}/periods"
+    period, period_event = new_action(
+        env, "fiscal_period_created",
+        lambda: c.post(periods, headers=headers, json={
+            "name": "SENSITIVE_PERIOD_NAME",
+            "start_date": "2026-01-01", "end_date": "2026-02-01",
+        }),
+    )
+    closed, closed_event = new_action(
+        env, "fiscal_period_closed",
+        lambda: c.post(f"{periods}/{period.json()['id']}/close", headers=headers),
+    )
+    assert closed_event["safe_changes"] is not None
+
+    accounts = f"{BASE}/companies/{env['company']}/accounts"
+    account, created_event = new_action(
+        env, "account_created",
+        lambda: c.post(accounts, headers=headers, json={
+            "code": "001", "name": "SENSITIVE_ACCOUNT_NAME",
+            "level": "group", "active": True,
+        }),
+    )
+    account_id = account.json()["id"]
+    _, updated_event = new_action(
+        env, "account_updated",
+        lambda: c.patch(f"{accounts}/{account_id}", headers=headers,
+                        json={"name": "SENSITIVE_CHANGED_ACCOUNT_NAME"}),
+    )
+    removed, deleted_event = new_action(
+        env, "account_deleted",
+        lambda: c.delete(f"{accounts}/{account_id}", headers=headers),
+    )
+    assert removed.status_code == 204
+    for item in (year_event, period_event, closed_event,
+                 created_event, updated_event, deleted_event):
+        assert item["actor_id"] == env["owner"]
+        assert item["company_id"] == env["company"]
+
+    events = audit_rows(env)
+    assert Counter(row["action"] for row in events) == {
+        "operator_initial_owner_provisioned": 1,
+        "initial_owner_activated": 1,
+        "membership_invitation_created": 2,
+        "invitation_new_user_activated": 1,
+        "invitation_existing_user_accepted": 1,
+        "company_created": 1,
+        "fiscal_year_created": 1,
+        "fiscal_period_created": 1,
+        "fiscal_period_closed": 1,
+        "account_created": 1,
+        "account_updated": 1,
+        "account_deleted": 1,
+    }
+    assert len(events) == 13
+    for row in events:
+        assert str(UUID(row["actor_id"])) == row["actor_id"]
+        assert str(UUID(row["company_id"])) == row["company_id"]
+        assert datetime.fromisoformat(row["occurred_at"]).utcoffset() == timedelta(0)
+        raw = str(row["safe_changes"])
+        for secret in (
+            secret_email, existing_email, first_token, second_token,
+            PASSWORD, MEMBER_PASSWORD, company_name,
+            "SENSITIVE_ACCOUNT_NAME", "SENSITIVE_CHANGED_ACCOUNT_NAME",
+            "SENSITIVE_FISCAL_YEAR_NAME", "SENSITIVE_PERIOD_NAME",
+        ):
+            assert secret not in raw
+
+    # Legacy H05 issuance quota still counts exactly two successful invites;
+    # it must not count or depend on any of the new H10 records.
+    with env["engine"].connect() as conn:
+        legacy = conn.execute(select(func.count()).select_from(t.audit).where(
+            t.audit.c.action == "membership_invitation_created",
+            t.audit.c.actor_id == env["owner"],
+            t.audit.c.company_id == env["company"],
+        )).scalar_one()
+    assert legacy == 2
+
+
+def test_rejected_real_mutations_never_create_new_h10_event(env):
+    c = env["client"]
+    headers = login_owner(env)
+    accounts = f"{BASE}/companies/{env['company']}/accounts"
+    before = {r["id"] for r in audit_rows(env)}
+    missing_csrf = c.post(accounts, json={"code": "A", "name": "A", "level": "group"})
+    assert missing_csrf.status_code == 403
+    invalid = c.post(accounts, headers=headers, json={
+        "code": "A", "name": "A", "level": "detail",
+    })
+    assert invalid.status_code == 422
+    assert {r["id"] for r in audit_rows(env)} == before
+
+    created, _ = new_action(env, "account_created", lambda: c.post(
+        accounts, headers=headers, json={"code": "001", "name": "Ledger",
+                                         "level": "group"},
+    ))
+    before = {r["id"] for r in audit_rows(env)}
+    duplicate = c.post(accounts, headers=headers, json={
+        "code": "001", "name": "Duplicate", "level": "group",
+    })
+    assert duplicate.status_code == 409
+    years = f"{BASE}/companies/{env['company']}/fiscal-years"
+    bad_year = c.post(years, headers=headers, json={
+        "name": "Invalid", "start_date": "2027-01-01", "end_date": "2026-01-01",
+    })
+    assert bad_year.status_code == 422
+    assert {r["id"] for r in audit_rows(env)} == before
+    with env["engine"].connect() as conn:
+        assert conn.execute(select(func.count()).select_from(t.audit).where(
+            t.audit.c.action == "membership_invitation_created",
+        )).scalar_one() == 0
+
+
+@pytest.mark.parametrize("operation", ["company_create", "account_create", "invitation_issue"])
+def test_actual_http_mutation_rolls_back_when_h10_insert_fails(env, operation):
+    c = env["client"]
+    headers = login_owner(env)
+    company_count_before = None
+    with env["engine"].connect() as conn:
+        company_count_before = conn.execute(select(func.count()).select_from(
+            t.companies
+        )).scalar_one()
+        account_count_before = conn.execute(
+            text("SELECT count(*) FROM h09_accounts")
+        ).scalar_one()
+        invitation_count_before = conn.execute(select(func.count()).select_from(
+            t.invitations
+        )).scalar_one()
+        old_h05_invites = conn.execute(select(func.count()).select_from(t.audit).where(
+            t.audit.c.action == "membership_invitation_created",
+        )).scalar_one()
+    before = {r["id"] for r in audit_rows(env)}
+
+    def fail_h10_insert(conn, cursor, statement, parameters, context, many):
+        if "INSERT INTO h10_audit_events" in statement:
+            raise RuntimeError("Forced H10 audit failure")
+
+    event.listen(env["engine"], "before_cursor_execute", fail_h10_insert)
+    try:
+        with pytest.raises(RuntimeError, match="Forced H10 audit failure"):
+            if operation == "company_create":
+                c.post(f"{BASE}/companies", headers=headers, json={
+                    "name": "ROLLBACK_COMPANY",
+                })
+            elif operation == "account_create":
+                c.post(f"{BASE}/companies/{env['company']}/accounts",
+                       headers=headers, json={
+                           "code": "ROLLBACK_CODE", "name": "ROLLBACK_ACCOUNT",
+                           "level": "group",
+                       })
+            else:
+                c.post(f"{BASE}/companies/{env['company']}/members",
+                       headers=headers, json={
+                           "email": "rollback-invitation@example.test",
+                           "role": "viewer",
+                       })
+    finally:
+        event.remove(env["engine"], "before_cursor_execute", fail_h10_insert)
+
+    assert {r["id"] for r in audit_rows(env)} == before
+    with env["engine"].connect() as conn:
+        assert conn.execute(select(func.count()).select_from(
+            t.companies
+        )).scalar_one() == company_count_before
+        assert conn.execute(text("SELECT count(*) FROM h09_accounts")).scalar_one() == account_count_before
+        assert conn.execute(select(func.count()).select_from(
+            t.invitations
+        )).scalar_one() == invitation_count_before
+        assert conn.execute(select(func.count()).select_from(t.audit).where(
+            t.audit.c.action == "membership_invitation_created",
+        )).scalar_one() == old_h05_invites
+
+
+def test_real_fiscal_close_rolls_back_both_audit_tables(env):
+    c = env["client"]
+    headers = login_owner(env)
+    years = f"{BASE}/companies/{env['company']}/fiscal-years"
+    yr = c.post(years, headers=headers, json={
+        "name": "FY", "start_date": "2026-01-01", "end_date": "2027-01-01",
+    })
+    assert yr.status_code == 201, yr.text
+    periods = f"{years}/{yr.json()['id']}/periods"
+    per = c.post(periods, headers=headers, json={
+        "name": "P", "start_date": "2026-01-01", "end_date": "2026-02-01",
+    })
+    assert per.status_code == 201, per.text
+    before = {r["id"] for r in audit_rows(env)}
+    with env["engine"].connect() as conn:
+        old_h05_closes = conn.execute(select(func.count()).select_from(t.audit).where(
+            t.audit.c.action == "fiscal_period_closed",
+        )).scalar_one()
+
+    def fail_h10_close(conn, cursor, statement, params, context, many):
+        if "INSERT INTO h10_audit_events" in statement:
+            raise RuntimeError("Forced fiscal close audit failure")
+    event.listen(env["engine"], "before_cursor_execute", fail_h10_close)
+    try:
+        with pytest.raises(RuntimeError, match="Forced fiscal close audit failure"):
+            c.post(f"{periods}/{per.json()['id']}/close", headers=headers)
+    finally:
+        event.remove(env["engine"], "before_cursor_execute", fail_h10_close)
+    assert {r["id"] for r in audit_rows(env)} == before
+    with env["engine"].connect() as conn:
+        assert conn.execute(text(
+            "SELECT status FROM h07_fiscal_periods WHERE id=:id"
+        ), {"id": per.json()["id"]}).scalar_one() == "open"
+        assert conn.execute(select(func.count()).select_from(t.audit).where(
+            t.audit.c.action == "fiscal_period_closed",
+        )).scalar_one() == old_h05_closes
+
+
+def test_real_owner_activation_rolls_back_on_audit_write_failure(env):
+    c = env["client"]
+    before = {r["id"] for r in audit_rows(env)}
+    h = csrf(c)
+
+    def fail_h10_activation(conn, cursor, statement, params, context, many):
+        if "INSERT INTO h10_audit_events" in statement:
+            raise RuntimeError("Forced activation audit failure")
+    event.listen(env["engine"], "before_cursor_execute", fail_h10_activation)
+    try:
+        with pytest.raises(RuntimeError, match="Forced activation audit failure"):
+            c.post(f"{BASE}/auth/activate", headers=h, json={
+                "token": env["tokens"][0], "password": PASSWORD,
+            })
+    finally:
+        event.remove(env["engine"], "before_cursor_execute", fail_h10_activation)
+    assert {r["id"] for r in audit_rows(env)} == before
+    with env["engine"].connect() as conn:
+        assert conn.execute(select(t.users.c.active).where(
+            t.users.c.id == env["owner"],
+        )).scalar_one() is False
+        assert conn.execute(select(t.setup_tokens.c.consumed_at).where(
+            t.setup_tokens.c.user_id == env["owner"],
+        )).scalar_one() is None
+    again = c.post(f"{BASE}/auth/activate", headers=h, json={
+        "token": env["tokens"][0], "password": PASSWORD,
+    })
+    assert again.status_code == 204, again.text
+    assert [r["action"] for r in audit_rows(env)].count("initial_owner_activated") == 1
