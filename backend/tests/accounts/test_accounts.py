@@ -404,11 +404,11 @@ def test_account_name_code_boundary_and_hierarchy_deep_escape(env):
     group = create(env, headers, "." * 64, "group", name="N" * 200)
     assert group.status_code == 201, group.text
     assert len(group.json()["name"]) == 200
-    general = create(env, headers, "\\\\" * 64, "general", group.json()["id"])
+    general = create(env, headers, "\\" * 64, "general", group.json()["id"])
     assert general.status_code == 201, general.text
     subsidiary = create(env, headers, "." * 64, "subsidiary", general.json()["id"])
     assert subsidiary.status_code == 201, subsidiary.text
-    detail = create(env, headers, "\\\\" * 64, "detail", subsidiary.json()["id"])
+    detail = create(env, headers, "\\" * 64, "detail", subsidiary.json()["id"])
     assert detail.status_code == 201, detail.text
     assert len(detail.json()["full_code"]) == 515
     assert len(detail.json()["code"]) == 64
