@@ -271,7 +271,7 @@ def test_tenant_isolation_and_unique_code_per_company(env):
     for method in ("get", "patch", "delete"):
         url = account_url(env, foreign_id)
         payload = {"name": "Forbidden"} if method == "patch" else None
-        res = getattr(c, method)(url, headers=headers, json=payload) if method != "get" else c.get(url)
+        res = c.request(method.upper(), url, headers=headers, json=payload) if method != "get" else c.get(url)
         assert res.status_code == 404, res.text
     assert c.get(account_url(env, group["id"])).status_code == 200
     assert create(env, headers, "02", "group").status_code == 201
@@ -304,7 +304,7 @@ def test_viewer_401_403_origin_csrf_revocation_and_expiry(env):
             {**headers, "Origin": "https://evil.example"},
             {"X-CSRF-Token": headers["X-CSRF-Token"]},
         ):
-            result = getattr(c, action)(url, headers=bad_headers, json=body)
+            result = c.request(action.upper(), url, headers=bad_headers, json=body)
             assert result.status_code == 403, result.text
     viewer_id = create_member(env, "viewer", "viewer-h09@example.test")
     assert c.post(f"{BASE}/auth/logout", headers=headers).status_code == 204
