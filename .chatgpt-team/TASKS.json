@@ -2522,6 +2522,34 @@
       "pm_assistant_handoff": "After governance approval PR merges, update ONLY H08 object in .chatgpt-team/TASKS.json: start_authorized true; status AUTHORIZED_NOT_STARTED; validation_status NOT_TESTED; review_policy coordinator_required, review risks/reason, detailed money validation acceptance/evidence and rc.4/H-D04/previous-task refs in notes. Do not modify other 29 tasks, previous approvals, WAVES, code, contract or other agent reports; leave independent administrative PR open for Manager.",
       "developer_gate": "No H08 coding until H08-only admin PR merge and explicit separate Manager start handoff. H08 feature branch/PR then Coordinator review followed by independent QA and Manager limited merge gate.",
       "other_tasks": "W1 open, H26 and W2-W6 unauthorized, no release or PostgreSQL production engine choice."
+    },
+    {
+      "id": "APP-HESABYAR-UIUX-ROLE-QUALITY-UPGRADE-20261116-001",
+      "date": "2026-11-16",
+      "approved_by": "manager",
+      "project": "حسابیار (Hesabyar)",
+      "framework_version": "1.3.0",
+      "scope": "UI/UX role work-quality standard upgrade ONLY; governance of future authorized UI/UX design work, NOT a new task or wave entry authorization.",
+      "status": "UIUX_ROLE_QUALITY_STANDARD_APPROVED_AND_MERGED_NO_TASK_START_AUTHORIZATION",
+      "governance_pr": 59,
+      "governance_merge_sha": "f86daa2c90ec32d45b70503dd2c35ff4557c8fdf",
+      "role_file": ".chatgpt-team/roles/ui-ux.md",
+      "prompt_file": ".chatgpt-team/prompts/ui-ux.md",
+      "decision_ref": ".chatgpt-team/DECISIONS.md#APP-HESABYAR-UIUX-ROLE-QUALITY-UPGRADE-20261116-001",
+      "restrictions": [
+        "No H-17/H-18 reopening: both remain COMPLETED with original acceptance/status.",
+        "H-19 and H-20 remain NOT_STARTED and start_authorized=false; W2/W3 remain PENDING_MANAGER_GATE.",
+        "No task ownership, status, start_authorized, review_policy, allowed_paths, priority, dependencies, evidence or approval rules changed by this decision.",
+        "No Developer/UI/UX implementation, new design files, Figma publication, task activation or wave activation authorized.",
+        "Only quality/process enhancements for future separately approved UI/UX work: RTL/bidi, responsive, WCAG/keyboard, IRR/Jalali accuracy, contract SHA mapping, screen/state matrices, testable design handoff and evidence distinction."
+      ],
+      "evidence_refs": [
+        "https://github.com/Ana0251/ChatGPT-Team-Test/pull/59",
+        "https://github.com/Ana0251/ChatGPT-Team-Test/commit/f86daa2c90ec32d45b70503dd2c35ff4557c8fdf",
+        ".chatgpt-team/DECISIONS.md#APP-HESABYAR-UIUX-ROLE-QUALITY-UPGRADE-20261116-001",
+        ".chatgpt-team/roles/ui-ux.md@22fb831c73c8a3e84c235a47b16e9dc24fc68320",
+        ".chatgpt-team/prompts/ui-ux.md@9e708c6488167f6b490ff37cb0ebddf540681da0"
+      ]
     }
   ]
 }
