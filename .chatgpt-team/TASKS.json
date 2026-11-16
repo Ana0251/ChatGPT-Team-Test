@@ -391,13 +391,36 @@
         "backend/tests/core/test_money.py"
       ],
       "acceptance_criteria": "Decimal normalization, currency and range rules; floats rejected",
-      "mandatory_amendments": "IRR only, nonnegative integer rial via Decimal; PostgreSQL NUMERIC(20,0), decimal string API, reject float, overprecision and out-of-range values.",
-      "evidence_required": "Precision, overflow and invalid amount cases",
-      "evidence_refs": [],
-      "status": "NOT_STARTED",
+      "mandatory_amendments": "IRR only, nonnegative integer rial via Decimal; PostgreSQL NUMERIC(20,0), decimal string API, reject float, overprecision and out-of-range values. Manager-approved administrative H-08 entry APP-HESABYAR-W1-H08-ENTRY-20261115-001 consistent with H-D04 IRR-only V1.0 and CURRENT OpenAPI 1.0.0-rc.4 blob f57de031224e21f09253642c210a778a60683711. Strict future Developer scope ONLY pure-Python backend/app/core/money.py plus backend/tests/core/test_money.py, with no API, DB persistence, schema, migration, dependency, package init, config, pyproject, app router, fiscal/identity/company, journal/posting, frontend, design or contract changes. Rial JSON input/output MUST be a canonical ASCII decimal STRING matching ^(0|[1-9][0-9]{0,19})$: integer IRR units, zero or 1..20 positive digits, no fraction, no currency conversion, no rounding or float intermediates. Accept 0, 1 and 99999999999999999999; reject 100000000000000000000 and any over-20-digit/overflow or out-of-range result, negatives (including -0), plus signs, leading zeros (except canonical 0), whitespace, exponent notation, fractions/decimal points, Unicode digits, malformed input, NaN/Infinity, float/int/bool or any JSON numeric/non-string value. Use exact Decimal for internal calculations and canonical serialization without implicit loss of precision, including sums and round-trips. Distinct reporting SignedRial string regex ^(0|-?[1-9][0-9]{0,19})$ may be supported only separately and must not weaken nonnegative Rial journal amount input. Do not infer PostgreSQL NUMERIC(20,0), SQLite financial persistence, posting integration or production security from pure helper tests. Development prohibited until PM Assistant H-08-only ledger PR is merged AND Manager issues an explicit subsequent Developer start handoff; Coordinator integration review then independent QA then Manager approval required.",
+      "evidence_required": "Precision, overflow and invalid amount cases Future actual owner-run exact-SHA unit tests for IRR-only pure-Decimal helper with Python/pytest versions, executable commands, raw PASS/FAIL/warnings and exit codes; independent Coordinator and QA review with QA-runtime distinguished from owner execution. Cases: input canonical 0/1/99999999999999999999, reject 100000000000000000000 (21 digits), Decimal/context overflow or precision loss, exact addition and aggregates at and beyond 20 digits; bidirectional canonical string-to-Decimal-to-string round-trip including 20-digit values; negative/-0, +1, leading zeros, spaces, exponent, fraction, scale mismatch, float, int, bool, JSON numeric, NaN, Infinity, Unicode digit, non-ASCII and malformed inputs; no float intermediate/implicit rounding and no signed report/input conflation. H-03/H-04/H-05/H-06/H-07 regression where feasible. No PASS claimed prior to actual execution; PostgreSQL NUMERIC(20,0), persistence/concurrency/posting/close, pen-test, backup and release DEFERRED/NOT_TESTED.",
+      "evidence_refs": [
+        ".chatgpt-team/DECISIONS.md#H-D04",
+        ".chatgpt-team/DECISIONS.md#APP-HESABYAR-W1-H08-ENTRY-20261115-001",
+        "https://github.com/Ana0251/ChatGPT-Team-Test/pull/56",
+        "https://github.com/Ana0251/ChatGPT-Team-Test/commit/0f49b128907843d9b19e9131f117efe1e28b8175",
+        "https://github.com/Ana0251/ChatGPT-Team-Test/pull/56#issuecomment-6893461139",
+        "docs/contracts/openapi.yaml@f57de031224e21f09253642c210a778a60683711",
+        "https://github.com/Ana0251/ChatGPT-Team-Test/pull/23",
+        "https://github.com/Ana0251/ChatGPT-Team-Test/pull/46",
+        "https://github.com/Ana0251/ChatGPT-Team-Test/pull/49",
+        "https://github.com/Ana0251/ChatGPT-Team-Test/commit/dafd95fe3e484900975506d29b9f4ceaa4b5cce6",
+        "https://github.com/Ana0251/ChatGPT-Team-Test/pull/55",
+        "https://github.com/Ana0251/ChatGPT-Team-Test/commit/0ec834e35159d70c059cd19aafbbe9ba39e70ca4"
+      ],
+      "status": "AUTHORIZED_NOT_STARTED",
       "validation_status": "NOT_TESTED",
-      "start_authorized": false,
-      "notes": null
+      "start_authorized": true,
+      "notes": "ADMINISTRATIVE ENTRY ONLY; Manager decision APP-HESABYAR-W1-H08-ENTRY-20261115-001 via merged PR #56 on main 0f49b128907843d9b19e9131f117efe1e28b8175. H-08 status AUTHORIZED_NOT_STARTED, start_authorized=true, validation_status=NOT_TESTED; Developer MUST NOT begin work until this separate H-08-only administrative PR is reviewed/merged and Manager gives a separate explicit start. H-04/H-06/H-07 completed only for local SQLite PASS LIMITED evidence, not production/posting. Monetary policy H-D04 IRR only, no fractional rial, Python Decimal exact arithmetic, JSON decimal canonical strings. Current OpenAPI rc.4 blob f57de031224e21f09253642c210a778a60683711 Rial ^(0|[1-9][0-9]{0,19})$; SignedRial distinct report-only ^(0|-?[1-9][0-9]{0,19})$. Max 20 ASCII digits: 99999999999999999999 valid; 21 digits invalid. Reject float/int/bool JSON input, negative (incl -0), +1, leading zero, space, Unicode digits, decimal fraction, exponent, NaN/Infinity, numeric overrange and noncanonical representation; test exact Decimal round-trip/addition/aggregate overflow without binary float or implicit rounding. Do NOT widen approved two-file allowed_paths (backend/app/core/money.py and backend/tests/core/test_money.py). Real H08 tests and Coordinator/independent QA reviews are NOT_TESTED/NOT_RUN as of entry. PostgreSQL NUMERIC(20,0) production physical storage, SQLite financial persistence, Posting and journal, concurrent close-vs-Posting, complete financial correctness, security/penetration/browser HTTPS, backup/restore, frontend, final DB-engine/release decisions DEFERRED/NOT_TESTED. W1 remains OPEN; H-26 and W2-W6 unauthorized, no other task or wave activation.",
+      "review_policy": "coordinator_required",
+      "review_risks": [
+        "Financial precision, 20 ASCII digit upper bound, integer scale and off-by-one overflow in Decimal and aggregates",
+        "JSON numeric/float/bool/NaN/Infinity/exponent/fraction/leading zero/sign/whitespace/Unicode-digit injection and unintended coercion",
+        "Incorrect distinction between nonnegative Rial input and signed report SignedRial, forbid -0 and invalid formats",
+        "Future H09-H16 consumers using lossless Python Decimal and canonical strings; no SQLite NUMERIC/float persistence",
+        "No shared file/contract/db/migration/API or H05/H06/H07 code changes; exact two file ownership",
+        "Absence of PostgreSQL NUMERIC(20,0), integration/posting and independent runtime QA claims while evaluating isolated money rules"
+      ],
+      "review_reason": "Money validation in H08 underpins the double-entry ledger and accounting integrity; silent floating-point rounding, overflow and type coercion are P0 financial risks. Require Coordinator integration/source review followed by independent QA."
     },
     {
       "id": "H-09",
