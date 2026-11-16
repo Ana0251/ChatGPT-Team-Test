@@ -405,12 +405,28 @@
         "https://github.com/Ana0251/ChatGPT-Team-Test/pull/49",
         "https://github.com/Ana0251/ChatGPT-Team-Test/commit/dafd95fe3e484900975506d29b9f4ceaa4b5cce6",
         "https://github.com/Ana0251/ChatGPT-Team-Test/pull/55",
-        "https://github.com/Ana0251/ChatGPT-Team-Test/commit/0ec834e35159d70c059cd19aafbbe9ba39e70ca4"
+        "https://github.com/Ana0251/ChatGPT-Team-Test/commit/0ec834e35159d70c059cd19aafbbe9ba39e70ca4",
+        ".chatgpt-team/DECISIONS.md#APP-HESABYAR-H08-LOCAL-QA-MERGE-20261116-001",
+        "https://github.com/Ana0251/ChatGPT-Team-Test/pull/65",
+        "https://github.com/Ana0251/ChatGPT-Team-Test/commit/54e8c7d7985f418ab5622074bf1c5faa1fe708da",
+        "https://github.com/Ana0251/ChatGPT-Team-Test/pull/58",
+        "https://github.com/Ana0251/ChatGPT-Team-Test/commit/fa87866ab87e570aea832f6144f0ea77ef8d2a04",
+        "https://github.com/Ana0251/ChatGPT-Team-Test/commit/8533e57e64b3356d8e8e8a3d3dfac5a5a78fd90e",
+        "https://github.com/Ana0251/ChatGPT-Team-Test/pull/58#issuecomment-6909194441",
+        "https://github.com/Ana0251/ChatGPT-Team-Test/pull/58#issuecomment-6909284132",
+        "https://github.com/Ana0251/ChatGPT-Team-Test/pull/58#issuecomment-6909680906",
+        "https://github.com/Ana0251/ChatGPT-Team-Test/pull/58#issuecomment-6909826862",
+        "https://github.com/Ana0251/ChatGPT-Team-Test/pull/63",
+        "https://github.com/Ana0251/ChatGPT-Team-Test/commit/82bfeb8ea550bb0e377dc52b6b7fbbf558341cc4",
+        "https://github.com/Ana0251/ChatGPT-Team-Test/pull/64",
+        "https://github.com/Ana0251/ChatGPT-Team-Test/commit/e5529acc500aa320d54ec306dbfc67033422f53d",
+        "backend/app/core/money.py@397e5fff74e8eaee733bffd2a1356f165d38fb25",
+        "backend/tests/core/test_money.py@d6a2f1f3927a187d985685dc4b67d650f0127751"
       ],
-      "status": "AUTHORIZED_NOT_STARTED",
-      "validation_status": "NOT_TESTED",
+      "status": "COMPLETED",
+      "validation_status": "LOCAL_PYTHON_IRR_DECIMAL_RC4_PASS_LIMITED_OWNER_158_H08_229_BACKEND_TESTS_COORDINATOR_QA_SOURCE_REVIEW_QA_RUNTIME_NOT_RUN",
       "start_authorized": true,
-      "notes": "ADMINISTRATIVE ENTRY ONLY; Manager decision APP-HESABYAR-W1-H08-ENTRY-20261115-001 via merged PR #56 on main 0f49b128907843d9b19e9131f117efe1e28b8175. H-08 status AUTHORIZED_NOT_STARTED, start_authorized=true, validation_status=NOT_TESTED; Developer MUST NOT begin work until this separate H-08-only administrative PR is reviewed/merged and Manager gives a separate explicit start. H-04/H-06/H-07 completed only for local SQLite PASS LIMITED evidence, not production/posting. Monetary policy H-D04 IRR only, no fractional rial, Python Decimal exact arithmetic, JSON decimal canonical strings. Current OpenAPI rc.4 blob f57de031224e21f09253642c210a778a60683711 Rial ^(0|[1-9][0-9]{0,19})$; SignedRial distinct report-only ^(0|-?[1-9][0-9]{0,19})$. Max 20 ASCII digits: 99999999999999999999 valid; 21 digits invalid. Reject float/int/bool JSON input, negative (incl -0), +1, leading zero, space, Unicode digits, decimal fraction, exponent, NaN/Infinity, numeric overrange and noncanonical representation; test exact Decimal round-trip/addition/aggregate overflow without binary float or implicit rounding. Do NOT widen approved two-file allowed_paths (backend/app/core/money.py and backend/tests/core/test_money.py). Real H08 tests and Coordinator/independent QA reviews are NOT_TESTED/NOT_RUN as of entry. PostgreSQL NUMERIC(20,0) production physical storage, SQLite financial persistence, Posting and journal, concurrent close-vs-Posting, complete financial correctness, security/penetration/browser HTTPS, backup/restore, frontend, final DB-engine/release decisions DEFERRED/NOT_TESTED. W1 remains OPEN; H-26 and W2-W6 unauthorized, no other task or wave activation.",
+      "notes": "ADMINISTRATIVE ENTRY ONLY; Manager decision APP-HESABYAR-W1-H08-ENTRY-20261115-001 via merged PR #56 on main 0f49b128907843d9b19e9131f117efe1e28b8175. H-08 status AUTHORIZED_NOT_STARTED, start_authorized=true, validation_status=NOT_TESTED; Developer MUST NOT begin work until this separate H-08-only administrative PR is reviewed/merged and Manager gives a separate explicit start. H-04/H-06/H-07 completed only for local SQLite PASS LIMITED evidence, not production/posting. Monetary policy H-D04 IRR only, no fractional rial, Python Decimal exact arithmetic, JSON decimal canonical strings. Current OpenAPI rc.4 blob f57de031224e21f09253642c210a778a60683711 Rial ^(0|[1-9][0-9]{0,19})$; SignedRial distinct report-only ^(0|-?[1-9][0-9]{0,19})$. Max 20 ASCII digits: 99999999999999999999 valid; 21 digits invalid. Reject float/int/bool JSON input, negative (incl -0), +1, leading zero, space, Unicode digits, decimal fraction, exponent, NaN/Infinity, numeric overrange and noncanonical representation; test exact Decimal round-trip/addition/aggregate overflow without binary float or implicit rounding. Do NOT widen approved two-file allowed_paths (backend/app/core/money.py and backend/tests/core/test_money.py). Real H08 tests and Coordinator/independent QA reviews are NOT_TESTED/NOT_RUN as of entry. PostgreSQL NUMERIC(20,0) production physical storage, SQLite financial persistence, Posting and journal, concurrent close-vs-Posting, complete financial correctness, security/penetration/browser HTTPS, backup/restore, frontend, final DB-engine/release decisions DEFERRED/NOT_TESTED. W1 remains OPEN; H-26 and W2-W6 unauthorized, no other task or wave activation.\n\nCURRENT MANAGER-ACCEPTED COMPLETION (2026-11-16), decision APP-HESABYAR-H08-LOCAL-QA-MERGE-20261116-001: H-08 status COMPLETED strictly for local pure-Python IRR/Decimal validation, conversion, canonical Rial/SignedRial serialization and precise addition helpers plus owner-run unit/backend regressions, PASS LIMITED only. Earlier administrative AUTHORIZED_NOT_STARTED / NOT_TESTED wording above is historical and superseded ONLY for this bounded helper acceptance. Developer PR #58 reviewed HEAD fa87866ab87e570aea832f6144f0ea77ef8d2a04 merged main SHA 8533e57e64b3356d8e8e8a3d3dfac5a5a78fd90e; only authorized money.py and test_money.py changed, existing OpenAPI 1.0.0-rc.4 blob f57de031224e21f09253642c210a778a60683711 unchanged. Manager decision via merged governance PR #65 at 54e8c7d7985f418ab5622074bf1c5faa1fe708da. Coordinator PR #63 PASS LIMITED independent SOURCE/CONTRACT/TEST and owner-evidence review on exact Developer SHA (merged at 82bfeb8ea550bb0e377dc52b6b7fbbf558341cc4); QA PR #64 PASS LIMITED independent SOURCE/CONTRACT/TEST review across 15 QA scenarios H08-QA-01..15 (merged at e5529acc500aa320d54ec306dbfc67033422f53d). COORDINATOR_RUNTIME=NOT_RUN; QA_RUNTIME=NOT_RUN; QA_PYTEST=NOT_RUN: neither independently ran the runtime tests. Actual OWNER_RUNTIME_PASS on Windows D:\\Codex\\Temp\\H08-retest\\backend, Python 3.14.7, Pytest 9.2.0, SQLite 3.50.4: H08 tests/core/test_money.py 158 PASS/0 FAIL/Exit Code 0; full backend tests 229 PASS/0 FAIL/Exit Code 0 with 54 nonblocking warnings. The 158 dedicated tests are INCLUDED within 229 backend tests and MUST NOT be counted as 387. Owner subsequently attested local HEAD fa87866ab87e570aea832f6144f0ea77ef8d2a04 and git status showing no modified tracked files (only untracked generated Python caches and egg-info); SHA/status was supplied AFTER passing test transcript, not contemporaneously; this proves only bounded combined owner evidence. No independently run GitHub CI status on developer HEAD was reported. No P0/P1 was found in reviewed pure-helper scope; deferred P2/P3/release gates remain. DEFERRED/NOT_TESTED and NOT COVERED BY THIS PASS: actual PostgreSQL NUMERIC(20,0) and SQLite monetary storage/restore, real API/driver/JSON end-to-end money serialization, journal posting/reversal, debit-credit balance and true accounting correctness, concurrent fiscal close vs Posting, multi-company IDOR/CSRF/security in production, browser/HTTPS/TLS/SMTP, database backup/recovery, penetration/stress/compliance and release readiness. W1 remains OPEN; H26/H29 and W2-W6 remain unauthorized. No new implementation, QA task or wave start authorized.",
       "review_policy": "coordinator_required",
       "review_risks": [
         "Financial precision, 20 ASCII digit upper bound, integer scale and off-by-one overflow in Decimal and aggregates",
@@ -420,7 +436,8 @@
         "No shared file/contract/db/migration/API or H05/H06/H07 code changes; exact two file ownership",
         "Absence of PostgreSQL NUMERIC(20,0), integration/posting and independent runtime QA claims while evaluating isolated money rules"
       ],
-      "review_reason": "Money validation in H08 underpins the double-entry ledger and accounting integrity; silent floating-point rounding, overflow and type coercion are P0 financial risks. Require Coordinator integration/source review followed by independent QA."
+      "review_reason": "Money validation in H08 underpins the double-entry ledger and accounting integrity; silent floating-point rounding, overflow and type coercion are P0 financial risks. Require Coordinator integration/source review followed by independent QA.",
+      "completed_on": "2026-11-16"
     },
     {
       "id": "H-09",
@@ -2582,6 +2599,78 @@
         ".chatgpt-team/DECISIONS.md#APP-HESABYAR-QA-EVIDENCE-RELEASE-GATE-UPGRADE-20261116-001",
         ".chatgpt-team/roles/qa.md@39045d3f393be8f939faa353572e3a4d3494164a",
         ".chatgpt-team/prompts/qa.md@5460f1b4a3cab78e946c6aef8d2f984cca8dba28"
+      ]
+    },
+    {
+      "id": "APP-HESABYAR-H08-LOCAL-QA-MERGE-20261116-001",
+      "date": "2026-11-16",
+      "approved_by": "manager",
+      "project": "حسابیار (Hesabyar)",
+      "framework_version": "1.3.0",
+      "task_id": "H-08",
+      "wave_id": "W1",
+      "status": "H08_LOCAL_PURE_PYTHON_IRR_DECIMAL_PASS_LIMITED_ACCEPTED_AFTER_MERGE_NO_RELEASE_GATE",
+      "review_policy": "coordinator_required",
+      "scope": "H-08 pure-Python IRR/Decimal helper and owner-executed local Python tests only; NOT independent QA runtime PASS, PostgreSQL/accounting integration, production security, release approval or W1 completion.",
+      "development_pr": 58,
+      "approved_head_sha": "fa87866ab87e570aea832f6144f0ea77ef8d2a04",
+      "development_merge_sha": "8533e57e64b3356d8e8e8a3d3dfac5a5a78fd90e",
+      "governance_pr": 65,
+      "governance_merge_sha": "54e8c7d7985f418ab5622074bf1c5faa1fe708da",
+      "review_history": [
+        {
+          "role": "coordinator",
+          "pr": 63,
+          "result": "PASS LIMITED SOURCE REVIEW",
+          "merge_sha": "82bfeb8ea550bb0e377dc52b6b7fbbf558341cc4",
+          "runtime": "NOT_RUN"
+        },
+        {
+          "role": "qa",
+          "pr": 64,
+          "result": "PASS LIMITED SOURCE/CONTRACT/TEST REVIEW",
+          "merge_sha": "e5529acc500aa320d54ec306dbfc67033422f53d",
+          "runtime": "NOT_RUN"
+        }
+      ],
+      "owner_evidence": {
+        "h08_dedicated_passed": 158,
+        "h08_dedicated_failed": 0,
+        "h08_exit_code": 0,
+        "backend_passed_including_h08": 229,
+        "backend_failed": 0,
+        "backend_exit_code": 0,
+        "backend_nonblocking_warnings": 54,
+        "executor": "DEVELOPER_OWNER",
+        "runtime": "OWNER_RUNTIME_PASS",
+        "qa_runtime": "NOT_RUN",
+        "coordinator_runtime": "NOT_RUN",
+        "provenance": "Owner local exact SHA/clean tracked worktree provided AFTER test logs, not contemporaneously. 158 dedicated tests are a subset of 229 total backend tests."
+      },
+      "decision_ref": ".chatgpt-team/DECISIONS.md#APP-HESABYAR-H08-LOCAL-QA-MERGE-20261116-001",
+      "evidence_refs": [
+        ".chatgpt-team/DECISIONS.md#APP-HESABYAR-H08-LOCAL-QA-MERGE-20261116-001",
+        "https://github.com/Ana0251/ChatGPT-Team-Test/pull/65",
+        "https://github.com/Ana0251/ChatGPT-Team-Test/commit/54e8c7d7985f418ab5622074bf1c5faa1fe708da",
+        "https://github.com/Ana0251/ChatGPT-Team-Test/pull/58",
+        "https://github.com/Ana0251/ChatGPT-Team-Test/commit/fa87866ab87e570aea832f6144f0ea77ef8d2a04",
+        "https://github.com/Ana0251/ChatGPT-Team-Test/commit/8533e57e64b3356d8e8e8a3d3dfac5a5a78fd90e",
+        "https://github.com/Ana0251/ChatGPT-Team-Test/pull/58#issuecomment-6909194441",
+        "https://github.com/Ana0251/ChatGPT-Team-Test/pull/58#issuecomment-6909284132",
+        "https://github.com/Ana0251/ChatGPT-Team-Test/pull/58#issuecomment-6909680906",
+        "https://github.com/Ana0251/ChatGPT-Team-Test/pull/58#issuecomment-6909826862",
+        "https://github.com/Ana0251/ChatGPT-Team-Test/pull/63",
+        "https://github.com/Ana0251/ChatGPT-Team-Test/commit/82bfeb8ea550bb0e377dc52b6b7fbbf558341cc4",
+        "https://github.com/Ana0251/ChatGPT-Team-Test/pull/64",
+        "https://github.com/Ana0251/ChatGPT-Team-Test/commit/e5529acc500aa320d54ec306dbfc67033422f53d",
+        "backend/app/core/money.py@397e5fff74e8eaee733bffd2a1356f165d38fb25",
+        "backend/tests/core/test_money.py@d6a2f1f3927a187d985685dc4b67d650f0127751"
+      ],
+      "restrictions": [
+        "No additional task/wave authorization, changes to other 29 task records, review_policy, allowed_paths, approvals history, code, contracts or agents' reports.",
+        "H-26 and H-29 remain NOT_STARTED, start_authorized=false; W1 stays open, W2-W6 gated.",
+        "PostgreSQL NUMERIC(20,0), monetary DB/API integration, posting/reversal/balancing, tenant security, close-posting race, backup/restore and production release readiness DEFERRED/NOT_TESTED.",
+        "Independent QA_RUNTIME=NOT_RUN; cannot state QA runtime PASS or add 158 to 229."
       ]
     }
   ]
