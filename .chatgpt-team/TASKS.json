@@ -554,12 +554,26 @@
         "backend/app/modules/identity/router.py@3173bd6e807a86fbe1f2f307c4d70ac015f54a31",
         "backend/app/modules/companies/router.py@6ce23a707c7ba5dfead66448a6195e699d29952b",
         "backend/app/modules/fiscal/router.py@998b7793385151f361b101848a2d1c619be88433",
-        "backend/app/modules/accounts/router.py@1a1e878aa00fc9436ed42df20c8864b19e87f5ca"
+        "backend/app/modules/accounts/router.py@1a1e878aa00fc9436ed42df20c8864b19e87f5ca",
+        ".chatgpt-team/DECISIONS.md#APP-HESABYAR-W2-H10-QA-LIMITED-MERGE-20261117-001",
+        "https://github.com/Ana0251/ChatGPT-Team-Test/pull/89",
+        "https://github.com/Ana0251/ChatGPT-Team-Test/commit/bed1324de99f4e20be446f7963830b5c75c5c816",
+        "https://github.com/Ana0251/ChatGPT-Team-Test/pull/89#issuecomment-6940457383",
+        "https://github.com/Ana0251/ChatGPT-Team-Test/commit/b91954c1ed4e9259c838849d8b662a037e1d85e8",
+        "https://github.com/Ana0251/ChatGPT-Team-Test/commit/b06feeed4a7073af6025ba1ab7e2e575e08cd732",
+        "https://github.com/Ana0251/ChatGPT-Team-Test/pull/84#issuecomment-6940137447",
+        "https://github.com/Ana0251/ChatGPT-Team-Test/pull/84#issuecomment-6940398438",
+        "https://github.com/Ana0251/ChatGPT-Team-Test/pull/87",
+        "https://github.com/Ana0251/ChatGPT-Team-Test/commit/8d82fdb3c21a97a48b98767b6abb5af5ef37a862",
+        "https://github.com/Ana0251/ChatGPT-Team-Test/pull/88",
+        "https://github.com/Ana0251/ChatGPT-Team-Test/commit/4c5ba3694169b1d4e29591d3d6a81c4d97d4bfe6",
+        ".chatgpt-team/agents/coordinator/reviews/H10-W2-PR84.md@fcb973c9be0db76c01ee2a4c361690a46dda8ee3",
+        ".chatgpt-team/agents/qa/reviews/H10-W2-PR84.md@da567ab41d82fdac7d8d9bb9353f553004487688"
       ],
-      "status": "AUTHORIZED_NOT_STARTED",
-      "validation_status": "NOT_TESTED",
+      "status": "COMPLETED",
+      "validation_status": "LOCAL_SQLITE_OWNER_WINDOWS_286_PASS_41_AUDIT_PASS_COORDINATOR_QA_SOURCE_PASS_LIMITED_QA_RUNTIME_NOT_RUN",
       "start_authorized": true,
-      "notes": "ADMINISTRATIVE W2 PHASE-2 H10 ENTRY ONLY (2026-11-16), APP-HESABYAR-W2-PHASE2-H10-AUDIT-GATED-ENTRY-20261116-001. H10 is AUTHORIZED_NOT_STARTED, start_authorized=true, validation_status NOT_TESTED and review_policy coordinator_required. This PM Assistant ledger sync does NOT start Developer. Mandatory sequence: governance PR #82 merged -> THIS separate admin PR approved/merged -> separate explicit Manager Developer H10 handoff. H05/H06 dependencies COMPLETED only local PASS LIMITED, H09/H19 COMPLETED in limited scopes, H26 remains AUTHORIZED_NOT_STARTED/NOT_TESTED, H11/H21 NOT_STARTED/start_authorized=false. W2 remains AUTHORIZED_NOT_STARTED, W3-W6 locked. Exclusive H10 original three paths plus main.py strictly for ONE Audit router import and ONE include_router(prefix=\"/api/v1\"); preserve all existing identity/companies/fiscal/accounts routers and health endpoint with no other shared-file modifications. Developer STOP gate BEFORE any edit outside these paths: enumerate complete source-to-sensitive-event integration map, required H05/H06/H07/H09 hooks, exact commit/blob references/minimal diffs, seek NEW Manager permission. Existing h05_audit nullable actor_id and company_id, absent safe_changes is NOT directly equivalent to rc.4 AuditEvent required real UUID actor_id/company_id; never forge IDs or leak anonymous/login failures/credentials. Audit GET owner/admin company-scoped only; immutable/append-only, actual actor/UTC and redacted changes; atomic mutation-event linkage required for future completion. If full audited mutations cannot be integrated legally, declare gaps NOT_TESTED instead of PASS. All H10 code/tests, independent runtime QA, PostgreSQL/multiworker, real concurrency, production security and release readiness remain NOT_TESTED/DEFERRED; no test execution is claimed here.\n\nH10 NARROW HISTORICAL HOOKS PERMISSION (2026-11-16), APP-HESABYAR-H10-ATOMIC-HOOKS-NARROW-EXCEPTION-20261116-001 / governance #85 merged: only H10 allowed_paths extended with exact five historical files (9 paths total) for import and EXACTLY TWELVE same-locked-transaction audit calls: identity/provision 1, identity/router 4, companies/router 1, fiscal/router 3, accounts/router 3. Developer satisfied pre-implementation STOP impact-map via PR #83 comment 6915328257; partial PR #84 HEAD 4133890769362571a1a35a8faebb3b3a5f7287e8 remains OPEN/UNMERGED and five hooks are NOT implemented there as of decision. NO edit to those files until this admin ledger PR MERGES and Manager issues NEW explicit supplementary H10 developer handoff. Real company/actor UUID, allowlisted secret-free safe_changes and same existing locked connection; rollback on audit insert failure. Preserve H05 audit/quota, authentication, business logic, tenant scope, existing transaction boundaries, API/OpenAPI and prior migrations. If further scope needed STOP for Manager. H10 status AUTHORIZED_NOT_STARTED, start_authorized true, validation_status NOT_TESTED and coordinator_required remain unchanged; 62 isolated staged tests are preliminary only, NOT full checkout OWNER_RUNTIME_PASS nor QA_RUNTIME_PASS. Any changed developer HEAD requires fresh exact-SHA owner-run tests, Coordinator then independent QA then Manager. PostgreSQL, full production security, real multiworker, Posting/release DEFERRED/NOT_TESTED; W2 OPEN, H11/H21 gated, H26 not completed.",
+      "notes": "ADMINISTRATIVE W2 PHASE-2 H10 ENTRY ONLY (2026-11-16), APP-HESABYAR-W2-PHASE2-H10-AUDIT-GATED-ENTRY-20261116-001. H10 is AUTHORIZED_NOT_STARTED, start_authorized=true, validation_status NOT_TESTED and review_policy coordinator_required. This PM Assistant ledger sync does NOT start Developer. Mandatory sequence: governance PR #82 merged -> THIS separate admin PR approved/merged -> separate explicit Manager Developer H10 handoff. H05/H06 dependencies COMPLETED only local PASS LIMITED, H09/H19 COMPLETED in limited scopes, H26 remains AUTHORIZED_NOT_STARTED/NOT_TESTED, H11/H21 NOT_STARTED/start_authorized=false. W2 remains AUTHORIZED_NOT_STARTED, W3-W6 locked. Exclusive H10 original three paths plus main.py strictly for ONE Audit router import and ONE include_router(prefix=\"/api/v1\"); preserve all existing identity/companies/fiscal/accounts routers and health endpoint with no other shared-file modifications. Developer STOP gate BEFORE any edit outside these paths: enumerate complete source-to-sensitive-event integration map, required H05/H06/H07/H09 hooks, exact commit/blob references/minimal diffs, seek NEW Manager permission. Existing h05_audit nullable actor_id and company_id, absent safe_changes is NOT directly equivalent to rc.4 AuditEvent required real UUID actor_id/company_id; never forge IDs or leak anonymous/login failures/credentials. Audit GET owner/admin company-scoped only; immutable/append-only, actual actor/UTC and redacted changes; atomic mutation-event linkage required for future completion. If full audited mutations cannot be integrated legally, declare gaps NOT_TESTED instead of PASS. All H10 code/tests, independent runtime QA, PostgreSQL/multiworker, real concurrency, production security and release readiness remain NOT_TESTED/DEFERRED; no test execution is claimed here.\n\nH10 NARROW HISTORICAL HOOKS PERMISSION (2026-11-16), APP-HESABYAR-H10-ATOMIC-HOOKS-NARROW-EXCEPTION-20261116-001 / governance #85 merged: only H10 allowed_paths extended with exact five historical files (9 paths total) for import and EXACTLY TWELVE same-locked-transaction audit calls: identity/provision 1, identity/router 4, companies/router 1, fiscal/router 3, accounts/router 3. Developer satisfied pre-implementation STOP impact-map via PR #83 comment 6915328257; partial PR #84 HEAD 4133890769362571a1a35a8faebb3b3a5f7287e8 remains OPEN/UNMERGED and five hooks are NOT implemented there as of decision. NO edit to those files until this admin ledger PR MERGES and Manager issues NEW explicit supplementary H10 developer handoff. Real company/actor UUID, allowlisted secret-free safe_changes and same existing locked connection; rollback on audit insert failure. Preserve H05 audit/quota, authentication, business logic, tenant scope, existing transaction boundaries, API/OpenAPI and prior migrations. If further scope needed STOP for Manager. H10 status AUTHORIZED_NOT_STARTED, start_authorized true, validation_status NOT_TESTED and coordinator_required remain unchanged; 62 isolated staged tests are preliminary only, NOT full checkout OWNER_RUNTIME_PASS nor QA_RUNTIME_PASS. Any changed developer HEAD requires fresh exact-SHA owner-run tests, Coordinator then independent QA then Manager. PostgreSQL, full production security, real multiworker, Posting/release DEFERRED/NOT_TESTED; W2 OPEN, H11/H21 gated, H26 not completed.\n\nH-10 MANAGER-ACCEPTED BOUNDED COMPLETION 2026-11-17 under APP-HESABYAR-W2-H10-QA-LIMITED-MERGE-20261117-001: earlier administrative AUTHORIZED_NOT_STARTED / NOT_TESTED pre-implementation notes above are HISTORICAL and superseded for this exact approved LOCAL SQLITE H10 scope only. status=COMPLETED and validation_status=LOCAL_SQLITE_OWNER_WINDOWS_286_PASS_41_AUDIT_PASS_COORDINATOR_QA_SOURCE_PASS_LIMITED_QA_RUNTIME_NOT_RUN. Manager decision governance PR #89 merged at bed1324de99f4e20be446f7963830b5c75c5c816, owner-specific PM Assistant handoff comment 6940457383. Developer PR #84 original exact reviewed HEAD b91954c1ed4e9259c838849d8b662a037e1d85e8, merged on main at b06feeed4a7073af6025ba1ab7e2e575e08cd732. Thirteen changed files all within the nine existing H10 approved allowed paths; existing 12 same-locked-transaction Audit record_event hooks (1+4+1+3+3), exactly two Audit router registration lines in main.py; additive h10_0005 after h09_0004; rc.4 remains unchanged. OWNER/USER-REPORTED REAL WINDOWS RUNTIME on isolated D:\\Codex\\Temp\\H10-retest-b91954 detached exact SHA: Python 3.14.7, pytest 9.2.0, SQLite 3.50.4, commands `python -m pytest -q -ra tests/audit` = 41 PASS / 0 FAIL / 45 nonblocking deprecation warnings / 16.15s / Exit Code 0; `python -m pytest -q -ra tests` full Backend = 286 PASS / 0 FAIL / 117 nonblocking deprecation warnings / 47.35s / Exit Code 0. The 41 Audit cases are INCLUDED within the 286 Backend tests, not 327 tests. User supplied pre-run clean git status and exact HEAD, then post-run matching HEAD and no tracked modifications; only untracked generated Python __pycache__/ and editable-install egg-info remain. Full raw logs and SHA checksums, independent CI run, and SQLAlchemy/Alembic dependency versions were NOT independently verified. Reviewer evidence: Coordinator PR #87 independently SOURCE/INTEGRATION_REVIEW_PASS_LIMITED; QA PR #88 independently SOURCE_AND_EVIDENCE_REVIEW_PASS_LIMITED; both against exact Developer SHA, but COORDINATOR_RUNTIME_NOT_RUN and QA_RUNTIME_NOT_RUN (QA_PYTEST_NOT_RUN), never QA_RUNTIME_PASS. QA report predates the Manager post-run evidence supplement PR #84 comment 6940398438; addendum strengthens OWNER provenance only. Observed implementation is local SQLite app audit API owner/admin company-scoped, append-only database UPDATE/DELETE triggers, server-verified actor/company/UTC and allowlisted secret-redacted safe_changes, additive SQLite migration, hooks in existing transactions, and local regression signal. LIMITED PASS NOT A PRODUCTION/RELEASE GATE. Open P1 EVIDENCE: independent QA runtime NOT_RUN; SQL injection failure/rollback exercised in five representative HTTP mutation categories, NOT separately each of 12 hooks; no independently verified full log/CI. Open P2: SQLite-only append-only triggers do not protect against privileged DBA or implement PostgreSQL semantics, timestamp SQL CHECK verifies suffix/length not true Gregorian validity, direct privileged INSERT may bypass strict safe_changes writer allowlist, offset pagination lacks snapshot isolation, H10 downgrade drops accumulated Audit records. P3: 45/117 dependency/Alembic deprecation warnings and stale pre-hooks prose in PR #84 body/source; changing source requires separately approved fresh review. Deferred/NOT_TESTED: PostgreSQL/multiworker/row locks, production security/TLS/penetration/real-client tenant isolation, real concurrent Posting and closed-period race, used-account deletion after posting, finance reconciliation/reversal, backup/restore/retention and release signoff. H26 remains AUTHORIZED_NOT_STARTED / NOT_TESTED; H11/H21 NOT_STARTED/start_authorized=false; W2 remains AUTHORIZED_NOT_STARTED/open and W3-W6 PENDING_MANAGER_GATE, with no new agent/work authorization. Original 9 allowed_paths, review_policy=coordinator_required, owner, dependencies, review risks and acceptance unchanged.",
       "review_policy": "coordinator_required",
       "review_risks": [
         "P0 completeness: sensitive mutations must be atomically linked to immutable, append-only audit events, with rollback correctness; existing module hooks cannot be presumed available or silently omitted",
@@ -572,7 +586,38 @@
         "Evidence provenance and high-risk release gates: owner-run SHA/version/command/exit and real regression evidence distinguished from independent Coordinator/QA source review; QA_RUNTIME_NOT_RUN until independently executed; PostgreSQL/security/production/posting release DEFERRED_NOT_TESTED",
         "NARROW EXCEPTION APP-HESABYAR-H10-ATOMIC-HOOKS-NARROW-EXCEPTION-20261116-001: only 5 exact historical source files for 12 same-existing-locked-transaction hooks; imported audit must not alter existing H05 audit, invitation quotas, business rules or auth/CSRF, and rollback of event failure must roll back mutation"
       ],
-      "review_reason": "H-10 is a P0 audit-security and financial traceability prerequisite. True, immutable, transaction-coupled sensitive mutation audit, company/actor provenance, legacy h05_audit incompatibilities, confidential redaction, multi-tenancy, additive Alembic migration and narrowly shared router integration require Coordinator independent contract/schema/ownership review, independent QA where applicable, then Manager final acceptance. QA owner-run results and source reviews must not be confused with QA runtime PASS. Manager PR #85 approved exactly five existing-module hook points after source-to-event impact map, strictly preserving atomicity, original module ownership and the requirement for separate supplementary handoff before any Developer edits."
+      "review_reason": "H-10 is a P0 audit-security and financial traceability prerequisite. True, immutable, transaction-coupled sensitive mutation audit, company/actor provenance, legacy h05_audit incompatibilities, confidential redaction, multi-tenancy, additive Alembic migration and narrowly shared router integration require Coordinator independent contract/schema/ownership review, independent QA where applicable, then Manager final acceptance. QA owner-run results and source reviews must not be confused with QA runtime PASS. Manager PR #85 approved exactly five existing-module hook points after source-to-event impact map, strictly preserving atomicity, original module ownership and the requirement for separate supplementary handoff before any Developer edits.",
+      "completed_on": "2026-11-17",
+      "review_history": [
+        {
+          "role": "coordinator",
+          "pr": 87,
+          "merge_sha": "8d82fdb3c21a97a48b98767b6abb5af5ef37a862",
+          "reviewed_developer_sha": "b91954c1ed4e9259c838849d8b662a037e1d85e8",
+          "result": "PASS_LIMITED_SOURCE_INTEGRATION_ONLY",
+          "runtime": "NOT_RUN",
+          "report": ".chatgpt-team/agents/coordinator/reviews/H10-W2-PR84.md"
+        },
+        {
+          "role": "qa",
+          "pr": 88,
+          "merge_sha": "4c5ba3694169b1d4e29591d3d6a81c4d97d4bfe6",
+          "reviewed_developer_sha": "b91954c1ed4e9259c838849d8b662a037e1d85e8",
+          "result": "PASS_LIMITED_INDEPENDENT_SOURCE_AND_OWNER_EVIDENCE_REVIEW",
+          "runtime": "QA_RUNTIME_NOT_RUN",
+          "report": ".chatgpt-team/agents/qa/reviews/H10-W2-PR84.md",
+          "provenance_caveat": "QA review authored before Manager owner-evidence post-run supplement comment 6940398438; it does not imply independent QA re-execution"
+        },
+        {
+          "role": "manager",
+          "pr": 89,
+          "merge_sha": "bed1324de99f4e20be446f7963830b5c75c5c816",
+          "decision_id": "APP-HESABYAR-W2-H10-QA-LIMITED-MERGE-20261117-001",
+          "result": "APPROVED_BOUNDED_LOCAL_SQLITE_PASS_LIMITED_ONLY",
+          "source_merge_pr": 84,
+          "source_merge_sha": "b06feeed4a7073af6025ba1ab7e2e575e08cd732"
+        }
+      ]
     },
     {
       "id": "H-11",
@@ -3141,6 +3186,82 @@
         "backend/app/modules/companies/router.py@6ce23a707c7ba5dfead66448a6195e699d29952b",
         "backend/app/modules/fiscal/router.py@998b7793385151f361b101848a2d1c619be88433",
         "backend/app/modules/accounts/router.py@1a1e878aa00fc9436ed42df20c8864b19e87f5ca"
+      ]
+    },
+    {
+      "id": "APP-HESABYAR-W2-H10-QA-LIMITED-MERGE-20261117-001",
+      "date": "2026-11-17",
+      "approved_by": "manager",
+      "project": "حسابیار (Hesabyar)",
+      "framework_version": "1.3.0",
+      "wave_id": "W2",
+      "task_id": "H-10",
+      "status": "H10_LOCAL_SQLITE_AUDIT_PASS_LIMITED_COMPLETED_COORDINATOR_QA_SOURCE_REVIEW_QA_RUNTIME_NOT_RUN",
+      "scope": "Acceptance ONLY for exact SHA H10 local SQLite audit implementation and user/owner-run Windows runtime results with independent Coordinator and QA SOURCE/EVIDENCE reviews. NOT independently executed QA, production audit correctness, PostgreSQL, Posting, W2 exit, or release approval.",
+      "decision_ref": ".chatgpt-team/DECISIONS.md#APP-HESABYAR-W2-H10-QA-LIMITED-MERGE-20261117-001",
+      "governance_pr": 89,
+      "governance_merge_sha": "bed1324de99f4e20be446f7963830b5c75c5c816",
+      "manager_handoff_comment": 6940457383,
+      "development_pr": 84,
+      "reviewed_developer_head_sha": "b91954c1ed4e9259c838849d8b662a037e1d85e8",
+      "developer_merge_sha": "b06feeed4a7073af6025ba1ab7e2e575e08cd732",
+      "review_history": [
+        {
+          "role": "coordinator",
+          "pr": 87,
+          "result": "SOURCE_INTEGRATION_PASS_LIMITED",
+          "runtime": "NOT_RUN",
+          "merge_sha": "8d82fdb3c21a97a48b98767b6abb5af5ef37a862"
+        },
+        {
+          "role": "qa",
+          "pr": 88,
+          "result": "INDEPENDENT_SOURCE_AND_EVIDENCE_PASS_LIMITED",
+          "runtime": "QA_RUNTIME_NOT_RUN",
+          "merge_sha": "4c5ba3694169b1d4e29591d3d6a81c4d97d4bfe6"
+        }
+      ],
+      "owner_test_evidence": {
+        "runner": "USER_REPORTED_EXACT_SHA_WINDOWS_OWNER_RUNTIME",
+        "environment": "Windows isolated checked-out Developer PR #84 HEAD",
+        "python": "3.14.7",
+        "pytest": "9.2.0",
+        "sqlite": "3.50.4",
+        "audit_pass": 41,
+        "audit_warnings": 45,
+        "audit_exit_code": 0,
+        "backend_pass_including_audit": 286,
+        "backend_warnings": 117,
+        "backend_exit_code": 0,
+        "pre_post_sha_same": true,
+        "post_status": "Only untracked generated __pycache__ and egg-info; tracked files unchanged",
+        "qa_runtime": "NOT_RUN",
+        "notes": "Audit 41 cases are INCLUDED in full Backend 286. Raw full logs/checksums and independent CI not verified."
+      },
+      "risk_limits": [
+        "QA_RUNTIME_NOT_RUN: independently source-reviewed only, not QA runtime PASS.",
+        "Only 5 representative fault-injection HTTP routes, not all 12 H10 hook calls individually.",
+        "SQLite-only append-only triggers, privileged DB bypass, timestamp validation, non-snapshot pagination and destructive downgrade caveats remain.",
+        "PostgreSQL/multiworker, transaction/concurrency in production, journal Posting/Reversal and financial integrity, penetration/TLS/security, backup/restore and release DEFERRED_NOT_TESTED.",
+        "All 9 H10 allowed paths and coordinator_required review policy retained; 29 other tasks and seven waves untouched; H26 NOT_COMPLETED, H11/H21 unauthorized, W2 OPEN."
+      ],
+      "evidence_refs": [
+        ".chatgpt-team/DECISIONS.md#APP-HESABYAR-W2-H10-QA-LIMITED-MERGE-20261117-001",
+        "https://github.com/Ana0251/ChatGPT-Team-Test/pull/89",
+        "https://github.com/Ana0251/ChatGPT-Team-Test/commit/bed1324de99f4e20be446f7963830b5c75c5c816",
+        "https://github.com/Ana0251/ChatGPT-Team-Test/pull/89#issuecomment-6940457383",
+        "https://github.com/Ana0251/ChatGPT-Team-Test/pull/84",
+        "https://github.com/Ana0251/ChatGPT-Team-Test/commit/b91954c1ed4e9259c838849d8b662a037e1d85e8",
+        "https://github.com/Ana0251/ChatGPT-Team-Test/commit/b06feeed4a7073af6025ba1ab7e2e575e08cd732",
+        "https://github.com/Ana0251/ChatGPT-Team-Test/pull/84#issuecomment-6940137447",
+        "https://github.com/Ana0251/ChatGPT-Team-Test/pull/84#issuecomment-6940398438",
+        "https://github.com/Ana0251/ChatGPT-Team-Test/pull/87",
+        "https://github.com/Ana0251/ChatGPT-Team-Test/commit/8d82fdb3c21a97a48b98767b6abb5af5ef37a862",
+        "https://github.com/Ana0251/ChatGPT-Team-Test/pull/88",
+        "https://github.com/Ana0251/ChatGPT-Team-Test/commit/4c5ba3694169b1d4e29591d3d6a81c4d97d4bfe6",
+        ".chatgpt-team/agents/coordinator/reviews/H10-W2-PR84.md@fcb973c9be0db76c01ee2a4c361690a46dda8ee3",
+        ".chatgpt-team/agents/qa/reviews/H10-W2-PR84.md@da567ab41d82fdac7d8d9bb9353f553004487688",
+        "docs/contracts/openapi.yaml@f57de031224e21f09253642c210a778a60683711"
       ]
     }
   ]
