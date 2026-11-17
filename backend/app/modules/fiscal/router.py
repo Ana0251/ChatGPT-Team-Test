@@ -13,6 +13,7 @@ from fastapi import APIRouter, Request
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 from sqlalchemy import and_, select
 
+from app.modules.audit.store import record_event
 from app.modules.fiscal import tables as f
 from app.modules.identity.router import (
     IdentityError, IdentityRoute, actor_id, engine_for, role_for_company,
@@ -102,6 +103,9 @@ def create_fiscal_year(companyId: UUID, body: FiscalInput, request: Request) -> 
             raise IdentityError(409, "PERIOD_OVERLAP")
         result = {"id": new_id(), "company_id": company, **values}
         conn.execute(f.years.insert().values(**result))
+        record_event(conn, actor_id=actor_id(conn, request), company_id=company,
+                     action="fiscal_year_created",
+                     safe_changes={"resource_id": result["id"]})
         return result
 
 
@@ -140,6 +144,9 @@ def create_fiscal_period(companyId: UUID, yearId: UUID, body: FiscalInput,
             "status": "open", **values,
         }
         conn.execute(f.periods.insert().values(**result))
+        record_event(conn, actor_id=actor_id(conn, request), company_id=company,
+                     action="fiscal_period_created",
+                     safe_changes={"resource_id": result["id"], "status": "open"})
         return result
 
 
@@ -159,4 +166,7 @@ def close_fiscal_period(companyId: UUID, yearId: UUID, periodId: UUID,
             f.periods.c.id == period_id, f.periods.c.status == "open",
         ).values(status="closed"))
         audit_event(conn, "fiscal_period_closed", user_id, company)
+        record_event(conn, actor_id=user_id, company_id=company,
+                     action="fiscal_period_closed",
+                     safe_changes={"resource_id": period_id, "status": "closed"})
         return {**dict(period), "status": "closed"}

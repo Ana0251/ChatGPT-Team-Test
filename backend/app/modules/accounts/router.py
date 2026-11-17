@@ -16,6 +16,7 @@ from sqlalchemy import func, select
 from sqlalchemy.exc import IntegrityError
 
 from app.modules.accounts import tables as t
+from app.modules.audit.store import record_event
 from app.modules.identity.router import (
     IdentityError, IdentityRoute, actor_id, engine_for, role_for_company,
 )
@@ -174,6 +175,10 @@ def create_account(companyId: UUID, body: AccountInput, request: Request) -> dic
                 conn.execute(t.accounts.insert().values(**row))
         except IntegrityError:
             raise IdentityError(409, "VALIDATION_ERROR") from None
+        record_event(conn, actor_id=require_member(conn, request, company, write=True),
+                     company_id=company, action="account_created",
+                     safe_changes={"resource_id": row["id"], "level": body.level,
+                                   "active": body.active})
         rows = all_company_accounts(conn, company)
         return serializable_account(row, rows)
 
@@ -198,6 +203,9 @@ def patch_account(companyId: UUID, accountId: UUID, body: AccountPatch,
         conn.execute(t.accounts.update().where(
             t.accounts.c.company_id == company, t.accounts.c.id == str(accountId),
         ).values(**updates))
+        record_event(conn, actor_id=require_member(conn, request, company, write=True),
+                     company_id=company, action="account_updated",
+                     safe_changes={"resource_id": str(accountId)})
         changed = {**dict(row), **updates}
         return serializable_account(changed, all_company_accounts(conn, company))
 
@@ -218,3 +226,6 @@ def delete_account(companyId: UUID, accountId: UUID, request: Request) -> None:
         conn.execute(t.accounts.delete().where(
             t.accounts.c.company_id == company, t.accounts.c.id == str(accountId),
         ))
+        record_event(conn, actor_id=require_member(conn, request, company, write=True),
+                     company_id=company, action="account_deleted",
+                     safe_changes={"resource_id": str(accountId)})

@@ -15,6 +15,7 @@ from sqlalchemy import Engine, select
 from app.modules.identity import tables as t
 from app.modules.identity.security import digest, expiry, new_secret, normalize_email
 from app.modules.identity.store import audit_event, locked, new_id
+from app.modules.audit.store import record_event
 
 Delivery = Callable[[str, str], None]
 
@@ -43,6 +44,9 @@ def provision_initial_owner(
             expires_at=expiry(15), consumed_at=None,
         ))
         audit_event(connection, "operator_initial_owner_provisioned", user_id, company_id)
+        record_event(connection, actor_id=user_id, company_id=company_id,
+                     action="operator_initial_owner_provisioned",
+                     safe_changes={"resource_id": company_id})
         # Deliver privately before commit: delivery errors roll back the DB transaction.
         # Delivery is trusted integration code; raw token MUST NOT be logged or sent via URL.
         deliver(normalized, token)

@@ -17,6 +17,7 @@ from fastapi.routing import APIRoute
 from pydantic import BaseModel, ConfigDict, Field
 from sqlalchemy import func, select
 
+from app.modules.audit.store import record_event
 from app.modules.identity import tables as t
 from app.modules.identity.delivery import smtp_delivery_from_env
 from app.modules.identity.security import (
@@ -291,6 +292,9 @@ def activate_owner(body: ActivateInput, request: Request):
         revoke_session(connection, old_sid)
         sid, _ = new_session(connection, "pre")
         audit_event(connection, "initial_owner_activated", row["user_id"], row["company_id"])
+        record_event(connection, actor_id=row["user_id"], company_id=row["company_id"],
+                     action="initial_owner_activated",
+                     safe_changes={"resource_id": row["user_id"]})
     result = Response(status_code=204, headers={"Cache-Control": "no-store"})
     result.set_cookie(PRE_COOKIE, sid, max_age=900, **COOKIE_ARGS)
     return result
@@ -316,6 +320,9 @@ def activate_invitation(body: ActivateInput, request: Request):
         revoke_session(connection, old_sid)
         sid, _ = new_session(connection, "pre")
         audit_event(connection, "invitation_new_user_activated", user_id, invitation["company_id"])
+        record_event(connection, actor_id=user_id, company_id=invitation["company_id"],
+                     action="invitation_new_user_activated",
+                     safe_changes={"resource_id": user_id})
     result = Response(status_code=204, headers={"Cache-Control": "no-store"})
     result.set_cookie(PRE_COOKIE, sid, max_age=900, **COOKIE_ARGS)
     return result
@@ -335,6 +342,9 @@ def accept_invitation(body: AcceptInput, request: Request):
         connection.execute(t.memberships.insert().values(user_id=user_id, company_id=invitation["company_id"], role=invitation["role"]))
         connection.execute(t.invitations.update().where(t.invitations.c.id == invitation["id"]).values(consumed_at=now_string()))
         audit_event(connection, "invitation_existing_user_accepted", user_id, invitation["company_id"])
+        record_event(connection, actor_id=user_id, company_id=invitation["company_id"],
+                     action="invitation_existing_user_accepted",
+                     safe_changes={"resource_id": user_id})
     return JSONResponse({"user_id": user_id, "company_id": invitation["company_id"], "role": invitation["role"]}, status_code=201)
 
 
@@ -412,6 +422,9 @@ def invite_member(companyId: UUID, body: InviteInput, request: Request):
             expires_at=invitation["expires_at"], consumed_at=None,
         ))
         audit_event(connection, "membership_invitation_created", user_id, str(companyId))
+        record_event(connection, actor_id=user_id, company_id=str(companyId),
+                     action="membership_invitation_created",
+                     safe_changes={"resource_id": invitation["id"], "role": body.role})
         # Private notifier gets token, API response/DB/audit never do. Failure rolls back.
         delivery(email, raw)
     return JSONResponse(invitation, status_code=202, headers={"Cache-Control": "no-store"})
